@@ -209,11 +209,41 @@
       padding: 8px 12px; border: 1px solid var(--border); border-radius: 8px;
       font: 14px var(--font); background: #fff;
     }
-    .score-fields { margin: 16px 0; }
-    .score-field { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
-    .score-field label { flex: 1; font-size: 14px; }
-    .score-field input[type=range] { width: 120px; }
-    .score-field .score-val { min-width: 30px; text-align: center; font-weight: 700; }
+    /* ── Subcategory score cards ── */
+    .subcat-card {
+      background: #fff; border: 1px solid var(--border); border-radius: 12px;
+      padding: 18px 20px; margin-bottom: 12px; box-shadow: var(--shadow);
+    }
+    .subcat-title { font-size: 15px; font-weight: 700; margin-bottom: 14px; color: var(--text); }
+    .subcat-row { display: flex; gap: 12px; align-items: flex-start; flex-wrap: wrap; margin-bottom: 10px; }
+    .subcat-score-wrap { display: flex; align-items: center; gap: 8px; }
+    .star-row { display: flex; gap: 4px; }
+    .star {
+      font-size: 26px; cursor: pointer; line-height: 1;
+      transition: transform .1s; user-select: none;
+    }
+    .star:hover { transform: scale(1.2); }
+    .star.filled { color: #f9a825; }
+    .star.empty  { color: #e0e0e0; }
+    .subcat-score-label { font-size: 18px; font-weight: 800; color: var(--primary); min-width: 32px; }
+    .subcat-link-wrap { flex: 1; min-width: 200px; }
+    .subcat-link-wrap input {
+      width: 100%; padding: 7px 10px; border: 1px solid var(--border);
+      border-radius: 8px; font: 13px var(--font);
+    }
+    .subcat-comment-wrap { width: 100%; }
+    .subcat-comment-wrap textarea {
+      width: 100%; padding: 7px 10px; border: 1px solid var(--border);
+      border-radius: 8px; font: 13px var(--font); resize: vertical; min-height: 52px;
+    }
+    /* saved log */
+    .entry-log-card {
+      border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px;
+      margin-bottom: 10px; background: #fafafa;
+    }
+    .entry-log-header { display: flex; justify-content: space-between; align-items: center; }
+    .entry-log-subs { margin-top: 10px; display: flex; flex-direction: column; gap: 6px; }
+    .entry-log-sub { font-size: 12px; padding: 4px 10px; background: #fff; border-radius: 6px; border: 1px solid var(--border); }
     .btn {
       padding: 10px 24px; border-radius: 8px; border: none;
       font: 14px var(--font); font-weight: 600; cursor: pointer; transition: all .15s;
@@ -675,9 +705,11 @@
   <section id="tab-entry" class="tab-content">
     <div class="section-head">
       <h2>Score Entry</h2>
-      <span class="sub">Record a spot-check observation</span>
+      <span class="sub">Score each sub-category individually with a Podio link and comment</span>
     </div>
-    <div class="card entry-form">
+
+    <!-- Header row: rep / date / role / reviewer -->
+    <div class="card" style="margin-bottom:16px">
       <div class="form-row">
         <div class="form-group">
           <label>Rep</label>
@@ -691,7 +723,7 @@
       <div class="form-row">
         <div class="form-group">
           <label>Role</label>
-          <select id="entry-cat">
+          <select id="entry-cat" onchange="renderEntrySubcats()">
             <option value="A">Role A — Shift / Podio / Lead Investigation</option>
             <option value="B">Role B — Shift / Task Management</option>
             <option value="C">Role C — Shift / Reviews / Reactivate</option>
@@ -705,27 +737,29 @@
           </select>
         </div>
       </div>
-      <div class="score-fields" id="entry-fields"></div>
-      <div style="display:flex;gap:12px;align-items:center">
-        <button class="btn btn-primary" onclick="saveEntry()">Save &amp; Copy JSON</button>
-        <span id="entry-avg-display" style="font-size:14px;color:var(--text-muted)"></span>
-      </div>
-      <div id="entry-copy-area" class="copy-area"></div>
-      <p style="font-size:12px;color:var(--text-muted);margin-top:8px">
-        Copy the JSON above and append it to <code>data/sampling_scores.json</code>, then run <code>python build-data.py</code>.
-      </p>
     </div>
 
-    <div class="entry-log card" style="margin-top:24px">
-      <div class="card-title">Recent Observations (last 10)</div>
-      <table>
-        <thead>
-          <tr>
-            <th>Date</th><th>Rep</th><th>Role</th><th>Reviewer</th><th>Avg</th>
-          </tr>
-        </thead>
-        <tbody id="entry-log-tbody"></tbody>
-      </table>
+    <!-- Per-subcategory cards -->
+    <div id="entry-subcats"></div>
+
+    <!-- Average + Save -->
+    <div class="card" style="margin-top:16px;display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+      <span id="entry-avg-display" style="font-size:16px;font-weight:700;color:var(--primary)"></span>
+      <button class="btn btn-primary" onclick="saveEntry()" style="margin-left:auto">
+        ✓ Save Observation
+      </button>
+      <div id="entry-saved-msg" style="color:var(--success);font-weight:700;display:none">Saved!</div>
+    </div>
+
+    <!-- Saved entries log -->
+    <div class="card" style="margin-top:24px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <div class="card-title" style="margin-bottom:0">Saved Observations</div>
+        <button class="btn btn-secondary" onclick="exportEntries()" style="font-size:12px;padding:6px 14px">
+          ⬇ Export JSON for permanent save
+        </button>
+      </div>
+      <div id="entry-log-list"></div>
     </div>
   </section>
 
@@ -2045,108 +2079,240 @@ function switchToIndividual(repId) {
 
 const CAT_FIELDS = {
   A: [
-    { key:"prioritizing_step2_keyword_managing_acq", label:"Prioritizing – Step 2, Keyword, Managing ACQ" },
-    { key:"returning_dup_initial",                   label:"Podio – Returning, Dup, Initial" },
-    { key:"activity_zillow_maps",                    label:"Lead Investigation – Activity, Zillow, Maps, Zipcode" }
+    { key: "prioritizing_step2_keyword_managing_acq", label: "Prioritizing — Step 2, Keyword, Managing ACQ" },
+    { key: "returning_dup_initial",                   label: "Podio — Returning, Dup, Initial" },
+    { key: "activity_zillow_maps",                    label: "Lead Investigation — Activity, Zillow, Maps, Zipcode" }
   ],
   B: [
-    { key:"tagging",          label:"Managing Shift – Tagging" },
-    { key:"prioritizing",     label:"Managing Shift – Prioritizing" },
-    { key:"updating_status",  label:"Podio – Updating Status" },
-    { key:"properly_handling",label:"Properly Handling" }
+    { key: "tagging",           label: "Managing Shift — Tagging" },
+    { key: "prioritizing",      label: "Managing Shift — Prioritizing" },
+    { key: "updating_status",   label: "Podio — Updating Status" },
+    { key: "properly_handling", label: "Properly Handling" }
   ],
   C: [
-    { key:"monitoring_ntc", label:"Managing Shift – Monitoring NTC" },
-    { key:"renos",          label:"Managing Shift – Renos" },
-    { key:"reviews",        label:"Lead Investigation – Reviews" },
-    { key:"reactivate",     label:"Lead Investigation – Reactivate" }
+    { key: "monitoring_ntc", label: "Managing Shift — Monitoring NTC" },
+    { key: "renos",          label: "Managing Shift — Renos" },
+    { key: "reviews",        label: "Lead Investigation — Reviews" },
+    { key: "reactivate",     label: "Lead Investigation — Reactivate" }
   ]
 };
 
+// ── localStorage persistence for score entries ────────────────────────────────
+const LS_KEY = 'ops_pending_entries';
+
+function getPendingEntries() {
+  try { return JSON.parse(localStorage.getItem(LS_KEY) || '[]'); }
+  catch(e) { return []; }
+}
+function savePendingEntries(list) {
+  localStorage.setItem(LS_KEY, JSON.stringify(list));
+}
+
+// Merge pending entries from localStorage into the live data so charts update
+function mergePendingIntoData() {
+  const pending = getPendingEntries();
+  pending.forEach(entry => {
+    // Avoid duplicates by id
+    if (!D.sampling_scores.find(s => s._local_id === entry._local_id)) {
+      D.sampling_scores.push(entry);
+    }
+  });
+}
+
+// ── Score Entry ───────────────────────────────────────────────────────────────
+
 function initScoreEntry() {
-  // Always rebuild rep dropdown (REPS is now loaded)
-  const repSel = document.getElementById("entry-rep");
+  const repSel = document.getElementById('entry-rep');
   repSel.innerHTML = '<option value="">— Select rep —</option>' +
-    REPS.map(r => `<option value="${r.id}">${r.name}</option>`).join("");
+    REPS.map(r => `<option value="${r.id}">${r.name}</option>`).join('');
 
-  // Default date to today
   const today = new Date().toISOString().slice(0, 10);
-  document.getElementById("entry-date").value = today;
+  document.getElementById('entry-date').value = today;
 
-  // Re-render fields on category change (only add listener once)
-  const catSel = document.getElementById("entry-cat");
-  catSel.removeEventListener("change", renderEntryFields);
-  catSel.addEventListener("change", renderEntryFields);
-  renderEntryFields();
+  const catSel = document.getElementById('entry-cat');
+  catSel.removeEventListener('change', renderEntrySubcats);
+  catSel.addEventListener('change', renderEntrySubcats);
+
+  renderEntrySubcats();
   renderEntryLog();
 }
 
-function renderEntryFields() {
-  const cat = document.getElementById("entry-cat").value;
+function renderEntrySubcats() {
+  const cat    = document.getElementById('entry-cat').value;
   const fields = CAT_FIELDS[cat] || [];
-  document.getElementById("entry-fields").innerHTML = fields.map(f => `
-    <div class="score-field">
-      <label>${f.label}</label>
-      <input type="range" min="1" max="5" step="1" value="3" id="field-${f.key}"
-        oninput="document.getElementById('val-${f.key}').textContent=this.value; updateEntryAvg()">
-      <span class="score-val" id="val-${f.key}">3</span>
-    </div>`).join("");
+  const container = document.getElementById('entry-subcats');
+  if (!container) return;
+
+  container.innerHTML = fields.map(f => `
+    <div class="subcat-card" id="subcat-${f.key}">
+      <div class="subcat-title">${f.label}</div>
+      <div class="subcat-row">
+        <div class="subcat-score-wrap">
+          <div class="star-row" id="stars-${f.key}">
+            ${[1,2,3,4,5].map(n =>
+              `<span class="star empty" data-key="${f.key}" data-val="${n}" onclick="setStarScore('${f.key}',${n})">★</span>`
+            ).join('')}
+          </div>
+          <span class="subcat-score-label" id="score-lbl-${f.key}">—</span>
+        </div>
+        <div class="subcat-link-wrap">
+          <input type="url" id="link-${f.key}" placeholder="Podio link (optional)"
+            style="width:100%;padding:7px 10px;border:1px solid var(--border);border-radius:8px;font:13px var(--font)">
+        </div>
+      </div>
+      <div class="subcat-comment-wrap">
+        <textarea id="comment-${f.key}" placeholder="Comment (optional)"
+          style="width:100%;padding:7px 10px;border:1px solid var(--border);border-radius:8px;font:13px var(--font);resize:vertical;min-height:52px"></textarea>
+      </div>
+    </div>`).join('');
+
   updateEntryAvg();
 }
 
+function setStarScore(key, val) {
+  // Update star display
+  document.querySelectorAll(`.star[data-key="${key}"]`).forEach(s => {
+    s.classList.toggle('filled', parseInt(s.dataset.val) <= val);
+    s.classList.toggle('empty',  parseInt(s.dataset.val) >  val);
+  });
+  const lbl = document.getElementById(`score-lbl-${key}`);
+  if (lbl) lbl.textContent = val + '/5';
+  updateEntryAvg();
+}
+
+function getSubcatScore(key) {
+  const filled = document.querySelectorAll(`.star[data-key="${key}"].filled`);
+  return filled.length || null;
+}
+
 function updateEntryAvg() {
-  const cat = document.getElementById("entry-cat").value;
+  const cat    = document.getElementById('entry-cat')?.value;
   const fields = CAT_FIELDS[cat] || [];
-  const vals = fields.map(f => parseInt(document.getElementById("field-" + f.key)?.value || 3));
-  const a = avg(vals);
-  document.getElementById("entry-avg-display").textContent = a != null ? `Avg: ${a.toFixed(2)} / 5` : "";
+  const scores = fields.map(f => getSubcatScore(f.key)).filter(s => s !== null);
+  const a = scores.length ? avg(scores) : null;
+  const el = document.getElementById('entry-avg-display');
+  if (el) el.textContent = a != null ? `Observation average: ${a.toFixed(2)} / 5` : '';
 }
 
 function saveEntry() {
-  const cat = document.getElementById("entry-cat").value;
+  const repId    = document.getElementById('entry-rep').value;
+  const date     = document.getElementById('entry-date').value;
+  const cat      = document.getElementById('entry-cat').value;
+  const reviewer = document.getElementById('entry-reviewer').value;
+
+  if (!repId)  { alert('Please select a rep.');  return; }
+  if (!date)   { alert('Please enter a date.');   return; }
+
   const fields = CAT_FIELDS[cat] || [];
   const scores = {};
-  fields.forEach(f => { scores[f.key] = parseInt(document.getElementById("field-" + f.key).value); });
-  const vals = Object.values(scores);
-  const a = avg(vals);
+  const subcatDetails = {};
+  let hasAnyScore = false;
 
-  const record = {
-    date:     document.getElementById("entry-date").value,
-    rep_id:   document.getElementById("entry-rep").value,
-    reviewer: document.getElementById("entry-reviewer").value,
-    category: cat,
+  fields.forEach(f => {
+    const score   = getSubcatScore(f.key);
+    const link    = document.getElementById(`link-${f.key}`)?.value.trim() || '';
+    const comment = document.getElementById(`comment-${f.key}`)?.value.trim() || '';
+    if (score !== null) {
+      scores[f.key] = score;
+      hasAnyScore = true;
+    }
+    subcatDetails[f.key] = { score, link, comment };
+  });
+
+  if (!hasAnyScore) { alert('Please score at least one sub-category.'); return; }
+
+  const scoreVals = Object.values(scores);
+  const avgScore  = avg(scoreVals);
+
+  const localId = `${Date.now()}-${repId}-${cat}`;
+  const entry = {
+    _local_id: localId,
+    date, rep_id: repId, reviewer, category: cat,
     scores,
-    avg: parseFloat(a.toFixed(2))
+    avg: parseFloat(avgScore.toFixed(2)),
+    subcat_details: subcatDetails
   };
 
-  // Add to in-memory data and re-render
-  D.sampling_scores.push(record);
-  renderOverview();
+  // Save to localStorage
+  const pending = getPendingEntries();
+  pending.push(entry);
+  savePendingEntries(pending);
+
+  // Merge into live data so charts update immediately
+  D.sampling_scores.push(entry);
+
+  // Also create rotem_comment entries for any subcats with links/comments
+  fields.forEach(f => {
+    const d = subcatDetails[f.key];
+    if (d.link || d.comment) {
+      const commentEntry = {
+        id: `local-${localId}-${f.key}`,
+        sheet: new Date(date).toLocaleString('en',{month:'long'}),
+        rep_id: repId, category: cat,
+        comment_date: date,
+        links: d.link ? [{ url: d.link, note: d.comment }] : [],
+        general_note: d.link ? '' : d.comment,
+        replies: [], reviewed_by: {}, employee_response: ''
+      };
+      D.rotem_comments.push(commentEntry);
+    }
+  });
+
+  // Refresh UI
   renderEntryLog();
+  renderEntrySubcats(); // reset form
+  const saved = document.getElementById('entry-saved-msg');
+  if (saved) { saved.style.display = 'block'; setTimeout(() => saved.style.display = 'none', 3000); }
 
-  // Show JSON to copy
-  const area = document.getElementById("entry-copy-area");
-  area.textContent = JSON.stringify(record, null, 2);
-  area.classList.add("visible");
-
-  // Copy to clipboard
-  navigator.clipboard?.writeText(JSON.stringify(record, null, 2)).catch(() => {});
-  alert("Entry added! JSON copied to clipboard. Paste into data/sampling_scores.json and run build-data.py.");
+  // Optionally refresh charts if on another tab
+  const activeTab = document.querySelector('.tab-btn.active')?.dataset.tab;
+  if (activeTab === 'overview')    renderOverview();
+  if (activeTab === 'leaderboard') renderLeaderboard();
 }
 
 function renderEntryLog() {
-  const recent = [...D.sampling_scores].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 10);
+  const container = document.getElementById('entry-log-list');
+  if (!container) return;
+  const pending = getPendingEntries();
+  if (!pending.length) {
+    container.innerHTML = '<p style="font-size:13px;color:var(--text-muted);padding:8px 0">No saved observations yet this session.</p>';
+    return;
+  }
   const repName = id => REPS.find(r => r.id === id)?.name || id;
-  document.getElementById("entry-log-tbody").innerHTML = recent.map(r => {
-    const scale = r.avg > 5 ? 10 : 5;
-    return `<tr>
-      <td>${r.date}</td>
-      <td>${repName(r.rep_id)}</td>
-      <td>Role ${r.category}</td>
-      <td>${r.reviewer}</td>
-      <td>${r.avg.toFixed(2)} / ${scale} (${pct((r.avg / scale) * 100)})</td>
-    </tr>`;
-  }).join("");
+  container.innerHTML = [...pending].reverse().map(e => {
+    const fields = CAT_FIELDS[e.category] || [];
+    const subsHtml = fields.filter(f => e.scores?.[f.key]).map(f => {
+      const d = e.subcat_details?.[f.key] || {};
+      const score = e.scores[f.key];
+      return `<div class="entry-log-sub">
+        <strong>${f.label}</strong> — ${score}/5
+        ${d.link ? ` · <a href="${d.link}" target="_blank" style="color:var(--primary);font-size:11px">Podio ↗</a>` : ''}
+        ${d.comment ? ` · <em style="color:var(--text-muted)">${escHtml(d.comment)}</em>` : ''}
+      </div>`;
+    }).join('');
+    return `<div class="entry-log-card">
+      <div class="entry-log-header">
+        <span><strong>${repName(e.rep_id)}</strong> · Role ${e.category} · ${e.date}</span>
+        <span style="font-size:13px;font-weight:700;color:var(--primary)">${e.avg.toFixed(2)}/5 avg</span>
+      </div>
+      <div class="entry-log-subs">${subsHtml}</div>
+    </div>`;
+  }).join('');
+}
+
+function exportEntries() {
+  const pending = getPendingEntries();
+  if (!pending.length) { alert('No pending entries to export.'); return; }
+  // Strip internal _local_id and _subcat_details before export
+  const clean = pending.map(e => {
+    const { _local_id, subcat_details, ...rest } = e;
+    return rest;
+  });
+  const blob = new Blob([JSON.stringify(clean, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `sampling_scores_export_${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
 }
 
 // ── Feedback (Rotem's comments) ──────────────────────────────────────────────
@@ -2805,6 +2971,7 @@ function initApp() {
 // On load: restore session or show name-picker
 AUTH.init();
 buildLoginPicker();
+mergePendingIntoData();
 if (AUTH.user) {
   document.getElementById('login-overlay').classList.add('hidden');
   initApp();
