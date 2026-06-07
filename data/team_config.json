@@ -5,12 +5,11 @@
     { "id": "gal",     "name": "Gal Kalderon", "role": "Junior Ops",  "target": 0.80, "gmail": "gal.kalderon@zoomrei.com" },
     { "id": "tomer",   "name": "Tomer Peled",  "role": "Junior Ops",  "target": 0.80, "gmail": "tomer.peled@zoomrei.com" },
     { "id": "eran",    "name": "Eran Retman",  "role": "Junior Ops",  "target": 0.80, "gmail": "eran.retman@zoomrei.com" },
-    { "id": "lior",    "name": "Lior",         "role": "Junior Ops",  "target": 0.80, "gmail": "lior@zoomrei.com" },
-    { "id": "rotem_i", "name": "Rotem Itzhak", "role": "Junior Ops",  "target": 0.80, "gmail": "rotem.itzhak@zoomrei.com" }
+    { "id": "lior",    "name": "Lior",         "role": "Junior Ops",  "target": 0.80, "gmail": "lior@zoomrei.com" }
   ],
   "managers": [
     { "email": "nitzan.raor@zoomrei.com",  "name": "Nitzan Raor" },
-    { "email": "rotem.itzhak@zoomrei.com", "name": "Rotem Itzhak", "also_rep": "rotem_i" }
+    { "email": "rotem.itzhak@zoomrei.com", "name": "Rotem Itzhak" }
   ],
   "roles": {
     "Closer Ops":  { "target": 0.90, "color": "#7c3aed" },
