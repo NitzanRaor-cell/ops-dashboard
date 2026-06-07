@@ -1,0 +1,513 @@
+[
+  {
+    "date": "2026-03-18",
+    "rep_id": "noam",
+    "reviewer": "rotem",
+    "category": "A",
+    "scores": {
+      "distribution": 8,
+      "monitoring": 8,
+      "managing_acq": 10,
+      "speed_to_lead": 10,
+      "zillow": 10,
+      "initial_fu": 10,
+      "returning_lead": 4,
+      "dup": 5,
+      "step2": 7
+    },
+    "avg": 8.0
+  },
+  {
+    "date": "2026-03-18",
+    "rep_id": "tomer",
+    "reviewer": "rotem",
+    "category": "A",
+    "scores": {
+      "distribution": 8,
+      "monitoring": 8,
+      "n_febe": 3,
+      "managing_acq": 10,
+      "speed_to_lead": 10,
+      "initial_fu": 6
+    },
+    "avg": 7.5
+  },
+  {
+    "date": "2026-03-18",
+    "rep_id": "eran",
+    "reviewer": "rotem",
+    "category": "C",
+    "scores": {
+      "monitoring_ntc": 10,
+      "reviews": 10,
+      "reactivate": 10,
+      "renos": 10,
+      "leads_on_nurture": 0
+    },
+    "avg": 8.0
+  },
+  {
+    "date": "2026-03-21",
+    "rep_id": "omer",
+    "reviewer": "rotem",
+    "category": "A",
+    "scores": {
+      "distribution": 8,
+      "n_febe": 2,
+      "speed_to_lead": 10,
+      "zillow": 10,
+      "maps_zipcode": 6,
+      "activity": 6,
+      "initial_fu": 4,
+      "step2": 5
+    },
+    "avg": 6.4
+  },
+  {
+    "date": "2026-03-21",
+    "rep_id": "gal",
+    "reviewer": "rotem",
+    "category": "B",
+    "scores": {
+      "initial_contact_scheduled": 7,
+      "communication": 10,
+      "properly_handling": 2,
+      "overdue_end_of_shift": 10,
+      "deleting_tasks": 10,
+      "updating_status": 2,
+      "email": 10
+    },
+    "avg": 7.29
+  },
+  {
+    "date": "2026-03-22",
+    "rep_id": "tal",
+    "reviewer": "rotem",
+    "category": "C",
+    "scores": {
+      "reviews": 7,
+      "reactivate": 0,
+      "leads_on_nurture": 0,
+      "no_task_contacted_interested_initial": 5
+    },
+    "avg": 3.0
+  },
+  {
+    "date": "2026-03-27",
+    "rep_id": "omer",
+    "reviewer": "rotem",
+    "category": "A",
+    "scores": {
+      "distribution": 8,
+      "n_febe": 2,
+      "speed_to_lead": 10,
+      "zillow": 10,
+      "maps_zipcode": 6,
+      "activity": 6,
+      "initial_fu": 4,
+      "step2": 5
+    },
+    "avg": 6.4
+  },
+  {
+    "date": "2026-03-29",
+    "rep_id": "noam",
+    "reviewer": "rotem",
+    "category": "A",
+    "scores": {
+      "distribution": 8,
+      "monitoring": 8,
+      "managing_acq": 10,
+      "speed_to_lead": 10,
+      "zillow": 10,
+      "initial_fu": 10,
+      "returning_lead": 4,
+      "dup": 5,
+      "step2": 7
+    },
+    "avg": 8.0
+  },
+  {
+    "date": "2026-03-29",
+    "rep_id": "eran",
+    "reviewer": "rotem",
+    "category": "A",
+    "scores": {
+      "monitoring": 8,
+      "n_febe": 3,
+      "managing_acq": 10,
+      "speed_to_lead": 10,
+      "initial_fu": 6,
+      "returning_lead": 10
+    },
+    "avg": 7.8
+  },
+  {
+    "date": "2026-04-02",
+    "rep_id": "gal",
+    "reviewer": "rotem",
+    "category": "A",
+    "scores": {
+      "distribution": 7,
+      "n_febe": 2,
+      "managing_acq": 10,
+      "inbound": 5,
+      "prioritizing": 6,
+      "speed_to_lead": 10,
+      "zillow": 10,
+      "maps_zipcode": 3,
+      "initial_fu": 4,
+      "returning_lead": 0
+    },
+    "avg": 5.7
+  },
+  {
+    "date": "2026-04-05",
+    "rep_id": "noam",
+    "reviewer": "rotem",
+    "category": "B",
+    "scores": {
+      "tagging_missing_calls": 10,
+      "initial_contact_scheduled": 10,
+      "communication": 10,
+      "properly_handling": 10,
+      "waiting_for_op_fu": 10,
+      "overdue_end_of_shift": 10,
+      "deleting_tasks": 10,
+      "updating_status": 7,
+      "email": 10
+    },
+    "avg": 9.67
+  },
+  {
+    "date": "2026-04-05",
+    "rep_id": "tal",
+    "reviewer": "rotem",
+    "category": "A",
+    "scores": {
+      "monitoring": 8,
+      "n_febe": 2,
+      "speed_to_lead": 10,
+      "zillow": 10,
+      "maps_zipcode": 4,
+      "initial_fu": 4
+    },
+    "avg": 6.33
+  },
+  {
+    "date": "2026-04-17",
+    "rep_id": "omer",
+    "reviewer": "rotem",
+    "category": "A",
+    "scores": {
+      "distribution": 8,
+      "n_febe": 2,
+      "speed_to_lead": 10,
+      "zillow": 10,
+      "maps_zipcode": 6,
+      "activity": 6,
+      "initial_fu": 4,
+      "step2": 5
+    },
+    "avg": 6.4
+  },
+  {
+    "date": "2026-04-18",
+    "rep_id": "noam",
+    "reviewer": "rotem",
+    "category": "A",
+    "scores": {
+      "distribution": 8,
+      "monitoring": 8,
+      "managing_acq": 10,
+      "speed_to_lead": 10,
+      "zillow": 10,
+      "initial_fu": 10,
+      "returning_lead": 4,
+      "dup": 5,
+      "step2": 7
+    },
+    "avg": 8.0
+  },
+  {
+    "date": "2026-04-18",
+    "rep_id": "tal",
+    "reviewer": "rotem",
+    "category": "B",
+    "scores": {
+      "tagging_missing_calls": 4,
+      "initial_contact_scheduled": 10,
+      "communication": 10,
+      "properly_handling": 1,
+      "waiting_for_op_fu": 6,
+      "overdue_end_of_shift": 10,
+      "deleting_tasks": 10,
+      "updating_status": 2,
+      "email": 10
+    },
+    "avg": 7.0
+  },
+  {
+    "date": "2026-04-19",
+    "rep_id": "gal",
+    "reviewer": "rotem",
+    "category": "B",
+    "scores": {
+      "initial_contact_scheduled": 7,
+      "communication": 10,
+      "properly_handling": 2,
+      "overdue_end_of_shift": 10,
+      "deleting_tasks": 10,
+      "updating_status": 2,
+      "email": 10
+    },
+    "avg": 7.29
+  },
+  {
+    "date": "2026-04-21",
+    "rep_id": "eran",
+    "reviewer": "rotem",
+    "category": "B",
+    "scores": {
+      "tagging_missing_calls": 7,
+      "initial_contact_scheduled": 10,
+      "communication": 10,
+      "properly_handling": 7,
+      "waiting_for_op_fu": 10,
+      "overdue_end_of_shift": 10,
+      "deleting_tasks": 10,
+      "updating_status": 5,
+      "email": 10
+    },
+    "avg": 8.78
+  },
+  {
+    "date": "2026-04-22",
+    "rep_id": "tal",
+    "reviewer": "rotem",
+    "category": "C",
+    "scores": {
+      "reviews": 7,
+      "reactivate": 0,
+      "leads_on_nurture": 0,
+      "no_task_contacted_interested_initial": 5
+    },
+    "avg": 3.0
+  },
+  {
+    "date": "2026-04-25",
+    "rep_id": "lior",
+    "reviewer": "rotem",
+    "category": "A",
+    "scores": {
+      "managing_acq": 10,
+      "speed_to_lead": 10,
+      "zillow": 10,
+      "initial_fu": 10,
+      "returning_lead": 10
+    },
+    "avg": 10.0
+  },
+  {
+    "date": "2026-05-09",
+    "rep_id": "omer",
+    "reviewer": "rotem",
+    "category": "A",
+    "scores": {
+      "prioritizing_step2_keyword_managing_acq": 5,
+      "returning_dup_initial": 5,
+      "activity_zillow_maps": 4
+    },
+    "avg": 4.67
+  },
+  {
+    "date": "2026-05-12",
+    "rep_id": "eran",
+    "reviewer": "rotem",
+    "category": "B",
+    "scores": {
+      "tagging": 5,
+      "prioritizing": 3,
+      "updating_status": 5,
+      "properly_handling": 5
+    },
+    "avg": 4.5
+  },
+  {
+    "date": "2026-05-14",
+    "rep_id": "noam",
+    "reviewer": "rotem",
+    "category": "A",
+    "scores": {
+      "prioritizing_step2_keyword_managing_acq": 5,
+      "returning_dup_initial": 4,
+      "activity_zillow_maps": 3
+    },
+    "avg": 4.0
+  },
+  {
+    "date": "2026-05-14",
+    "rep_id": "tomer",
+    "reviewer": "rotem",
+    "category": "C",
+    "scores": {
+      "monitoring_ntc": 5,
+      "renos": 5,
+      "reviews": 5,
+      "reactivate": 3
+    },
+    "avg": 4.5
+  },
+  {
+    "date": "2026-05-14",
+    "rep_id": "eran",
+    "reviewer": "rotem",
+    "category": "C",
+    "scores": {
+      "monitoring_ntc": 5,
+      "renos": 5,
+      "reviews": 2,
+      "reactivate": 3
+    },
+    "avg": 3.75
+  },
+  {
+    "date": "2026-05-15",
+    "rep_id": "tomer",
+    "reviewer": "rotem",
+    "category": "B",
+    "scores": {
+      "tagging": 5,
+      "prioritizing": 4,
+      "updating_status": 5,
+      "properly_handling": 5
+    },
+    "avg": 4.75
+  },
+  {
+    "date": "2026-05-15",
+    "rep_id": "eran",
+    "reviewer": "rotem",
+    "category": "A",
+    "scores": {
+      "prioritizing_step2_keyword_managing_acq": 5,
+      "returning_dup_initial": 5,
+      "activity_zillow_maps": 5
+    },
+    "avg": 5.0
+  },
+  {
+    "date": "2026-05-17",
+    "rep_id": "noam",
+    "reviewer": "rotem",
+    "category": "B",
+    "scores": {
+      "tagging": 3,
+      "prioritizing": 4,
+      "updating_status": 2,
+      "properly_handling": 5
+    },
+    "avg": 3.5
+  },
+  {
+    "date": "2026-05-17",
+    "rep_id": "eran",
+    "reviewer": "rotem",
+    "category": "B",
+    "scores": {
+      "tagging": 5,
+      "prioritizing": 3,
+      "updating_status": 5,
+      "properly_handling": 5
+    },
+    "avg": 4.5
+  },
+  {
+    "date": "2026-05-18",
+    "rep_id": "omer",
+    "reviewer": "rotem",
+    "category": "B",
+    "scores": {
+      "tagging": 4,
+      "prioritizing": 5,
+      "updating_status": 3,
+      "properly_handling": 5
+    },
+    "avg": 4.25
+  },
+  {
+    "date": "2026-05-19",
+    "rep_id": "gal",
+    "reviewer": "rotem",
+    "category": "A",
+    "scores": {
+      "prioritizing_step2_keyword_managing_acq": 2,
+      "returning_dup_initial": 5,
+      "activity_zillow_maps": 2
+    },
+    "avg": 3.0
+  },
+  {
+    "date": "2026-05-15",
+    "rep_id": "gal",
+    "reviewer": "rotem",
+    "category": "B",
+    "scores": {
+      "tagging": 4,
+      "prioritizing": 5,
+      "updating_status": 3,
+      "properly_handling": 4
+    },
+    "avg": 4.0
+  },
+  {
+    "date": "2026-05-15",
+    "rep_id": "tomer",
+    "reviewer": "rotem",
+    "category": "A",
+    "scores": {
+      "prioritizing_step2_keyword_managing_acq": 5,
+      "returning_dup_initial": 5,
+      "activity_zillow_maps": 5
+    },
+    "avg": 5.0
+  },
+  {
+    "date": "2026-06-06",
+    "rep_id": "noam",
+    "reviewer": "rotem",
+    "category": "A",
+    "scores": {
+      "prioritizing_step2_keyword_managing_acq": 5,
+      "returning_dup_initial": 3,
+      "activity_zillow_maps": 4
+    },
+    "avg": 4.0
+  },
+  {
+    "date": "2026-06-06",
+    "rep_id": "tomer",
+    "reviewer": "rotem",
+    "category": "C",
+    "scores": {
+      "monitoring_ntc": 5,
+      "renos": 5,
+      "reviews": 5,
+      "reactivate": 4
+    },
+    "avg": 4.75
+  },
+  {
+    "date": "2026-06-06",
+    "rep_id": "eran",
+    "reviewer": "rotem",
+    "category": "B",
+    "scores": {
+      "tagging": 5,
+      "prioritizing": 5,
+      "updating_status": 5,
+      "properly_handling": 4
+    },
+    "avg": 4.75
+  }
+]

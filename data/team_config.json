@@ -1,0 +1,60 @@
+{
+  "reps": [
+    { "id": "noam",    "name": "Noam Levi",    "role": "Closer Ops",  "target": 0.90, "gmail": "noam.levi@zoomrei.com" },
+    { "id": "omer",    "name": "Omer Livne",   "role": "Senior Ops",  "target": 0.85, "gmail": "omer.livne@zoomrei.com" },
+    { "id": "gal",     "name": "Gal Kalderon", "role": "Junior Ops",  "target": 0.80, "gmail": "gal.kalderon@zoomrei.com" },
+    { "id": "tomer",   "name": "Tomer Peled",  "role": "Junior Ops",  "target": 0.80, "gmail": "tomer.peled@zoomrei.com" },
+    { "id": "eran",    "name": "Eran Retman",  "role": "Junior Ops",  "target": 0.80, "gmail": "eran.retman@zoomrei.com" },
+    { "id": "lior",    "name": "Lior",         "role": "Junior Ops",  "target": 0.80, "gmail": "lior@zoomrei.com" },
+    { "id": "rotem_i", "name": "Rotem Itzhak", "role": "Junior Ops",  "target": 0.80, "gmail": "rotem.itzhak@zoomrei.com" }
+  ],
+  "managers": [
+    { "email": "nitzan.raor@zoomrei.com",  "name": "Nitzan Raor" },
+    { "email": "rotem.itzhak@zoomrei.com", "name": "Rotem Itzhak", "also_rep": "rotem_i" }
+  ],
+  "roles": {
+    "Closer Ops":  { "target": 0.90, "color": "#7c3aed" },
+    "Senior Ops":  { "target": 0.85, "color": "#0ea5e9" },
+    "Junior Ops":  { "target": 0.80, "color": "#10b981" }
+  },
+  "rubrics": {
+    "speed_to_lead": {
+      "label": "Speed to Lead",
+      "category": "A",
+      "type": "qlik",
+      "thresholds": [
+        { "score": 5, "min": 93, "label": "93%+" },
+        { "score": 4, "min": 91, "label": "91–92%" },
+        { "score": 3, "min": 88, "label": "88–90%" },
+        { "score": 2, "min": 85, "label": "85–87%" },
+        { "score": 1, "min": 0,  "label": "<85%" }
+      ]
+    },
+    "handle_7min": {
+      "label": "Handle Within 7 Min",
+      "category": "A",
+      "type": "qlik",
+      "thresholds": [
+        { "score": 5, "min": 76, "label": "76%+" },
+        { "score": 4, "min": 72, "label": "72–75%" },
+        { "score": 3, "min": 70, "label": "70–71%" },
+        { "score": 2, "min": 67, "label": "67–69%" },
+        { "score": 1, "min": 0,  "label": "<67%" }
+      ]
+    },
+    "prioritizing_podio": {
+      "label": "Prioritizing / Podio Investigation",
+      "category": "A",
+      "type": "manual",
+      "subcategories": ["step2_keyword_managing_acq", "returning_dup_initial", "activity_zillow_maps"]
+    },
+    "tagging":         { "label": "Tagging",          "category": "B", "type": "manual" },
+    "prioritizing_b":  { "label": "Prioritizing",     "category": "B", "type": "manual" },
+    "updating_status": { "label": "Updating Status",  "category": "B", "type": "manual" },
+    "properly_handling": { "label": "Properly Handling", "category": "B", "type": "manual" },
+    "monitoring_ntc":  { "label": "Monitoring NTC",   "category": "C", "type": "manual" },
+    "renos":           { "label": "Renos",             "category": "C", "type": "manual" },
+    "reviews":         { "label": "Reviews",           "category": "C", "type": "manual" },
+    "reactivate":      { "label": "Reactivate",        "category": "C", "type": "manual" }
+  }
+}

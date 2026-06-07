@@ -1,0 +1,2814 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ops Team Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <!-- Google OAuth will be wired here when ready -->
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #f0f2f5;
+      --card: #ffffff;
+      --border: #e0e0e0;
+      --primary: #1565c0;
+      --primary-light: #e3f0ff;
+      --text: #212121;
+      --text-muted: #757575;
+      --success: #2e7d32;
+      --success-bg: #e8f5e9;
+      --warn: #e65100;
+      --warn-bg: #fff3e0;
+      --danger: #c62828;
+      --danger-bg: #ffebee;
+      --purple: #6a1b9a;
+      --purple-bg: #f3e5f5;
+      --blue: #0277bd;
+      --blue-bg: #e1f5fe;
+      --green: #2e7d32;
+      --green-bg: #e8f5e9;
+      --shadow: 0 1px 4px rgba(0,0,0,.12);
+      --radius: 10px;
+      --font: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    }
+
+    body { font-family: var(--font); background: var(--bg); color: var(--text); min-height: 100vh; }
+
+    /* ── Header ── */
+    header {
+      background: var(--primary);
+      color: #fff;
+      padding: 0 24px;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky; top: 0; z-index: 100;
+      box-shadow: 0 2px 6px rgba(0,0,0,.25);
+    }
+    header h1 { font-size: 18px; font-weight: 600; letter-spacing: .3px; }
+    header .meta { font-size: 12px; opacity: .75; }
+
+    /* ── Tab nav ── */
+    .tab-nav {
+      background: #fff;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      padding: 0 24px;
+      gap: 4px;
+      position: sticky; top: 56px; z-index: 99;
+    }
+    .tab-nav button {
+      padding: 14px 18px;
+      border: none; background: none;
+      font: 14px/1 var(--font);
+      font-weight: 500;
+      color: var(--text-muted);
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      margin-bottom: -1px;
+      transition: color .15s, border-color .15s;
+    }
+    .tab-nav button:hover { color: var(--primary); }
+    .tab-nav button.active { color: var(--primary); border-bottom-color: var(--primary); }
+
+    /* ── Main ── */
+    main { max-width: 1200px; margin: 0 auto; padding: 24px; }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    /* ── Cards & grids ── */
+    .card {
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 20px;
+    }
+    .card-title {
+      font-size: 13px; font-weight: 600; text-transform: uppercase;
+      letter-spacing: .6px; color: var(--text-muted); margin-bottom: 12px;
+    }
+    .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; margin-bottom: 24px; }
+    .kpi-card {
+      background: var(--card); border-radius: var(--radius);
+      box-shadow: var(--shadow); padding: 18px 20px;
+    }
+    .kpi-label { font-size: 12px; color: var(--text-muted); font-weight: 500; margin-bottom: 6px; }
+    .kpi-value { font-size: 28px; font-weight: 700; color: var(--text); line-height: 1; }
+    .kpi-sub { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+
+    /* ── Rep status table ── */
+    .rep-table { width: 100%; border-collapse: collapse; }
+    .rep-table th {
+      text-align: left; padding: 10px 14px;
+      font-size: 12px; font-weight: 600; text-transform: uppercase;
+      letter-spacing: .5px; color: var(--text-muted);
+      border-bottom: 2px solid var(--border);
+    }
+    .rep-table td { padding: 12px 14px; border-bottom: 1px solid var(--border); font-size: 14px; }
+    .rep-table tr:last-child td { border-bottom: none; }
+    .rep-table tr:hover td { background: #fafafa; }
+
+    /* ── Badges ── */
+    .badge {
+      display: inline-block; padding: 2px 10px; border-radius: 999px;
+      font-size: 11px; font-weight: 600;
+    }
+    .badge-closer { background: var(--purple-bg); color: var(--purple); }
+    .badge-senior { background: var(--blue-bg); color: var(--blue); }
+    .badge-junior { background: var(--green-bg); color: var(--green); }
+
+    /* ── Status chip ── */
+    .chip {
+      display: inline-block; padding: 3px 10px; border-radius: 999px;
+      font-size: 12px; font-weight: 600;
+    }
+    .chip-on  { background: var(--success-bg); color: var(--success); }
+    .chip-warn { background: var(--warn-bg); color: var(--warn); }
+    .chip-below { background: var(--danger-bg); color: var(--danger); }
+    .chip-na   { background: #f5f5f5; color: var(--text-muted); }
+
+    /* ── Progress bar ── */
+    .progress-wrap { display: flex; align-items: center; gap: 8px; }
+    .progress-bar { flex: 1; height: 8px; background: #e0e0e0; border-radius: 4px; overflow: hidden; }
+    .progress-fill { height: 100%; border-radius: 4px; transition: width .4s; }
+    .progress-label { font-size: 13px; font-weight: 600; min-width: 38px; text-align: right; }
+
+    /* ── Trend arrow ── */
+    .trend { font-size: 13px; font-weight: 600; }
+    .trend-up   { color: var(--success); }
+    .trend-down { color: var(--danger); }
+    .trend-flat { color: var(--text-muted); }
+
+    /* ── Leaderboard ── */
+    .lb-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+    .lb-card {
+      background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow);
+      padding: 20px; display: flex; flex-direction: column; gap: 12px;
+      border-left: 5px solid transparent;
+      transition: transform .15s, box-shadow .15s;
+    }
+    .lb-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,.16); }
+    .lb-card.rank-1 { border-left-color: #f9a825; }
+    .lb-card.rank-2 { border-left-color: #90a4ae; }
+    .lb-card.rank-3 { border-left-color: #a1887f; }
+    .lb-card.on-target { border-left-color: var(--success); }
+    .lb-card.near-target { border-left-color: var(--warn); }
+    .lb-card.below-target { border-left-color: var(--danger); }
+    .lb-rank { font-size: 28px; font-weight: 800; color: #bdbdbd; line-height: 1; }
+    .lb-name { font-size: 18px; font-weight: 700; }
+    .lb-score { font-size: 36px; font-weight: 800; line-height: 1; }
+    .lb-score.on-target  { color: var(--success); }
+    .lb-score.near-target { color: var(--warn); }
+    .lb-score.below-target { color: var(--danger); }
+    .lb-score.no-data { color: #bdbdbd; font-size: 20px; }
+    .lb-target-gap { font-size: 12px; color: var(--text-muted); }
+    .lb-cats { display: flex; gap: 6px; flex-wrap: wrap; }
+    .lb-cat { font-size: 11px; padding: 2px 8px; border-radius: 4px; background: var(--bg); }
+
+    /* ── Trends ── */
+    .trend-controls { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 20px; align-items: center; }
+    .seg-btn {
+      padding: 6px 16px; border-radius: 20px; border: 1px solid var(--border);
+      background: #fff; font: 13px var(--font); cursor: pointer; transition: all .15s;
+    }
+    .seg-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+    .chart-wrap { position: relative; height: 340px; }
+
+    .rep-toggles { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 16px; }
+    .rep-toggle {
+      padding: 4px 14px; border-radius: 999px; border: 2px solid transparent;
+      font: 12px var(--font); font-weight: 600; cursor: pointer; transition: all .15s;
+      background: var(--bg);
+    }
+    .rep-toggle.active { border-color: currentColor; background: #fff; }
+
+    /* ── Individual view ── */
+    .ind-header { display: flex; gap: 16px; align-items: center; margin-bottom: 24px; }
+    .ind-header select {
+      padding: 8px 14px; border: 1px solid var(--border); border-radius: 8px;
+      font: 14px var(--font); background: #fff; cursor: pointer;
+    }
+    .ind-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    @media (max-width: 700px) { .ind-grid { grid-template-columns: 1fr; } }
+    .sw-list { display: flex; flex-direction: column; gap: 10px; }
+    .sw-item { display: flex; align-items: center; gap: 10px; }
+    .sw-label { flex: 1; font-size: 13px; }
+    .sw-bar { width: 80px; height: 6px; background: #e0e0e0; border-radius: 3px; overflow: hidden; }
+    .sw-fill { height: 100%; border-radius: 3px; }
+    .sw-score { font-size: 13px; font-weight: 600; min-width: 36px; text-align: right; }
+
+    /* ── Score Entry ── */
+    .entry-form { max-width: 600px; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    .form-group label { font-size: 13px; font-weight: 600; color: var(--text-muted); }
+    .form-group select, .form-group input {
+      padding: 8px 12px; border: 1px solid var(--border); border-radius: 8px;
+      font: 14px var(--font); background: #fff;
+    }
+    .score-fields { margin: 16px 0; }
+    .score-field { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+    .score-field label { flex: 1; font-size: 14px; }
+    .score-field input[type=range] { width: 120px; }
+    .score-field .score-val { min-width: 30px; text-align: center; font-weight: 700; }
+    .btn {
+      padding: 10px 24px; border-radius: 8px; border: none;
+      font: 14px var(--font); font-weight: 600; cursor: pointer; transition: all .15s;
+    }
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-primary:hover { background: #0d47a1; }
+    .btn-secondary { background: #f5f5f5; color: var(--text); }
+    .entry-log { margin-top: 24px; }
+    .entry-log table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .entry-log th { padding: 8px 10px; background: #fafafa; border-bottom: 2px solid var(--border);
+      text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: .5px; color: var(--text-muted); }
+    .entry-log td { padding: 8px 10px; border-bottom: 1px solid var(--border); }
+
+    /* ── Section header ── */
+    .section-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 16px; }
+    .section-head h2 { font-size: 16px; font-weight: 700; }
+    .section-head .sub { font-size: 13px; color: var(--text-muted); }
+
+    .month-badge {
+      display: inline-block; padding: 3px 10px; border-radius: 6px;
+      background: var(--primary-light); color: var(--primary);
+      font-size: 12px; font-weight: 700;
+    }
+
+    .no-data-msg { text-align: center; padding: 48px; color: var(--text-muted); font-size: 15px; }
+
+    /* copy area */
+    .copy-area {
+      margin-top: 16px; background: #1e1e1e; color: #d4d4d4;
+      border-radius: 8px; padding: 16px; font: 12px/1.6 'Courier New', monospace;
+      white-space: pre-wrap; word-break: break-all; display: none;
+    }
+    .copy-area.visible { display: block; }
+
+    /* ── Feedback / Comments ── */
+    .feedback-card {
+      border: 1px solid var(--border); border-radius: 8px;
+      background: #fafafa; margin-top: 12px; overflow: hidden;
+    }
+    .feedback-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 14px; cursor: pointer; user-select: none;
+      background: #f5f5f5; border-bottom: 1px solid var(--border);
+    }
+    .feedback-header:hover { background: #eee; }
+    .feedback-header .fh-left { display: flex; align-items: center; gap: 10px; }
+    .feedback-chevron { font-size: 12px; transition: transform .2s; }
+    .feedback-chevron.open { transform: rotate(90deg); }
+    .feedback-body { padding: 14px; display: none; }
+    .feedback-body.open { display: block; }
+
+    .feedback-meta { font-size: 12px; color: var(--text-muted); margin-bottom: 10px; }
+    .feedback-general-note {
+      font-size: 14px; line-height: 1.6; direction: rtl; text-align: right;
+      background: #fff; border: 1px solid var(--border); border-radius: 6px;
+      padding: 10px 12px; margin-bottom: 10px; color: var(--text);
+    }
+    .podio-link {
+      display: flex; gap: 10px; padding: 10px 12px; margin-bottom: 8px;
+      background: #fff; border: 1px solid var(--border); border-radius: 8px;
+      align-items: flex-start;
+    }
+    .podio-link-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+    .podio-link-content { flex: 1; min-width: 0; }
+    .podio-link a {
+      font-size: 12px; color: var(--primary); text-decoration: none;
+      word-break: break-all; display: block; margin-bottom: 4px;
+    }
+    .podio-link a:hover { text-decoration: underline; }
+    .podio-link-note {
+      font-size: 13px; line-height: 1.5; color: var(--text);
+      direction: rtl; text-align: right;
+    }
+    .reply-block {
+      margin-top: 8px; padding: 8px 12px; background: #e8f0ff;
+      border-radius: 6px; font-size: 13px; color: #37474f;
+      direction: rtl; text-align: right;
+    }
+
+    /* reviewed + response row */
+    .feedback-actions {
+      margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border);
+      display: flex; gap: 12px; align-items: flex-start; flex-wrap: wrap;
+    }
+    .reviewed-check {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 13px; font-weight: 600; cursor: pointer;
+      padding: 6px 12px; border-radius: 8px; border: 2px solid var(--border);
+      background: #fff; transition: all .15s; user-select: none; white-space: nowrap;
+    }
+    .reviewed-check input { width: 16px; height: 16px; cursor: pointer; accent-color: var(--success); }
+    .reviewed-check.checked { border-color: var(--success); background: var(--success-bg); color: var(--success); }
+    .response-wrap { flex: 1; min-width: 220px; }
+    .response-wrap textarea {
+      width: 100%; padding: 8px 10px; border: 1px solid var(--border);
+      border-radius: 8px; font: 13px var(--font); resize: vertical;
+      min-height: 60px; color: var(--text);
+    }
+    .response-wrap textarea:focus { outline: 2px solid var(--primary); border-color: transparent; }
+    .response-save-btn {
+      margin-top: 6px; padding: 5px 14px; border-radius: 6px; border: none;
+      background: var(--primary); color: #fff; font: 12px var(--font);
+      font-weight: 600; cursor: pointer;
+    }
+    .response-saved { font-size: 12px; color: var(--success); margin-top: 4px; display: none; }
+
+    /* ── Insights ── */
+    .insight-team-card {
+      background: linear-gradient(135deg, #1565c0 0%, #0d47a1 100%);
+      color: #fff; border-radius: var(--radius); padding: 24px; margin-bottom: 24px;
+      box-shadow: 0 4px 16px rgba(21,101,192,.35);
+    }
+    .insight-team-card h3 { font-size: 14px; opacity:.75; text-transform:uppercase; letter-spacing:.6px; margin-bottom:8px; }
+    .insight-team-card .itc-headline { font-size: 20px; font-weight:700; line-height:1.4; margin-bottom:16px; }
+    .itc-stats { display: flex; gap: 24px; flex-wrap:wrap; margin-bottom:16px; }
+    .itc-stat { min-width: 100px; }
+    .itc-stat-label { font-size:11px; opacity:.7; text-transform:uppercase; letter-spacing:.5px; }
+    .itc-stat-value { font-size:22px; font-weight:800; }
+    .itc-flags { display:flex; gap:10px; flex-wrap:wrap; margin-top:4px; }
+    .itc-flag {
+      padding:4px 12px; border-radius:999px; font-size:12px; font-weight:600;
+      background:rgba(255,255,255,.15); color:#fff;
+    }
+    .itc-flag.red   { background:rgba(198,40,40,.5); }
+    .itc-flag.green { background:rgba(46,125,50,.5); }
+    .itc-flag.warn  { background:rgba(230,81,0,.5); }
+
+    .insight-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(320px,1fr)); gap:16px; margin-bottom:24px; }
+    .insight-rep-card {
+      background: var(--card); border-radius:var(--radius); box-shadow:var(--shadow);
+      padding:20px; border-left:5px solid transparent;
+    }
+    .insight-rep-card.priority-high   { border-left-color: var(--danger); }
+    .insight-rep-card.priority-medium { border-left-color: var(--warn); }
+    .insight-rep-card.priority-low    { border-left-color: var(--success); }
+    .irc-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:10px; }
+    .irc-name { font-size:17px; font-weight:700; }
+    .irc-score { font-size:28px; font-weight:800; line-height:1; }
+    .irc-score.good  { color:var(--success); }
+    .irc-score.warn  { color:var(--warn); }
+    .irc-score.bad   { color:var(--danger); }
+    .irc-score.none  { color:#bdbdbd; font-size:16px; }
+    .irc-meta { font-size:12px; color:var(--text-muted); margin-bottom:12px; }
+    .irc-roles { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:12px; }
+    .irc-role-pill {
+      display:flex; align-items:center; gap:5px; padding:4px 10px;
+      border-radius:8px; font-size:12px; background:var(--bg);
+    }
+    .irc-role-pill.best  { background:var(--success-bg); color:var(--success); font-weight:600; }
+    .irc-role-pill.worst { background:var(--danger-bg); color:var(--danger); font-weight:600; }
+    .coaching-note {
+      font-size:13px; line-height:1.6; color:var(--text);
+      background:#f9f9f9; border-radius:8px; padding:10px 12px;
+      border-left:3px solid var(--primary);
+    }
+    .insight-section-title {
+      font-size:14px; font-weight:700; text-transform:uppercase; letter-spacing:.5px;
+      color:var(--text-muted); margin:28px 0 12px; padding-bottom:8px;
+      border-bottom:2px solid var(--border);
+    }
+
+    /* team trends summary in Trends tab */
+    .team-trends-summary {
+      display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; margin-bottom:20px;
+    }
+    .tts-card {
+      background:var(--card); border-radius:8px; box-shadow:var(--shadow);
+      padding:14px 16px;
+    }
+    .tts-label { font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.5px; color:var(--text-muted); }
+    .tts-value { font-size:22px; font-weight:800; margin:4px 0 2px; }
+    .tts-sub   { font-size:12px; color:var(--text-muted); }
+
+    /* ── Login overlay ── */
+    #login-overlay {
+      position: fixed; inset: 0; z-index: 9999;
+      background: linear-gradient(135deg, #0d47a1 0%, #1565c0 60%, #1976d2 100%);
+      display: flex; align-items: center; justify-content: center;
+      padding: 24px;
+    }
+    #login-overlay.hidden { display: none; }
+    .login-card {
+      background: #fff; border-radius: 20px; padding: 36px 32px;
+      width: 100%; max-width: 640px; box-shadow: 0 24px 64px rgba(0,0,0,.4);
+      text-align: center;
+    }
+    .login-logo  { font-size: 36px; margin-bottom: 6px; }
+    .login-title { font-size: 24px; font-weight: 800; color: var(--primary); margin-bottom: 4px; }
+    .login-sub   { font-size: 13px; color: var(--text-muted); margin-bottom: 28px; }
+
+    /* Name-picker grid */
+    .name-picker { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 12px; margin-bottom: 20px; }
+    .name-card {
+      border: 2px solid var(--border); border-radius: 14px; padding: 16px 10px;
+      cursor: pointer; transition: all .18s; background: #fafafa;
+      display: flex; flex-direction: column; align-items: center; gap: 8px;
+    }
+    .name-card:hover { border-color: var(--primary); background: var(--primary-light); transform: translateY(-2px); box-shadow: 0 4px 14px rgba(21,101,192,.2); }
+    .name-card.manager { border-color: var(--purple); background: var(--purple-bg); }
+    .name-card.manager:hover { background: #ede0f5; border-color: var(--purple); }
+    .name-card-avatar {
+      width: 44px; height: 44px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 19px; font-weight: 800; color: #fff;
+    }
+    .name-card-name  { font-size: 13px; font-weight: 700; color: var(--text); }
+    .name-card-role  { font-size: 11px; color: var(--text-muted); }
+    .name-card-badge { font-size: 10px; padding: 2px 7px; border-radius: 999px; font-weight: 700; }
+    .name-card.manager .name-card-badge { background: var(--purple); color: #fff; }
+
+    .login-divider { display: flex; align-items: center; gap: 10px; margin: 8px 0; color: var(--text-muted); font-size: 12px; }
+    .login-divider::before,.login-divider::after { content:''; flex:1; height:1px; background:var(--border); }
+    .login-error { color: var(--danger); font-size: 13px; margin-top: 10px; display: none; }
+
+    /* ── Personal alert banner ── */
+    .personal-alerts { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+    .alert-banner {
+      border-radius: 12px; padding: 14px 18px;
+      display: flex; align-items: center; gap: 12px; font-size: 14px; line-height: 1.5;
+    }
+    .alert-banner .alert-icon { font-size: 22px; flex-shrink: 0; }
+    .alert-banner .alert-text strong { display: block; font-size: 15px; margin-bottom: 2px; }
+    .alert-praise    { background: #e8f5e9; border: 1.5px solid #a5d6a7; color: #1b5e20; }
+    .alert-improved  { background: #e3f2fd; border: 1.5px solid #90caf9; color: #0d47a1; }
+    .alert-below     { background: #fff3e0; border: 1.5px solid #ffcc80; color: #e65100; }
+    .alert-declined  { background: #fce4ec; border: 1.5px solid #f48fb1; color: #880e4f; }
+
+    /* user chip in header */
+    .user-chip {
+      display: flex; align-items: center; gap: 8px;
+      background: rgba(255,255,255,.15); border-radius: 999px;
+      padding: 4px 12px 4px 4px; cursor: pointer; transition: background .15s;
+    }
+    .user-chip:hover { background: rgba(255,255,255,.25); }
+    .user-avatar {
+      width: 28px; height: 28px; border-radius: 50%;
+      background: rgba(255,255,255,.3); display: flex; align-items: center;
+      justify-content: center; font-size: 13px; font-weight: 700; color: #fff;
+    }
+    .user-name { font-size: 13px; font-weight: 600; color: #fff; }
+    .sign-out-btn { font-size: 11px; color: rgba(255,255,255,.7); background: none; border: none; cursor: pointer; }
+    .sign-out-btn:hover { color: #fff; }
+
+    /* View As bar */
+    #view-as-bar {
+      background: #fff; border-bottom: 2px solid var(--primary);
+      padding: 6px 24px; display: none; align-items: center; gap: 10px;
+      font-size: 13px; font-weight: 600;
+    }
+    #view-as-bar label { color: var(--text-muted); }
+    #view-as-select {
+      padding: 4px 10px; border: 1px solid var(--border); border-radius: 8px;
+      font: 13px var(--font); background: #fff; cursor: pointer; min-width: 180px;
+    }
+
+    /* Preview banner (rep view while manager is impersonating) */
+    #preview-banner {
+      background: #fff8e1; border-bottom: 2px solid #f9a825;
+      padding: 8px 24px; display: none; align-items: center; gap: 10px;
+      font-size: 13px; position: sticky; top: 56px; z-index: 98;
+    }
+    #preview-banner .pb-icon { font-size: 16px; }
+    #preview-banner strong { color: #e65100; }
+    #preview-banner button {
+      margin-left: auto; padding: 4px 14px; border-radius: 6px;
+      border: 1px solid #e65100; background: #fff; color: #e65100;
+      font: 600 12px var(--font); cursor: pointer;
+    }
+    #preview-banner button:hover { background: #fff3e0; }
+
+    .manager-badge {
+      font-size: 10px; background: rgba(255,255,255,.2); color: #fff;
+      padding: 1px 6px; border-radius: 4px; font-weight: 700;
+    }
+
+    /* ── Month filter bar ── */
+    .month-filter-bar {
+      background: #fff; border-bottom: 1px solid var(--border);
+      padding: 8px 24px; display: flex; align-items: center; gap: 8px;
+      flex-wrap: wrap; position: sticky; top: 113px; z-index: 98;
+    }
+    .month-filter-bar .mf-label { font-size: 12px; font-weight: 600; color: var(--text-muted); margin-right: 4px; }
+    .month-btn {
+      padding: 5px 14px; border-radius: 20px; border: 1px solid var(--border);
+      background: #fff; font: 12px var(--font); font-weight: 600; cursor: pointer; transition: all .15s;
+      color: var(--text-muted);
+    }
+    .month-btn:hover { border-color: var(--primary); color: var(--primary); }
+    .month-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+    .month-btn.all { font-style: italic; }
+
+    /* ── Role A quant breakdown in individual view ── */
+    .quant-breakdown {
+      background: #f8fbff; border: 1px solid #c5d9f5; border-radius: 8px;
+      padding: 12px 14px; margin-top: 10px;
+    }
+    .quant-breakdown .qb-title { font-size: 12px; font-weight: 700; color: var(--primary); margin-bottom: 8px; text-transform: uppercase; letter-spacing: .5px; }
+    .quant-shift-row {
+      display: flex; gap: 8px; align-items: center; padding: 5px 0;
+      border-bottom: 1px solid #e3eeff; font-size: 12px;
+    }
+    .quant-shift-row:last-child { border-bottom: none; }
+    .quant-shift-date { width: 80px; color: var(--text-muted); }
+    .quant-shift-we { font-size: 10px; background: #e3f0ff; color: var(--primary); padding: 1px 5px; border-radius: 3px; }
+    .quant-shift-metrics { flex: 1; display: flex; gap: 12px; }
+    .quant-metric { font-weight: 600; }
+    .quant-metric.good { color: var(--success); }
+    .quant-metric.warn { color: var(--warn); }
+    .quant-metric.bad  { color: var(--danger); }
+    .quant-score-final { font-weight: 800; font-size: 13px; min-width: 45px; text-align: right; }
+
+    /* feedback tab (full list) */
+    .fb-filter-bar { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; align-items: center; }
+    .fb-filter-bar select { padding: 7px 12px; border: 1px solid var(--border); border-radius: 8px; font: 13px var(--font); background: #fff; }
+    .fb-count { font-size: 13px; color: var(--text-muted); margin-left: auto; }
+    .fb-group-header {
+      font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px;
+      color: var(--text-muted); margin: 20px 0 8px; padding-bottom: 6px;
+      border-bottom: 2px solid var(--border);
+    }
+    .fb-no-results { text-align:center; padding: 40px; color: var(--text-muted); }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════ LOGIN OVERLAY ════════════════════════════ -->
+<div id="login-overlay">
+  <div class="login-card">
+    <div class="login-logo">⚡</div>
+    <div class="login-title">Ops Team Dashboard</div>
+    <div class="login-sub">ZoomREI Operations · Who are you?</div>
+    <div class="name-picker" id="name-picker">
+      <!-- Populated by JavaScript from team_config -->
+    </div>
+    <div class="login-error" id="login-error"></div>
+  </div>
+</div>
+
+<header>
+  <h1>⚡ Ops Team Dashboard</h1>
+  <!-- View As selector (managers only) -->
+  <div id="view-as-bar-header" style="display:flex;align-items:center;gap:8px">
+    <label style="font-size:12px;opacity:.75">View as:</label>
+    <select id="view-as-select"
+      style="padding:3px 8px;border-radius:6px;font:12px var(--font);border:1px solid rgba(255,255,255,.4);background:rgba(255,255,255,.15);color:#fff;cursor:pointer"
+      onchange="if(this.value) AUTH.startViewAs(this.value); else if(AUTH.viewingAs) AUTH.exitViewAs()">
+      <option value="" style="color:#000">— My view (manager) —</option>
+    </select>
+  </div>
+  <div class="meta" style="display:flex;align-items:center;gap:12px">
+    <span id="hdr-month"></span>
+    <div class="user-chip" id="user-chip" style="display:none">
+      <div class="user-avatar" id="user-avatar"></div>
+      <span class="user-name" id="user-name"></span>
+      <span class="manager-badge" id="mgr-badge" style="display:none">MGR</span>
+    </div>
+    <button class="sign-out-btn" id="sign-out-btn" style="display:none" onclick="signOut()">Sign out</button>
+  </div>
+</header>
+
+<nav class="tab-nav">
+  <button class="tab-btn active" data-tab="overview">Overview</button>
+  <button class="tab-btn" data-tab="leaderboard">Leaderboard</button>
+  <button class="tab-btn" data-tab="trends">Trends</button>
+  <button class="tab-btn" data-tab="individual">Individual</button>
+  <button class="tab-btn" data-tab="entry">Score Entry</button>
+  <button class="tab-btn" data-tab="feedback">Feedback</button>
+  <button class="tab-btn" data-tab="insights">Insights</button>
+</nav>
+
+<!-- Preview mode banner -->
+<div id="preview-banner">
+  <span class="pb-icon">👁</span>
+  Previewing as <strong id="preview-name"></strong> — this is exactly what they see.
+  <button onclick="AUTH.exitViewAs()">Exit preview</button>
+</div>
+
+<div class="month-filter-bar" id="month-filter-bar">
+  <span class="mf-label">Month:</span>
+</div>
+
+<main>
+
+  <!-- ══════════════════════════════ OVERVIEW ══════════════════════════════ -->
+  <section id="tab-overview" class="tab-content active">
+    <div id="kpi-grid" class="kpi-grid"></div>
+    <div class="card">
+      <div class="section-head">
+        <h2>Team Performance</h2>
+        <span id="overview-period" class="sub"></span>
+      </div>
+      <table class="rep-table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Role</th>
+            <th>Score</th>
+            <th>vs Target</th>
+            <th>Trend</th>
+            <th>Role A</th>
+            <th>Role B</th>
+            <th>Role C</th>
+            <th>Last Obs.</th>
+          </tr>
+        </thead>
+        <tbody id="overview-tbody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════ LEADERBOARD ══════════════════════════ -->
+  <section id="tab-leaderboard" class="tab-content">
+    <div class="section-head">
+      <h2>Leaderboard</h2>
+      <span id="lb-period" class="sub"></span>
+    </div>
+    <div id="lb-grid" class="lb-grid"></div>
+  </section>
+
+  <!-- ══════════════════════════════ TRENDS ════════════════════════════════ -->
+  <section id="tab-trends" class="tab-content">
+    <div class="section-head">
+      <h2>Trends</h2>
+      <span class="sub">Score history over time</span>
+    </div>
+    <div id="team-trends-summary" class="team-trends-summary"></div>
+    <div class="card" style="margin-bottom:20px">
+      <div class="trend-controls">
+        <strong style="font-size:13px">Metric:</strong>
+        <button class="seg-btn active" data-metric="overall">Overall %</button>
+        <button class="seg-btn" data-metric="catA">Role A</button>
+        <button class="seg-btn" data-metric="catB">Role B</button>
+        <button class="seg-btn" data-metric="catC">Role C</button>
+      </div>
+      <div class="chart-wrap"><canvas id="trends-chart"></canvas></div>
+      <div class="rep-toggles" id="rep-toggles"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Month-over-Month Summary</div>
+      <table class="rep-table" id="trends-table">
+        <thead>
+          <tr id="trends-thead-row"></tr>
+        </thead>
+        <tbody id="trends-tbody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════ INDIVIDUAL ════════════════════════════ -->
+  <section id="tab-individual" class="tab-content">
+    <div class="ind-header" style="display:none">
+      <label style="font-weight:600;font-size:14px">View rep:</label>
+      <select id="ind-rep-select"></select>
+    </div>
+    <div id="ind-content"></div>
+  </section>
+
+  <!-- ══════════════════════════════ SCORE ENTRY ═══════════════════════════ -->
+  <section id="tab-entry" class="tab-content">
+    <div class="section-head">
+      <h2>Score Entry</h2>
+      <span class="sub">Record a spot-check observation</span>
+    </div>
+    <div class="card entry-form">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Rep</label>
+          <select id="entry-rep"></select>
+        </div>
+        <div class="form-group">
+          <label>Date</label>
+          <input type="date" id="entry-date" />
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Role</label>
+          <select id="entry-cat">
+            <option value="A">Role A — Shift / Podio / Lead Investigation</option>
+            <option value="B">Role B — Shift / Task Management</option>
+            <option value="C">Role C — Shift / Reviews / Reactivate</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Reviewer</label>
+          <select id="entry-reviewer">
+            <option value="rotem">Rotem</option>
+            <option value="nitzan">Nitzan</option>
+          </select>
+        </div>
+      </div>
+      <div class="score-fields" id="entry-fields"></div>
+      <div style="display:flex;gap:12px;align-items:center">
+        <button class="btn btn-primary" onclick="saveEntry()">Save &amp; Copy JSON</button>
+        <span id="entry-avg-display" style="font-size:14px;color:var(--text-muted)"></span>
+      </div>
+      <div id="entry-copy-area" class="copy-area"></div>
+      <p style="font-size:12px;color:var(--text-muted);margin-top:8px">
+        Copy the JSON above and append it to <code>data/sampling_scores.json</code>, then run <code>python build-data.py</code>.
+      </p>
+    </div>
+
+    <div class="entry-log card" style="margin-top:24px">
+      <div class="card-title">Recent Observations (last 10)</div>
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th><th>Rep</th><th>Role</th><th>Reviewer</th><th>Avg</th>
+          </tr>
+        </thead>
+        <tbody id="entry-log-tbody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════ INSIGHTS TAB ══════════════════════════ -->
+  <section id="tab-insights" class="tab-content">
+    <div class="section-head">
+      <h2>Performance Insights</h2>
+      <span class="sub">Team and individual analysis</span>
+    </div>
+
+    <!-- Alert preview (managers only) -->
+    <div class="card" style="margin-bottom:24px">
+      <div class="card-title">Alert & Praise Previews — what team members see</div>
+      <p style="font-size:13px;color:var(--text-muted);margin-bottom:14px">
+        These banners appear at the top of each team member's Individual view whenever they log in.
+      </p>
+      <div class="personal-alerts">
+        <div class="alert-banner alert-praise">
+          <span class="alert-icon">🏆</span>
+          <div class="alert-text">
+            <strong>Above target — great work!</strong>
+            You're at 95.0% — 15.0pp above your 80% target. Keep it up!
+          </div>
+        </div>
+        <div class="alert-banner alert-improved">
+          <span class="alert-icon">📈</span>
+          <div class="alert-text">
+            <strong>Improving trend!</strong>
+            You went from 82.0% to 95.0% — up 13.0pp vs May 2026.
+          </div>
+        </div>
+        <div class="alert-banner alert-below">
+          <span class="alert-icon">⚠️</span>
+          <div class="alert-text">
+            <strong>Below target</strong>
+            You're at 72.0% — 8.0pp below your 80% target. Focus on your weakest role to close the gap.
+          </div>
+        </div>
+        <div class="alert-banner alert-declined">
+          <span class="alert-icon">📉</span>
+          <div class="alert-text">
+            <strong>Score dropped this month</strong>
+            90.0% → 72.0% (−18.0pp vs May 2026). Review your Role breakdown to see what changed.
+          </div>
+        </div>
+      </div>
+      <p style="font-size:12px;color:var(--text-muted);margin-top:10px">
+        Multiple banners can appear at once — e.g. a rep can be improving <em>and</em> still below target.
+      </p>
+    </div>
+
+    <div id="insights-content"></div>
+  </section>
+
+  <!-- ════════════════════════════ FEEDBACK TAB ══════════════════════════ -->
+  <section id="tab-feedback" class="tab-content">
+    <div class="section-head">
+      <h2>Rotem's Feedback</h2>
+      <span class="sub">Observations with Podio links and coaching notes</span>
+    </div>
+    <div class="fb-filter-bar">
+      <select id="fb-rep-filter">
+        <option value="">All Reps</option>
+      </select>
+      <select id="fb-cat-filter">
+        <option value="">All Roles</option>
+        <option value="A">Role A</option>
+        <option value="B">Role B</option>
+        <option value="C">Role C</option>
+      </select>
+      <select id="fb-sheet-filter">
+        <option value="">All Periods</option>
+        <option value="March">March</option>
+        <option value="May">May</option>
+        <option value="June">June</option>
+      </select>
+      <select id="fb-reviewed-filter">
+        <option value="">All Status</option>
+        <option value="unreviewed">Not Reviewed</option>
+        <option value="reviewed">Reviewed</option>
+      </select>
+      <span class="fb-count" id="fb-count"></span>
+    </div>
+    <div id="fb-list"></div>
+  </section>
+
+</main>
+
+<!-- ═══════════════════════════════ EMBEDDED SEED DATA ════════════════════ -->
+<script>
+// Seed data — overridden by load-data.js if present
+if (!window.OPS_DATA) {
+  window.OPS_DATA = {
+    generated_at: "2026-06-07T00:00:00Z",
+    team_config: {
+      reps: [
+        { id: "noam",    name: "Noam Levi",    role: "Closer Ops", target: 0.90 },
+        { id: "omer",    name: "Omer Livne",   role: "Senior Ops", target: 0.85 },
+        { id: "gal",     name: "Gal Kalderon", role: "Junior Ops", target: 0.80 },
+        { id: "tomer",   name: "Tomer Peled",  role: "Junior Ops", target: 0.80 },
+        { id: "eran",    name: "Eran Retman",  role: "Junior Ops", target: 0.80 },
+        { id: "lior",    name: "Lior",         role: "Junior Ops", target: 0.80 },
+        { id: "rotem_i", name: "Rotem Itzhak", role: "Junior Ops", target: 0.80 }
+      ]
+    },
+    sampling_scores: [
+      // ── March ──
+      { date:"2026-03-18", rep_id:"noam",  reviewer:"rotem", category:"A", scores:{distribution:8,monitoring:8,managing_acq:10,speed_to_lead:10,zillow:10,initial_fu:10,returning_lead:4,dup:5,step2:7}, avg:8.0 },
+      { date:"2026-03-18", rep_id:"tomer", reviewer:"rotem", category:"A", scores:{distribution:8,monitoring:8,n_febe:3,managing_acq:10,speed_to_lead:10,initial_fu:6}, avg:7.5 },
+      { date:"2026-03-18", rep_id:"eran",  reviewer:"rotem", category:"C", scores:{monitoring_ntc:10,reviews:10,reactivate:10,renos:10,leads_on_nurture:0}, avg:8.0 },
+      { date:"2026-03-21", rep_id:"omer",  reviewer:"rotem", category:"A", scores:{distribution:8,n_febe:2,speed_to_lead:10,zillow:10,maps_zipcode:6,activity:6,initial_fu:4,step2:5}, avg:6.4 },
+      { date:"2026-03-21", rep_id:"gal",   reviewer:"rotem", category:"B", scores:{initial_contact_scheduled:7,communication:10,properly_handling:2,overdue_end_of_shift:10,deleting_tasks:10,updating_status:2,email:10}, avg:7.3 },
+      { date:"2026-03-22", rep_id:"tal",   reviewer:"rotem", category:"C", scores:{reviews:7,reactivate:0,leads_on_nurture:0,no_task_contacted_interested_initial:5}, avg:3.0 },
+      { date:"2026-03-27", rep_id:"omer",  reviewer:"rotem", category:"A", scores:{distribution:8,n_febe:2,speed_to_lead:10,zillow:10,maps_zipcode:6,activity:6,initial_fu:4,step2:5}, avg:6.4 },
+      { date:"2026-03-29", rep_id:"noam",  reviewer:"rotem", category:"A", scores:{distribution:8,monitoring:8,managing_acq:10,speed_to_lead:10,zillow:10,initial_fu:10,returning_lead:4,dup:5,step2:7}, avg:8.0 },
+      { date:"2026-03-29", rep_id:"eran",  reviewer:"rotem", category:"A", scores:{monitoring:8,n_febe:3,managing_acq:10,speed_to_lead:10,initial_fu:6,returning_lead:10}, avg:7.8 },
+      // ── April ──
+      { date:"2026-04-02", rep_id:"gal",   reviewer:"rotem", category:"A", scores:{distribution:7,n_febe:2,managing_acq:10,inbound:5,prioritizing:6,speed_to_lead:10,zillow:10,maps_zipcode:3,initial_fu:4,returning_lead:0}, avg:5.7 },
+      { date:"2026-04-05", rep_id:"noam",  reviewer:"rotem", category:"B", scores:{tagging_missing_calls:10,initial_contact_scheduled:10,communication:10,properly_handling:10,waiting_for_op_fu:10,overdue_end_of_shift:10,deleting_tasks:10,updating_status:7,email:10}, avg:9.7 },
+      { date:"2026-04-05", rep_id:"tal",   reviewer:"rotem", category:"A", scores:{monitoring:8,n_febe:2,speed_to_lead:10,zillow:10,maps_zipcode:4,initial_fu:4}, avg:6.3 },
+      { date:"2026-04-17", rep_id:"omer",  reviewer:"rotem", category:"A", scores:{distribution:8,n_febe:2,speed_to_lead:10,zillow:10,maps_zipcode:6,activity:6,initial_fu:4,step2:5}, avg:6.4 },
+      { date:"2026-04-18", rep_id:"noam",  reviewer:"rotem", category:"A", scores:{distribution:8,monitoring:8,managing_acq:10,speed_to_lead:10,zillow:10,initial_fu:10,returning_lead:4,dup:5,step2:7}, avg:8.0 },
+      { date:"2026-04-18", rep_id:"tal",   reviewer:"rotem", category:"B", scores:{tagging_missing_calls:4,initial_contact_scheduled:10,communication:10,properly_handling:1,waiting_for_op_fu:6,overdue_end_of_shift:10,deleting_tasks:10,updating_status:2,email:10}, avg:7.0 },
+      { date:"2026-04-19", rep_id:"gal",   reviewer:"rotem", category:"B", scores:{initial_contact_scheduled:7,communication:10,properly_handling:2,overdue_end_of_shift:10,deleting_tasks:10,updating_status:2,email:10}, avg:7.3 },
+      { date:"2026-04-21", rep_id:"eran",  reviewer:"rotem", category:"B", scores:{tagging_missing_calls:7,initial_contact_scheduled:10,communication:10,properly_handling:7,waiting_for_op_fu:10,overdue_end_of_shift:10,deleting_tasks:10,updating_status:5,email:10}, avg:8.8 },
+      { date:"2026-04-22", rep_id:"tal",   reviewer:"rotem", category:"C", scores:{reviews:7,reactivate:0,leads_on_nurture:0,no_task_contacted_interested_initial:5}, avg:3.0 },
+      { date:"2026-04-25", rep_id:"lior",  reviewer:"rotem", category:"A", scores:{managing_acq:10,speed_to_lead:10,zillow:10,initial_fu:10,returning_lead:10}, avg:10.0 },
+      // ── May ──
+      { date:"2026-05-09", rep_id:"omer",  reviewer:"rotem", category:"A", scores:{prioritizing_step2_keyword_managing_acq:5,returning_dup_initial:5,activity_zillow_maps:4}, avg:4.67 },
+      { date:"2026-05-12", rep_id:"eran",  reviewer:"rotem", category:"B", scores:{tagging:5,prioritizing:3,updating_status:5,properly_handling:5}, avg:4.5 },
+      { date:"2026-05-14", rep_id:"noam",  reviewer:"rotem", category:"A", scores:{prioritizing_step2_keyword_managing_acq:5,returning_dup_initial:4,activity_zillow_maps:3}, avg:4.0 },
+      { date:"2026-05-14", rep_id:"tomer", reviewer:"rotem", category:"C", scores:{monitoring_ntc:5,renos:5,reviews:5,reactivate:3}, avg:4.5 },
+      { date:"2026-05-14", rep_id:"eran",  reviewer:"rotem", category:"C", scores:{monitoring_ntc:5,renos:5,reviews:2,reactivate:3}, avg:3.75 },
+      { date:"2026-05-15", rep_id:"tomer", reviewer:"rotem", category:"B", scores:{tagging:5,prioritizing:4,updating_status:5,properly_handling:5}, avg:4.75 },
+      { date:"2026-05-15", rep_id:"eran",  reviewer:"rotem", category:"A", scores:{prioritizing_step2_keyword_managing_acq:5,returning_dup_initial:5,activity_zillow_maps:5}, avg:5.0 },
+      { date:"2026-05-15", rep_id:"tomer", reviewer:"rotem", category:"A", scores:{prioritizing_step2_keyword_managing_acq:5,returning_dup_initial:5,activity_zillow_maps:5}, avg:5.0 },
+      { date:"2026-05-15", rep_id:"gal",   reviewer:"rotem", category:"B", scores:{tagging:4,prioritizing:5,updating_status:3,properly_handling:4}, avg:4.0 },
+      { date:"2026-05-17", rep_id:"noam",  reviewer:"rotem", category:"B", scores:{tagging:3,prioritizing:4,updating_status:2,properly_handling:5}, avg:3.5 },
+      { date:"2026-05-17", rep_id:"eran",  reviewer:"rotem", category:"B", scores:{tagging:5,prioritizing:3,updating_status:5,properly_handling:5}, avg:4.5 },
+      { date:"2026-05-18", rep_id:"omer",  reviewer:"rotem", category:"B", scores:{tagging:4,prioritizing:5,updating_status:3,properly_handling:5}, avg:4.25 },
+      { date:"2026-05-19", rep_id:"gal",   reviewer:"rotem", category:"A", scores:{prioritizing_step2_keyword_managing_acq:2,returning_dup_initial:5,activity_zillow_maps:2}, avg:3.0 },
+      // ── June ──
+      { date:"2026-06-06", rep_id:"noam",  reviewer:"rotem", category:"A", scores:{prioritizing_step2_keyword_managing_acq:5,returning_dup_initial:3,activity_zillow_maps:4}, avg:4.0 },
+      { date:"2026-06-06", rep_id:"tomer", reviewer:"rotem", category:"C", scores:{monitoring_ntc:5,renos:5,reviews:5,reactivate:4}, avg:4.75 },
+      { date:"2026-06-06", rep_id:"eran",  reviewer:"rotem", category:"B", scores:{tagging:5,prioritizing:5,updating_status:5,properly_handling:4}, avg:4.75 }
+    ],
+    qlik_daily: [],
+    qlik_team_daily: [],  // Populated by build-data.py from qlik_team_daily.json
+    shift_schedule: [],   // Populated by build-data.py from shift_schedule.json
+    shift_history: [],
+    rotem_comments: []
+  };
+}
+</script>
+
+<!-- Optional override (generated by build-data.py) -->
+<script src="load-data.js" onerror=""></script>
+
+<!-- ═══════════════════════════════ MAIN LOGIC ════════════════════════════ -->
+<script>
+// ── Utilities ──────────────────────────────────────────────────────────────
+
+const D = window.OPS_DATA;
+const REPS = D.team_config.reps;
+const MONTH_NAMES = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+
+function avg(arr) {
+  const vals = arr.filter(x => x != null && !isNaN(x));
+  return vals.length ? vals.reduce((a, b) => a + b, 0) / vals.length : null;
+}
+
+function pct(v, digits = 1) {
+  if (v == null) return "–";
+  return v.toFixed(digits) + "%";
+}
+
+// Speed-to-lead is covered by Qlik quantitative data, so exclude it from
+// Rotem's quality average for Role A to avoid double-counting.
+const ROLE_A_QUALITY_EXCLUDE = ['speed_to_lead'];
+
+function normalizeScore(record) {
+  if (record.category === 'A' && record.scores) {
+    const keys = Object.keys(record.scores).filter(k => !ROLE_A_QUALITY_EXCLUDE.includes(k));
+    if (keys.length) {
+      const scale = record.avg > 5 ? 10 : 5;
+      const qualityAvg = keys.reduce((s, k) => s + record.scores[k], 0) / keys.length;
+      return (qualityAvg / scale) * 100;
+    }
+  }
+  const scale = record.avg > 5 ? 10 : 5;
+  return (record.avg / scale) * 100;
+}
+
+function statusClass(score, target) {
+  if (score == null) return "na";
+  const gap = score - target * 100;
+  if (gap >= 0) return "on";
+  if (gap >= -5) return "warn";
+  return "below";
+}
+
+function trendArrow(curr, prev) {
+  if (curr == null || prev == null) return '<span class="trend trend-flat">–</span>';
+  const diff = curr - prev;
+  if (diff > 1) return `<span class="trend trend-up">▲ +${diff.toFixed(1)}pp</span>`;
+  if (diff < -1) return `<span class="trend trend-down">▼ ${diff.toFixed(1)}pp</span>`;
+  return `<span class="trend trend-flat">→ ${diff > 0 ? '+' : ''}${diff.toFixed(1)}pp</span>`;
+}
+
+function roleBadge(role) {
+  if (role === "Closer Ops") return `<span class="badge badge-closer">${role}</span>`;
+  if (role === "Senior Ops") return `<span class="badge badge-senior">${role}</span>`;
+  return `<span class="badge badge-junior">${role}</span>`;
+}
+
+function repColor(repId) {
+  const palette = {
+    noam:"#7B1FA2", omer:"#0277BD", tal:"#2E7D32",
+    gal:"#E65100",  tomer:"#AD1457", eran:"#00695C", lior:"#1565C0"
+  };
+  return palette[repId] || "#9E9E9E";
+}
+
+// ── Authentication & Access Control ──────────────────────────────────────────
+// Simple name-picker for now. Google OAuth will be added later.
+
+const MANAGERS = ['nitzan', 'rotem'];  // These IDs get full access
+
+const AUTH = {
+  user:      null,   // { id, name, isManager }
+  viewingAs: null,   // { id, name } — manager previewing a rep's view
+
+  init() {
+    const saved = localStorage.getItem('ops_auth');
+    if (saved) { try { this.user = JSON.parse(saved); } catch(e) {} }
+  },
+
+  loginAs(id) {
+    const isManager = MANAGERS.includes(id);
+    const rep = REPS.find(r => r.id === id);
+    const managerNames = { nitzan: 'Nitzan Raor', rotem: 'Rotem Itzhak' };
+    const name = rep?.name || managerNames[id] || id;
+    this.user = { id, name, isManager };
+    this.viewingAs = null;
+    localStorage.setItem('ops_auth', JSON.stringify(this.user));
+    this._updateUI();
+  },
+
+  // Manager previews exactly what a rep sees
+  startViewAs(repId) {
+    if (!this.user?.isManager) return;
+    const rep = REPS.find(r => r.id === repId);
+    if (!rep) return;
+    this.viewingAs = { id: repId, name: rep.name };
+    this._updateUI();
+    _rerenderAsRep(repId);
+  },
+
+  exitViewAs() {
+    this.viewingAs = null;
+    this._updateUI();
+    _rerenderAsManager();
+  },
+
+  logout() {
+    this.user = null;
+    this.viewingAs = null;
+    localStorage.removeItem('ops_auth');
+  },
+
+  // Effective identity for data access
+  isManager()   { return !!this.user?.isManager && !this.viewingAs; },
+  myRepId()     {
+    if (this.viewingAs) return this.viewingAs.id;
+    if (!this.user?.isManager) return this.user?.id || null;
+    return null;
+  },
+  canSeeRep(repId) {
+    if (!this.user) return false;
+    if (this.isManager()) return true;           // real manager, no preview
+    return this.myRepId() === repId;             // rep or previewing
+  },
+
+  _updateUI() {
+    if (!this.user) return;
+    const g = id => document.getElementById(id);
+    if (g('user-chip'))    g('user-chip').style.display    = 'flex';
+    if (g('sign-out-btn')) g('sign-out-btn').style.display = 'block';
+    if (g('user-avatar'))  g('user-avatar').textContent    = this.user.name.charAt(0).toUpperCase();
+    if (g('user-name'))    g('user-name').textContent      = this.user.name.split(' ')[0];
+    if (g('mgr-badge'))    g('mgr-badge').style.display    = this.user.isManager ? 'inline' : 'none';
+
+    // "View As" selector in header
+    const sel = g('view-as-select');
+    const selWrap = g('view-as-bar-header');
+    if (sel && selWrap) {
+      if (this.user.isManager) {
+        selWrap.style.display = 'flex';
+        if (sel.options.length <= 1) {
+          sel.innerHTML = '<option value="" style="color:#000">— My view (manager) —</option>' +
+            REPS.map(r => `<option value="${r.id}" style="color:#000">${r.name.split(' ')[0]}</option>`).join('');
+        }
+        sel.value = this.viewingAs?.id || '';
+      } else {
+        selWrap.style.display = 'none';
+      }
+    }
+
+    // Preview banner
+    const banner = g('preview-banner');
+    if (banner) {
+      if (this.viewingAs) {
+        banner.style.display = 'flex';
+        const nameEl = g('preview-name');
+        if (nameEl) nameEl.textContent = this.viewingAs.name;
+      } else {
+        banner.style.display = 'none';
+      }
+    }
+  }
+};
+
+function _rerenderAsRep(repId) {
+  // Show rep-only tabs, hide manager tabs
+  ['overview','insights','entry'].forEach(t => {
+    const btn = document.querySelector(`[data-tab="${t}"]`);
+    if (btn) btn.style.display = 'none';
+  });
+  ['individual','leaderboard','trends','feedback'].forEach(t => {
+    const btn = document.querySelector(`[data-tab="${t}"]`);
+    if (btn) btn.style.display = '';
+  });
+  // Switch to individual tab
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(s => s.classList.remove('active'));
+  const indBtn = document.querySelector('[data-tab="individual"]');
+  if (indBtn) indBtn.classList.add('active');
+  document.getElementById('tab-individual').classList.add('active');
+  renderIndividual(repId);
+}
+
+function _rerenderAsManager() {
+  // Restore all tabs
+  document.querySelectorAll('.tab-btn').forEach(b => b.style.display = '');
+  // Switch to overview
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(s => s.classList.remove('active'));
+  document.querySelector('[data-tab="overview"]').classList.add('active');
+  document.getElementById('tab-overview').classList.add('active');
+  renderOverview();
+}
+
+function signOut() {
+  AUTH.logout();
+  location.reload();
+}
+
+function buildLoginPicker() {
+  const picker = document.getElementById('name-picker');
+  if (!picker) return;
+
+  const avatarColors = {
+    noam:'#7B1FA2', omer:'#0277BD', tal:'#2E7D32', gal:'#E65100',
+    tomer:'#AD1457', eran:'#00695C', lior:'#1565C0', rotem_i:'#5D4037',
+    nitzan:'#1565C0', rotem:'#6A1B9A'
+  };
+
+  // Team members
+  const repCards = REPS.map(r => {
+    const color = avatarColors[r.id] || '#9E9E9E';
+    return `<div class="name-card" onclick="selectIdentity('${r.id}')">
+      <div class="name-card-avatar" style="background:${color}">${r.name.charAt(0)}</div>
+      <div class="name-card-name">${r.name.split(' ')[0]}</div>
+      <div class="name-card-role">${r.role}</div>
+    </div>`;
+  }).join('');
+
+  // Manager entries
+  const mgrCards = [
+    { id: 'nitzan', name: 'Nitzan Raor',   color: avatarColors.nitzan },
+    { id: 'rotem',  name: 'Rotem Itzhak',  color: avatarColors.rotem  },
+  ].map(m => `<div class="name-card manager" onclick="selectIdentity('${m.id}')">
+    <div class="name-card-avatar" style="background:${m.color}">${m.name.charAt(0)}</div>
+    <div class="name-card-name">${m.name.split(' ')[0]}</div>
+    <div class="name-card-badge">Manager</div>
+  </div>`).join('');
+
+  picker.innerHTML = repCards + mgrCards;
+}
+
+function selectIdentity(id) {
+  AUTH.loginAs(id);
+  document.getElementById('login-overlay').classList.add('hidden');
+  initApp();
+}
+
+function signOut() {
+  AUTH.logout();
+  location.reload();
+}
+
+// Visibility helpers for render functions
+function visibleReps() {
+  if (AUTH.isManager()) return REPS;
+  return AUTH.myRepId() ? REPS.filter(r => r.id === AUTH.myRepId()) : REPS;
+}
+
+// ── Month filter state ────────────────────────────────────────────────────────
+
+let activeFilterMonth = null; // null = latest
+
+function getActiveMonth() {
+  return activeFilterMonth || currentMonth();
+}
+
+function initMonthFilter() {
+  const months = getAllMonths();
+  const bar = document.getElementById('month-filter-bar');
+  const existing = bar.querySelectorAll('.month-btn');
+  existing.forEach(e => e.remove());
+
+  months.forEach(ym => {
+    const btn = document.createElement('button');
+    btn.className = 'month-btn' + (ym === getActiveMonth() ? ' active' : '');
+    btn.textContent = monthLabel(ym);
+    btn.onclick = () => setActiveMonth(ym);
+    bar.appendChild(btn);
+  });
+}
+
+function setActiveMonth(ym) {
+  activeFilterMonth = ym;
+  document.querySelectorAll('.month-btn').forEach(b => {
+    b.classList.toggle('active', b.textContent === monthLabel(ym));
+  });
+  // Re-render the active tab
+  const activeTab = document.querySelector('.tab-btn.active')?.dataset.tab;
+  if (activeTab === 'overview')    renderOverview();
+  if (activeTab === 'leaderboard') renderLeaderboard();
+  if (activeTab === 'individual')  renderIndividual();
+  if (activeTab === 'insights')    renderInsights();
+  if (activeTab === 'trends')      renderTrends();
+}
+
+// ── Data Engine ─────────────────────────────────────────────────────────────
+
+// ── Quantitative scoring targets ─────────────────────────────────────────────
+// Distribution ≤5min: 95% → 100 score (linear below)
+// Handled ≤7min:      75% → 100 score (linear below); weekend +5pp bonus on raw before scoring
+
+function scoreDistMetric(pct) {
+  return Math.min((pct / 95) * 100, 100);
+}
+function scoreHandledMetric(pct, is_weekend) {
+  const adjusted = Math.min(pct + (is_weekend ? 5 : 0), 100);
+  return Math.min((adjusted / 75) * 100, 100);
+}
+
+function computeRoleAQuantScore(repId, year, month) {
+  const shifts = (D.shift_schedule || []).filter(s => {
+    const d = new Date(s.date);
+    return s.rep_id === repId && s.role === 'A'
+      && d.getFullYear() === year && d.getMonth() + 1 === month;
+  });
+  if (!shifts.length) return { score: null, shifts: [] };
+
+  const dailyScores = [];
+  shifts.forEach(s => {
+    const q = (D.qlik_team_daily || []).find(q => q.date === s.date);
+    if (!q) return;
+    const dist_score    = scoreDistMetric(q.leads_distributed_5min_pct);
+    const handled_score = scoreHandledMetric(q.leads_handled_5min_pct, s.is_weekend);
+    const daily_score   = (dist_score + handled_score) / 2;
+    dailyScores.push({
+      date: s.date, is_weekend: s.is_weekend,
+      dist_raw:     q.leads_distributed_5min_pct,
+      handled_raw:  q.leads_handled_5min_pct,
+      dist_score, handled_score, daily_score
+    });
+  });
+
+  const score = dailyScores.length ? avg(dailyScores.map(d => d.daily_score)) : null;
+  return { score, shifts: dailyScores };
+}
+
+// Role B quantitative: task-counter shift completion rate, target 90%
+// Source: shift_history.json — populated daily by task-counter.py
+function computeRoleBQuantScore(repId, year, month) {
+  const shifts = (D.shift_history || []).filter(s => {
+    const d = new Date(s.date);
+    return s.rep_id === repId && d.getFullYear() === year && d.getMonth() + 1 === month;
+  });
+  if (!shifts.length) return { score: null, shifts: [] };
+  const scored = shifts.map(s => ({
+    date: s.date,
+    completion_rate: s.completion_rate,
+    score: Math.min((s.completion_rate / 90) * 100, 100),
+    goal_met: s.goal_met
+  }));
+  return { score: avg(scored.map(s => s.score)), shifts: scored };
+}
+
+function getMonthlyScore(repId, year, month) {
+  const records = D.sampling_scores.filter(s => {
+    const d = new Date(s.date);
+    return s.rep_id === repId && d.getFullYear() === year && d.getMonth() + 1 === month;
+  });
+
+  const catAQuality = [], catBQuality = [], catC = [];
+  records.forEach(r => {
+    const n = normalizeScore(r);
+    if (r.category === "A") catAQuality.push(n);
+    if (r.category === "B") catBQuality.push(n);
+    if (r.category === "C") catC.push(n);
+  });
+
+  // Role A: 50% Qlik quantitative + 50% Rotem quality
+  const { score: roleAQuant, shifts: quantShifts } = computeRoleAQuantScore(repId, year, month);
+  const roleAQualityAvg = catAQuality.length ? avg(catAQuality) : null;
+  let catA = null;
+  if (roleAQuant != null && roleAQualityAvg != null) catA = roleAQuant * 0.5 + roleAQualityAvg * 0.5;
+  else if (roleAQuant != null) catA = roleAQuant;
+  else if (roleAQualityAvg != null) catA = roleAQualityAvg;
+
+  // Role B: 50% task-counter quantitative + 50% Rotem quality
+  const { score: roleBQuant, shifts: bQuantShifts } = computeRoleBQuantScore(repId, year, month);
+  const roleBQualityAvg = catBQuality.length ? avg(catBQuality) : null;
+  let catB = null;
+  if (roleBQuant != null && roleBQualityAvg != null) catB = roleBQuant * 0.5 + roleBQualityAvg * 0.5;
+  else if (roleBQuant != null) catB = roleBQuant;
+  else if (roleBQualityAvg != null) catB = roleBQualityAvg;
+
+  const c = avg(catC);
+  const parts = [catA, catB, c].filter(x => x != null);
+  const overall = parts.length ? avg(parts) : null;
+  return {
+    catA, catB, catC: c, overall,
+    roleAQuant, roleAQuality: roleAQualityAvg, quantShifts,
+    roleBQuant, roleBQuality: roleBQualityAvg, bQuantShifts
+  };
+}
+
+function getAllMonths() {
+  const set = new Set();
+  D.sampling_scores.forEach(s => {
+    const d = new Date(s.date);
+    set.add(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`);
+  });
+  (D.shift_schedule || []).forEach(s => {
+    const d = new Date(s.date);
+    set.add(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`);
+  });
+  return Array.from(set).sort();
+}
+
+function currentMonth() {
+  const months = getAllMonths();
+  return months[months.length - 1] || null;
+}
+
+function parseMonth(ym) {
+  const [y, m] = ym.split("-").map(Number);
+  return { year: y, month: m };
+}
+
+function monthLabel(ym) {
+  const { year, month } = parseMonth(ym);
+  return MONTH_NAMES[month - 1] + " " + year;
+}
+
+function getLastObsDate(repId) {
+  const recs = D.sampling_scores.filter(s => s.rep_id === repId);
+  if (!recs.length) return null;
+  return recs.reduce((a, b) => a.date > b.date ? a : b).date;
+}
+
+function getStrengthsWeaknesses(repId) {
+  const months = getAllMonths().slice(-3);
+  const dimScores = {};
+  D.sampling_scores
+    .filter(s => s.rep_id === repId && months.some(m => s.date.startsWith(m.substring(0, 7))))
+    .forEach(r => {
+      const scale = r.avg > 5 ? 10 : 5;
+      Object.entries(r.scores).forEach(([k, v]) => {
+        if (!dimScores[k]) dimScores[k] = [];
+        dimScores[k].push((v / scale) * 100);
+      });
+    });
+  return Object.entries(dimScores)
+    .map(([k, v]) => ({ key: k, label: k.replace(/_/g, " "), score: avg(v) }))
+    .sort((a, b) => b.score - a.score);
+}
+
+// ── Tab switching ────────────────────────────────────────────────────────────
+
+let activeCharts = {};
+
+function destroyChart(id) {
+  if (activeCharts[id]) { activeCharts[id].destroy(); delete activeCharts[id]; }
+}
+
+document.querySelectorAll(".tab-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+    document.querySelectorAll(".tab-content").forEach(s => s.classList.remove("active"));
+    btn.classList.add("active");
+    const tab = btn.dataset.tab;
+    document.getElementById("tab-" + tab).classList.add("active");
+    if (tab === "trends")     renderTrends();
+    if (tab === "individual") renderIndividual();
+    if (tab === "leaderboard") renderLeaderboard();
+    if (tab === "feedback")   renderFeedbackTab();
+    if (tab === "insights")   renderInsights();
+  });
+});
+
+// ── Overview ─────────────────────────────────────────────────────────────────
+
+function renderOverview() {
+  const cm = getActiveMonth();
+  const { year, month } = cm ? parseMonth(cm) : { year: 2026, month: 6 };
+  const months = getAllMonths();
+  const prevYM = months[months.length - 2] || null;
+
+  document.getElementById("hdr-month").textContent = cm ? monthLabel(cm) : "";
+  document.getElementById("hdr-updated").textContent =
+    D.generated_at ? new Date(D.generated_at).toLocaleDateString("en-GB") : "–";
+  document.getElementById("overview-period").textContent = cm ? `Showing ${monthLabel(cm)}` : "";
+
+  // KPI cards
+  const teamScores = REPS.map(r => getMonthlyScore(r.id, year, month).overall).filter(x => x != null);
+  const teamAvg = avg(teamScores);
+  const onTarget = REPS.filter(r => {
+    const s = getMonthlyScore(r.id, year, month).overall;
+    return s != null && s >= r.target * 100;
+  }).length;
+
+  const kpiData = [
+    { label: "Team Average", value: teamAvg != null ? pct(teamAvg) : "–", sub: "overall score" },
+    { label: "On Target", value: `${onTarget} / ${REPS.length}`, sub: "reps meeting goal" },
+    { label: "Reps Observed", value: teamScores.length, sub: "this month" },
+    { label: "Observations", value: D.sampling_scores.filter(s => s.date.startsWith(cm?.slice(0,7) || "9999")).length, sub: "spot-checks" }
+  ];
+  document.getElementById("kpi-grid").innerHTML = kpiData.map(k => `
+    <div class="kpi-card">
+      <div class="kpi-label">${k.label}</div>
+      <div class="kpi-value">${k.value}</div>
+      <div class="kpi-sub">${k.sub}</div>
+    </div>`).join("");
+
+  // Rep table
+  const tbody = document.getElementById("overview-tbody");
+  tbody.innerHTML = REPS.map(r => {
+    const curr = getMonthlyScore(r.id, year, month);
+    const prev = prevYM ? getMonthlyScore(r.id, ...Object.values(parseMonth(prevYM))) : { overall: null };
+    const sc = curr.overall;
+    const st = statusClass(sc, r.target);
+    const targetPct = r.target * 100;
+    const barColor = st === "on" ? "var(--success)" : st === "warn" ? "var(--warn)" : "var(--danger)";
+    const fillWidth = sc != null ? Math.min(sc, 100).toFixed(1) : 0;
+    const lastObs = getLastObsDate(r.id);
+    return `
+      <tr>
+        <td><strong>${r.name}</strong></td>
+        <td>${roleBadge(r.role)}</td>
+        <td>
+          <div class="progress-wrap">
+            <div class="progress-bar">
+              <div class="progress-fill" style="width:${fillWidth}%;background:${barColor}"></div>
+            </div>
+            <span class="progress-label" style="color:${barColor}">${sc != null ? pct(sc) : "–"}</span>
+          </div>
+        </td>
+        <td>
+          ${sc != null
+            ? `<span class="chip chip-${st}">${st === "on" ? "On Track" : st === "warn" ? "Near Target" : "Below"}</span>`
+            : `<span class="chip chip-na">No Data</span>`}
+          <span style="font-size:11px;color:var(--text-muted);margin-left:4px">Goal ${pct(targetPct, 0)}</span>
+        </td>
+        <td>${trendArrow(curr.overall, prev.overall)}</td>
+        <td style="font-size:13px">${curr.catA != null ? pct(curr.catA) : "–"}</td>
+        <td style="font-size:13px">${curr.catB != null ? pct(curr.catB) : "–"}</td>
+        <td style="font-size:13px">${curr.catC != null ? pct(curr.catC) : "–"}</td>
+        <td style="font-size:12px;color:var(--text-muted)">${lastObs || "–"}</td>
+      </tr>`;
+  }).join("");
+}
+
+// ── Leaderboard ──────────────────────────────────────────────────────────────
+
+function renderLeaderboard() {
+  const cm = getActiveMonth();
+  const { year, month } = cm ? parseMonth(cm) : { year: 2026, month: 6 };
+  const months = getAllMonths();
+  const prevYM = months[months.length - 2] || null;
+
+  document.getElementById("lb-period").textContent = cm ? monthLabel(cm) : "";
+
+  // Reps see only top 3 + themselves; managers see all
+  const ranked = REPS.map(r => {
+    const curr = getMonthlyScore(r.id, year, month);
+    const prev = prevYM ? getMonthlyScore(r.id, ...Object.values(parseMonth(prevYM))) : { overall: null };
+    return { ...r, ...curr, prev: prev.overall };
+  }).sort((a, b) => {
+    if (a.overall == null && b.overall == null) return 0;
+    if (a.overall == null) return 1;
+    if (b.overall == null) return -1;
+    return b.overall - a.overall;
+  });
+
+  // Access control: reps see only top 3 + their own position
+  const myId = AUTH.myRepId();
+  const visibleRanked = AUTH.isManager()
+    ? ranked
+    : ranked.filter((r, i) => i < 3 || r.id === myId);
+
+  const isRepView = !AUTH.isManager();
+
+  document.getElementById("lb-grid").innerHTML = visibleRanked.map((r) => {
+    const rank = ranked.indexOf(r) + 1;
+    const sc   = r.overall;
+    const st   = statusClass(sc, r.target);
+    const borderClass = rank <= 3 ? `rank-${rank}` : `${st}-target`;
+    const diff = (sc != null && r.prev != null) ? sc - r.prev : null;
+    const isMe = r.id === myId;
+
+    const trendColor = diff > 1 ? 'var(--success)' : diff < -1 ? 'var(--danger)' : 'var(--text-muted)';
+    const trendArrowStr = diff > 1 ? '▲' : diff < -1 ? '▼' : '→';
+    const trendHtml = diff != null
+      ? `<span style="font-size:13px;color:${trendColor}">${trendArrowStr} ${diff > 0 ? '+' : ''}${diff.toFixed(1)}pp vs prev</span>`
+      : '';
+
+    const medals = ["🥇","🥈","🥉"];
+    const rankDisplay = rank <= 3 ? `${medals[rank-1]} ${rank}` : `#${rank}`;
+
+    // Reps see top-3 with only name + score (no role breakdown, no gap detail)
+    // They DO see their own card in full if they're outside top 3
+    const showRoleBreakdown = !isRepView || isMe;
+    const clickHandler = (isRepView && !isMe) ? '' : `onclick="switchToIndividual('${r.id}')"`;
+
+    return `
+      <div class="lb-card ${borderClass}" ${clickHandler} style="${isRepView && !isMe ? '' : 'cursor:pointer'}">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start">
+          <div class="lb-rank">${rankDisplay}</div>
+          <div style="display:flex;gap:6px;align-items:center">
+            ${isMe ? `<span style="font-size:11px;font-weight:700;color:var(--primary);background:var(--primary-light);padding:2px 8px;border-radius:999px">You</span>` : ''}
+            ${roleBadge(r.role)}
+          </div>
+        </div>
+        <div class="lb-name">${r.name.split(' ')[0]}</div>
+        <div class="lb-score ${sc != null ? st + '-target' : 'no-data'}">
+          ${sc != null ? pct(sc) : "No data"}
+        </div>
+        ${showRoleBreakdown ? `
+          <div class="lb-target-gap">Target: ${pct(r.target * 100, 0)}${sc != null ? ` · Gap: ${(sc - r.target * 100).toFixed(1)}pp` : ''}</div>
+          ${trendHtml}
+          <div class="lb-cats">
+            ${r.catA != null ? `<span class="lb-cat">Role A: ${pct(r.catA, 0)}</span>` : ""}
+            ${r.catB != null ? `<span class="lb-cat">Role B: ${pct(r.catB, 0)}</span>` : ""}
+            ${r.catC != null ? `<span class="lb-cat">Role C: ${pct(r.catC, 0)}</span>` : ""}
+          </div>` : `
+          ${trendHtml}`}
+      </div>`;
+  }).join("");
+
+  // Rep view: add separator before "Your position" if they're outside top 3
+  if (isRepView && myId && ranked.findIndex(r => r.id === myId) >= 3) {
+    const grid = document.getElementById('lb-grid');
+    const sep = document.createElement('div');
+    sep.style.cssText = 'grid-column:1/-1;border-top:2px dashed var(--border);padding-top:8px;font-size:12px;color:var(--text-muted);font-weight:600';
+    sep.textContent = 'Your position';
+    const ownCard = grid.lastElementChild;
+    grid.insertBefore(sep, ownCard);
+  }
+}
+
+// ── Trends ───────────────────────────────────────────────────────────────────
+
+let activeMetric = "overall";
+let activeReps = new Set(REPS.map(r => r.id));
+let trendsChart = null;
+
+function renderTrends() {
+  buildTeamTrendsSummary();
+  buildRepToggles();
+  buildTrendsTable();
+  drawTrendsChart();
+}
+
+function buildRepToggles() {
+  const container = document.getElementById("rep-toggles");
+  if (container.childElementCount > 0) return;
+  container.innerHTML = REPS.map(r => `
+    <button class="rep-toggle active" data-rep="${r.id}"
+      style="color:${repColor(r.id)}"
+      onclick="toggleRep('${r.id}', this)">
+      ${r.name}
+    </button>`).join("");
+}
+
+function toggleRep(id, btn) {
+  if (activeReps.has(id)) { activeReps.delete(id); btn.classList.remove("active"); }
+  else { activeReps.add(id); btn.classList.add("active"); }
+  drawTrendsChart();
+}
+
+document.querySelectorAll(".seg-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".seg-btn").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    activeMetric = btn.dataset.metric;
+    drawTrendsChart();
+  });
+});
+
+function drawTrendsChart() {
+  const months = getAllMonths();
+  if (!months.length) return;
+
+  const labels = months.map(m => monthLabel(m));
+
+  // Reps see: team avg + their own line. Managers see all.
+  const allowedReps = AUTH.isManager()
+    ? REPS
+    : REPS.filter(r => r.id === AUTH.myRepId());
+
+  const datasets = allowedReps.filter(r => activeReps.has(r.id)).map(r => {
+    const data = months.map(m => {
+      const { year, month } = parseMonth(m);
+      const s = getMonthlyScore(r.id, year, month);
+      return s[activeMetric];
+    });
+    return {
+      label: r.name,
+      data,
+      borderColor: repColor(r.id),
+      backgroundColor: repColor(r.id) + "22",
+      tension: 0.35,
+      pointRadius: 5,
+      pointHoverRadius: 7,
+      fill: false
+    };
+  });
+
+  // Team average line
+  const teamData = months.map(m => {
+    const { year, month } = parseMonth(m);
+    const vals = REPS.map(r => getMonthlyScore(r.id, year, month)[activeMetric]).filter(x => x != null);
+    return avg(vals);
+  });
+  datasets.unshift({
+    label: "Team Avg",
+    data: teamData,
+    borderColor: "#9E9E9E",
+    borderDash: [6, 3],
+    borderWidth: 2,
+    pointRadius: 4,
+    tension: 0.35,
+    fill: false
+  });
+
+  if (trendsChart) trendsChart.destroy();
+  trendsChart = new Chart(document.getElementById("trends-chart"), {
+    type: "line",
+    data: { labels, datasets },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      interaction: { mode: "index", intersect: false },
+      plugins: {
+        legend: { position: "bottom", labels: { boxWidth: 12, padding: 12, font: { size: 12 } } },
+        tooltip: { callbacks: { label: ctx => ` ${ctx.dataset.label}: ${ctx.parsed.y != null ? pct(ctx.parsed.y) : "–"}` } }
+      },
+      scales: {
+        y: {
+          min: 0, max: 105,
+          ticks: { callback: v => v + "%" },
+          grid: { color: "#f0f0f0" }
+        },
+        x: { grid: { display: false } }
+      }
+    }
+  });
+}
+
+function buildTeamTrendsSummary() {
+  const months = getAllMonths();
+  if (!months.length) return;
+  const cm = months[months.length - 1];
+  const pm = months[months.length - 2] || null;
+  const { year: cy, month: cmo } = parseMonth(cm);
+  const currScores = REPS.map(r => getMonthlyScore(r.id, cy, cmo).overall).filter(x => x != null);
+  const teamNow  = avg(currScores);
+
+  let teamPrev = null;
+  if (pm) {
+    const { year: py, month: pmo } = parseMonth(pm);
+    const prev = REPS.map(r => getMonthlyScore(r.id, py, pmo).overall).filter(x => x != null);
+    teamPrev = avg(prev);
+  }
+
+  const diff = teamNow != null && teamPrev != null ? teamNow - teamPrev : null;
+  const diffTxt = diff != null
+    ? `${diff >= 0 ? '▲ +' : '▼ '}${Math.abs(diff).toFixed(1)}pp vs ${monthLabel(pm)}`
+    : '';
+  const diffColor = diff == null ? '#9e9e9e' : diff >= 0 ? 'var(--success)' : 'var(--danger)';
+
+  // Role breakdown
+  const roleAvgs = ['catA','catB','catC'].map(k => {
+    const vals = REPS.map(r => getMonthlyScore(r.id, cy, cmo)[k]).filter(x => x != null);
+    return avg(vals);
+  });
+
+  const onTarget = REPS.filter(r => {
+    const s = getMonthlyScore(r.id, cy, cmo).overall;
+    return s != null && s >= r.target * 100;
+  }).length;
+
+  document.getElementById('team-trends-summary').innerHTML = [
+    { label: 'Team Average', value: teamNow != null ? pct(teamNow) : '–', sub: monthLabel(cm), color: teamNow != null && teamNow >= 80 ? 'var(--success)' : 'var(--danger)' },
+    { label: 'vs Previous Month', value: diff != null ? `${diff >= 0 ? '+' : ''}${diff.toFixed(1)}pp` : '–', sub: diffTxt ? monthLabel(pm) + ' → ' + monthLabel(cm) : 'no prior data', color: diffColor },
+    { label: 'On Target', value: `${onTarget} / ${currScores.length}`, sub: 'active reps this month', color: onTarget >= currScores.length ? 'var(--success)' : 'var(--warn)' },
+    { label: 'Role A avg', value: roleAvgs[0] != null ? pct(roleAvgs[0], 0) : '–', sub: 'Shift/Podio/Lead', color: roleAvgs[0] != null && roleAvgs[0] >= 80 ? 'var(--success)' : 'var(--danger)' },
+    { label: 'Role B avg', value: roleAvgs[1] != null ? pct(roleAvgs[1], 0) : '–', sub: 'Task Management', color: roleAvgs[1] != null && roleAvgs[1] >= 80 ? 'var(--success)' : 'var(--danger)' },
+    { label: 'Role C avg', value: roleAvgs[2] != null ? pct(roleAvgs[2], 0) : '–', sub: 'Reviews/Reactivate', color: roleAvgs[2] != null && roleAvgs[2] >= 80 ? 'var(--success)' : 'var(--danger)' },
+  ].map(c => `<div class="tts-card">
+    <div class="tts-label">${c.label}</div>
+    <div class="tts-value" style="color:${c.color}">${c.value}</div>
+    <div class="tts-sub">${c.sub}</div>
+  </div>`).join('');
+}
+
+function buildTrendsTable() {
+  const months = getAllMonths();
+  const thead = document.getElementById("trends-thead-row");
+  const tbody = document.getElementById("trends-tbody");
+  thead.innerHTML = `<th>Rep</th>` + months.map(m => `<th>${monthLabel(m)}</th>`).join("") + `<th>Trend</th>`;
+  tbody.innerHTML = REPS.map(r => {
+    const scores = months.map(m => {
+      const { year, month } = parseMonth(m);
+      return getMonthlyScore(r.id, year, month).overall;
+    });
+    const last = scores[scores.length - 1];
+    const prev = scores[scores.length - 2];
+    return `<tr>
+      <td><strong>${r.name}</strong></td>
+      ${scores.map(s => `<td>${s != null ? pct(s) : "–"}</td>`).join("")}
+      <td>${trendArrow(last, prev)}</td>
+    </tr>`;
+  }).join("");
+}
+
+// ── Role QA session cards (B and C) ──────────────────────────────────────────
+
+function buildRoleQASection(category, repId, title) {
+  const sessions = D.sampling_scores
+    .filter(s => s.rep_id === repId && s.category === category)
+    .sort((a, b) => b.date.localeCompare(a.date));
+
+  if (!sessions.length) {
+    return `<div class="card" style="margin-top:16px">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px">
+        <div class="card-title" style="margin-bottom:0">${title}</div>
+        <span style="font-size:12px;color:var(--text-muted)">No observations yet</span>
+      </div>
+      <p style="font-size:13px;color:var(--text-muted);padding:12px 0">No ${category} role QA sessions recorded.</p>
+    </div>`;
+  }
+
+  // Month-over-month trend for this role
+  const months = getAllMonths();
+  const roleColor = category === 'B' ? '#2e7d32' : '#6a1b9a';
+
+  const trendHtml = months.map(m => {
+    const { year, month } = parseMonth(m);
+    const score = getMonthlyScore(repId, year, month)[category === 'B' ? 'catB' : 'catC'];
+    return score != null
+      ? `<div style="text-align:center;min-width:60px">
+           <div style="font-size:11px;color:var(--text-muted)">${MONTH_NAMES[month-1]}</div>
+           <div style="font-size:18px;font-weight:800;color:${roleColor}">${pct(score,0)}</div>
+         </div>`
+      : `<div style="text-align:center;min-width:60px">
+           <div style="font-size:11px;color:var(--text-muted)">${MONTH_NAMES[month-1]}</div>
+           <div style="font-size:14px;color:#ccc">–</div>
+         </div>`;
+  }).join('<div style="color:#ccc;align-self:center;font-size:18px;padding:0 4px">→</div>');
+
+  // Each QA session card
+  const sessionCards = sessions.map(s => {
+    const scale = s.avg > 5 ? 10 : 5;
+    const scorePct = (s.avg / scale) * 100;
+    const scoreColor = scorePct >= 80 ? 'var(--success)' : scorePct >= 65 ? 'var(--warn)' : 'var(--danger)';
+    const fmtScores = Object.entries(s.scores)
+      .filter(([k]) => !['speed_to_lead'].includes(k))
+      .map(([k, v]) => `<span style="font-size:12px;padding:2px 8px;background:var(--bg);border-radius:4px">
+        ${k.replace(/_/g,' ')}: <strong>${v}/${scale}</strong>
+      </span>`).join('');
+
+    // Find matching Rotem comments for this session
+    const relatedComments = (D.rotem_comments || []).filter(c =>
+      c.rep_id === repId && c.category === category &&
+      Math.abs(new Date(c.comment_date) - new Date(s.date)) < 14 * 86400000
+    );
+
+    const commentsHtml = relatedComments.map(c => buildFeedbackCard(c, { inline: true })).join('');
+
+    return `<div style="border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:12px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <div>
+          <strong style="font-size:15px">${s.date}</strong>
+          <span style="font-size:12px;color:var(--text-muted);margin-left:8px">by ${s.reviewer}</span>
+        </div>
+        <div style="text-align:right">
+          <div style="font-size:26px;font-weight:800;color:${scoreColor};line-height:1">${pct(scorePct)}</div>
+          <div style="font-size:11px;color:var(--text-muted)">${s.avg.toFixed(1)} / ${scale} pts</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:${relatedComments.length ? '12px' : '0'}">
+        ${fmtScores}
+      </div>
+      ${commentsHtml}
+    </div>`;
+  }).join('');
+
+  const avg_score = avg(sessions.map(s => (s.avg / (s.avg > 5 ? 10 : 5)) * 100));
+
+  return `<div class="card" style="margin-top:16px">
+    <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px">
+      <div class="card-title" style="margin-bottom:0">${title}</div>
+      <span style="font-size:14px;font-weight:700;color:${roleColor}">
+        Avg: ${pct(avg_score)} · ${sessions.length} session${sessions.length !== 1 ? 's' : ''}
+      </span>
+    </div>
+    <!-- Trend row -->
+    <div style="display:flex;gap:4px;align-items:center;padding:12px;background:var(--bg);border-radius:8px;margin-bottom:16px;flex-wrap:wrap">
+      ${trendHtml}
+    </div>
+    ${sessionCards}
+  </div>`;
+}
+
+// ── Role A Quantitative Breakdown ─────────────────────────────────────────────
+
+function metricColor(v) {
+  if (v >= 88) return 'good';
+  if (v >= 75) return 'warn';
+  return 'bad';
+}
+
+function buildRoleABreakdown(repId, year, month) {
+  const { score: quantScore, shifts } = computeRoleAQuantScore(repId, year, month);
+  const months = getAllMonths();
+
+  // Role A monthly trend row
+  const trendHtml = months.map(m => {
+    const { year: y, month: mo } = parseMonth(m);
+    const s = getMonthlyScore(repId, y, mo);
+    return `<div style="text-align:center;min-width:60px">
+      <div style="font-size:10px;color:var(--text-muted);text-transform:uppercase">${MONTH_NAMES[mo-1]}</div>
+      <div style="font-size:13px;font-weight:700;color:var(--primary)">${s.catA != null ? pct(s.catA,0) : '–'}</div>
+      ${s.roleAQuant != null ? `<div style="font-size:10px;color:var(--text-muted)">Q: ${pct(s.roleAQuant,0)}</div>` : ''}
+      ${s.roleAQuality != null ? `<div style="font-size:10px;color:var(--text-muted)">QA: ${pct(s.roleAQuality,0)}</div>` : ''}
+    </div>`;
+  }).join('<div style="color:#ccc;align-self:center;font-size:16px;padding:0 2px">→</div>');
+
+  if (!shifts.length) return `<div class="card" style="margin-bottom:16px">
+    <div class="card-title">Role A — Shift/Podio/Lead Investigation</div>
+    <div style="display:flex;gap:4px;align-items:center;padding:12px;background:var(--bg);border-radius:8px;margin-bottom:8px;flex-wrap:wrap">${trendHtml}</div>
+    <p style="font-size:13px;color:var(--text-muted)">No Role A shifts recorded for this month.</p>
+  </div>`;
+
+  const rows = shifts.map(s => {
+    const distColor  = s.dist_score  >= 90 ? 'var(--success)' : s.dist_score  >= 75 ? 'var(--warn)' : 'var(--danger)';
+    const hdlColor   = s.handled_score >= 90 ? 'var(--success)' : s.handled_score >= 75 ? 'var(--warn)' : 'var(--danger)';
+    const dayColor   = s.daily_score >= 90 ? 'var(--success)' : s.daily_score >= 75 ? 'var(--warn)' : 'var(--danger)';
+    return `<div class="quant-shift-row">
+      <span class="quant-shift-date">${s.date.slice(5)}</span>
+      ${s.is_weekend ? '<span class="quant-shift-we">WE +5pt</span>' : '<span style="width:52px"></span>'}
+      <div class="quant-shift-metrics">
+        <span style="font-size:11px">Dist ${s.dist_raw}% → <span style="font-weight:700;color:${distColor}">${s.dist_score.toFixed(0)}pts</span></span>
+        <span style="font-size:11px">Handled ${s.handled_raw}%${s.is_weekend?'+5':''}  → <span style="font-weight:700;color:${hdlColor}">${s.handled_score.toFixed(0)}pts</span></span>
+      </div>
+      <span class="quant-score-final" style="color:${dayColor}">${s.daily_score.toFixed(1)}%</span>
+    </div>`;
+  }).join('');
+
+  return `
+    <div class="card" style="margin-bottom:16px">
+      <div class="card-title" style="margin-bottom:10px">Role A — Shift/Podio/Lead Investigation</div>
+      <div style="display:flex;gap:4px;align-items:center;padding:12px;background:var(--bg);border-radius:8px;margin-bottom:16px;flex-wrap:wrap">${trendHtml}</div>
+      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px">
+        <div class="card-title" style="margin-bottom:0">Quantitative: Qlik Shift Data</div>
+        <span style="font-size:13px;font-weight:700;color:var(--primary)">
+          Avg: ${quantScore != null ? pct(quantScore) : '–'} (${shifts.length} shifts)
+        </span>
+      </div>
+      <p style="font-size:12px;color:var(--text-muted);margin-bottom:10px">
+        Score per shift = avg(Dist ≤5min %, Handled ≤5min %) × weekend factor (1.05 on Fri/Sat/Sun), capped at 100%.
+        Monthly quantitative = average across all A shifts. Final Role A = 50% this + 50% Rotem quality score.
+      </p>
+      <div class="quant-breakdown">
+        <div class="qb-title">${shifts.length} A shifts · ${shifts.filter(s=>s.is_weekend).length} weekend</div>
+        ${rows}
+      </div>
+    </div>`;
+}
+
+// ── Individual ───────────────────────────────────────────────────────────────
+
+let indRadarChart = null;
+let indBarChart = null;
+
+function renderIndividual(repId) {
+  const select   = document.getElementById("ind-rep-select");
+  const header   = document.querySelector(".ind-header");
+  const myId     = AUTH.myRepId();
+  const isRepView = !AUTH.isManager(); // true for reps AND manager-in-preview
+
+  if (isRepView) {
+    // Rep sees only their own data — hide the selector entirely
+    if (header) header.style.display = "none";
+  } else {
+    // Manager sees the full selector
+    if (header) header.style.display = "flex";
+    if (!select.options.length) {
+      select.innerHTML = REPS.map(r => `<option value="${r.id}">${r.name} (${r.role})</option>`).join("");
+      select.addEventListener("change", () => renderIndividual(select.value));
+    }
+  }
+
+  // Lock rep for rep-view; use selector or default for manager
+  const id = isRepView ? myId : (repId || select.value || REPS[0].id);
+  if (!isRepView) select.value = id;
+
+  const rep = REPS.find(r => r.id === id);
+  const months = getAllMonths();
+  const allScores = months.map(m => {
+    const { year, month } = parseMonth(m);
+    return { label: monthLabel(m), ...getMonthlyScore(id, year, month) };
+  });
+  const sw = getStrengthsWeaknesses(id);
+
+  if (indRadarChart) { indRadarChart.destroy(); indRadarChart = null; }
+  if (indBarChart)   { indBarChart.destroy();   indBarChart = null; }
+
+  const activeM  = getActiveMonth();
+  const { year: ay, month: am } = activeM ? parseMonth(activeM) : { year: 2026, month: 6 };
+  const activeMScore = getMonthlyScore(id, ay, am);
+
+  // Role A score breakdown for the active month
+  const roleABreakdownHtml = buildRoleABreakdown(id, ay, am, activeMScore);
+
+  document.getElementById("ind-content").innerHTML = `
+    ${buildPersonalAlerts(id)}
+
+    <div style="margin-bottom:16px;display:flex;gap:16px;align-items:center;flex-wrap:wrap">
+      <div><strong>${rep.name}</strong> &nbsp;${roleBadge(rep.role)}&nbsp;
+        <span style="font-size:13px;color:var(--text-muted)">Target: ${pct(rep.target * 100, 0)}</span>
+      </div>
+      <div style="font-size:13px;color:var(--text-muted)">Showing: <strong>${activeM ? monthLabel(activeM) : '–'}</strong></div>
+    </div>
+
+    <!-- Active month score summary -->
+    <div class="kpi-grid" style="margin-bottom:20px">
+      ${[
+        {label:'Overall', val:activeMScore.overall, target:rep.target*100},
+        {label:'Role A (combined)', val:activeMScore.catA},
+        {label:'Role A – Quant', val:activeMScore.roleAQuant, sub:'Qlik shifts'},
+        {label:'Role A – Quality', val:activeMScore.roleAQuality, sub:'Rotem sampling'},
+        {label:'Role B', val:activeMScore.catB},
+        {label:'Role C', val:activeMScore.catC}
+      ].map(k => {
+        const color = k.val == null ? '#bdbdbd'
+          : k.target != null ? (k.val >= k.target ? 'var(--success)' : k.val >= k.target-5 ? 'var(--warn)' : 'var(--danger)')
+          : k.val >= 80 ? 'var(--success)' : k.val >= 70 ? 'var(--warn)' : 'var(--danger)';
+        return `<div class="kpi-card">
+          <div class="kpi-label">${k.label}</div>
+          <div class="kpi-value" style="color:${color}">${k.val != null ? pct(k.val) : '–'}</div>
+          ${k.sub ? `<div class="kpi-sub">${k.sub}</div>` : ''}
+        </div>`;
+      }).join('')}
+    </div>
+
+    ${roleABreakdownHtml}
+
+    <!-- Radar + Monthly Trend bar -->
+    <div class="ind-grid" style="margin-top:16px">
+      <div class="card">
+        <div class="card-title">Skill Radar (recent 3 months)</div>
+        <div style="position:relative;height:260px"><canvas id="ind-radar"></canvas></div>
+        <div id="ind-radar-legend" style="margin-top:8px;display:flex;gap:10px;flex-wrap:wrap"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Monthly Trend (all months)</div>
+        <div style="position:relative;height:260px"><canvas id="ind-bar"></canvas></div>
+      </div>
+    </div>
+
+    <!-- Role B QA sessions -->
+    ${buildRoleQASection('B', id, 'Role B — Task Management')}
+
+    <!-- Role C QA sessions -->
+    ${buildRoleQASection('C', id, 'Role C — Reviews & Reactivate')}
+
+    <!-- Strengths / weaknesses -->
+    <div class="ind-grid" style="margin-top:16px">
+      <div class="card">
+        <div class="card-title">Strengths (top 5)</div>
+        <div class="sw-list">${sw.slice(0, 5).map(d => swRow(d, "var(--success)")).join("")}</div>
+      </div>
+      <div class="card">
+        <div class="card-title">Development Areas (bottom 5)</div>
+        <div class="sw-list">${sw.slice(-5).reverse().map(d => swRow(d, "var(--danger)")).join("")}</div>
+      </div>
+    </div>
+
+    ${buildIndividualFeedbackSection(id)}`;
+
+  // Radar chart — only plot roles with actual data; null = "no observations yet"
+  const radarMonths = months.slice(-3);
+  const ROLE_LABELS = ["Role A", "Role B", "Role C"];
+  const ROLE_KEYS   = ["catA",   "catB",   "catC"];
+  const radarData = ROLE_KEYS.map(k =>
+    avg(radarMonths.map(m => {
+      const {year, month} = parseMonth(m);
+      return getMonthlyScore(id, year, month)[k];
+    }).filter(x => x != null))
+  );
+
+  // Show no-data chips below radar
+  const radarLegend = document.getElementById('ind-radar-legend');
+  if (radarLegend) {
+    radarLegend.innerHTML = radarData.map((v, i) => v != null
+      ? `<span style="font-size:11px;padding:2px 8px;background:var(--bg);border-radius:4px">${ROLE_LABELS[i]}: <strong>${pct(v,0)}</strong></span>`
+      : `<span style="font-size:11px;padding:2px 8px;background:#fafafa;border:1px dashed #ccc;border-radius:4px;color:var(--text-muted)">${ROLE_LABELS[i]}: no data</span>`
+    ).join('');
+  }
+
+  // If fewer than 2 roles have data, show bar-style instead of radar (radar is meaningless for 1 axis)
+  const validRoles = radarData.filter(v => v != null).length;
+  if (validRoles >= 2) {
+    indRadarChart = new Chart(document.getElementById("ind-radar"), {
+      type: "radar",
+      data: {
+        labels: ["Role A\n(Shift/Podio/Lead Inv)", "Role B\n(Task Mgmt)", "Role C\n(Reviews/Reactivate)"],
+        datasets: [{
+          label: rep.name,
+          data: radarData,
+          borderColor: repColor(id),
+          backgroundColor: repColor(id) + "33",
+          pointBackgroundColor: radarData.map(v => v != null ? repColor(id) : 'transparent'),
+          pointRadius: radarData.map(v => v != null ? 5 : 0),
+          spanGaps: false
+        }, {
+          label: `Target (${pct(rep.target * 100, 0)})`,
+          data: [rep.target * 100, rep.target * 100, rep.target * 100],
+          borderColor: "#9E9E9E", backgroundColor: "transparent",
+          borderDash: [4,4], pointRadius: 0, spanGaps: true
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        scales: { r: { min: 0, max: 100, ticks: { callback: v => v + "%" }, pointLabels: { font: { size: 11 } } } },
+        plugins: { legend: { labels: { font: { size: 11 } } } }
+      }
+    });
+  } else {
+    // Single-role fallback: horizontal bar
+    const ctx = document.getElementById("ind-radar").getContext('2d');
+    const existing = document.getElementById("ind-radar");
+    existing.parentElement.innerHTML = `<p style="text-align:center;color:var(--text-muted);padding:40px;font-size:13px">
+      Only 1 role observed yet — radar requires at least 2. See the role breakdown below.</p>`;
+  }
+
+  // Bar chart: monthly A/B/C
+  indBarChart = new Chart(document.getElementById("ind-bar"), {
+    type: "bar",
+    data: {
+      labels: allScores.map(s => s.label),
+      datasets: [
+        { label: "Role A", data: allScores.map(s => s.catA), backgroundColor: "#1565c044", borderColor: "#1565c0", borderWidth: 2 },
+        { label: "Role B", data: allScores.map(s => s.catB), backgroundColor: "#2e7d3244", borderColor: "#2e7d32", borderWidth: 2 },
+        { label: "Role C", data: allScores.map(s => s.catC), backgroundColor: "#6a1b9a44", borderColor: "#6a1b9a", borderWidth: 2 }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { labels: { font: { size: 11 } } },
+        tooltip: { callbacks: { label: ctx => ` ${ctx.dataset.label}: ${ctx.parsed.y != null ? pct(ctx.parsed.y) : "–"}` } }
+      },
+      scales: {
+        y: { min: 0, max: 105, ticks: { callback: v => v + "%" } },
+        x: { grid: { display: false } }
+      }
+    }
+  });
+}
+
+function swRow(d, color) {
+  const w = d.score != null ? d.score.toFixed(0) : 0;
+  return `
+    <div class="sw-item">
+      <span class="sw-label">${d.label}</span>
+      <div class="sw-bar"><div class="sw-fill" style="width:${w}%;background:${color}"></div></div>
+      <span class="sw-score" style="color:${color}">${d.score != null ? pct(d.score, 0) : "–"}</span>
+    </div>`;
+}
+
+function switchToIndividual(repId) {
+  document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+  document.querySelectorAll(".tab-content").forEach(s => s.classList.remove("active"));
+  document.querySelector('[data-tab="individual"]').classList.add("active");
+  document.getElementById("tab-individual").classList.add("active");
+  renderIndividual(repId);
+}
+
+// ── Score Entry ──────────────────────────────────────────────────────────────
+
+const CAT_FIELDS = {
+  A: [
+    { key:"prioritizing_step2_keyword_managing_acq", label:"Prioritizing – Step 2, Keyword, Managing ACQ" },
+    { key:"returning_dup_initial",                   label:"Podio – Returning, Dup, Initial" },
+    { key:"activity_zillow_maps",                    label:"Lead Investigation – Activity, Zillow, Maps, Zipcode" }
+  ],
+  B: [
+    { key:"tagging",          label:"Managing Shift – Tagging" },
+    { key:"prioritizing",     label:"Managing Shift – Prioritizing" },
+    { key:"updating_status",  label:"Podio – Updating Status" },
+    { key:"properly_handling",label:"Properly Handling" }
+  ],
+  C: [
+    { key:"monitoring_ntc", label:"Managing Shift – Monitoring NTC" },
+    { key:"renos",          label:"Managing Shift – Renos" },
+    { key:"reviews",        label:"Lead Investigation – Reviews" },
+    { key:"reactivate",     label:"Lead Investigation – Reactivate" }
+  ]
+};
+
+function initScoreEntry() {
+  // Always rebuild rep dropdown (REPS is now loaded)
+  const repSel = document.getElementById("entry-rep");
+  repSel.innerHTML = '<option value="">— Select rep —</option>' +
+    REPS.map(r => `<option value="${r.id}">${r.name}</option>`).join("");
+
+  // Default date to today
+  const today = new Date().toISOString().slice(0, 10);
+  document.getElementById("entry-date").value = today;
+
+  // Re-render fields on category change (only add listener once)
+  const catSel = document.getElementById("entry-cat");
+  catSel.removeEventListener("change", renderEntryFields);
+  catSel.addEventListener("change", renderEntryFields);
+  renderEntryFields();
+  renderEntryLog();
+}
+
+function renderEntryFields() {
+  const cat = document.getElementById("entry-cat").value;
+  const fields = CAT_FIELDS[cat] || [];
+  document.getElementById("entry-fields").innerHTML = fields.map(f => `
+    <div class="score-field">
+      <label>${f.label}</label>
+      <input type="range" min="1" max="5" step="1" value="3" id="field-${f.key}"
+        oninput="document.getElementById('val-${f.key}').textContent=this.value; updateEntryAvg()">
+      <span class="score-val" id="val-${f.key}">3</span>
+    </div>`).join("");
+  updateEntryAvg();
+}
+
+function updateEntryAvg() {
+  const cat = document.getElementById("entry-cat").value;
+  const fields = CAT_FIELDS[cat] || [];
+  const vals = fields.map(f => parseInt(document.getElementById("field-" + f.key)?.value || 3));
+  const a = avg(vals);
+  document.getElementById("entry-avg-display").textContent = a != null ? `Avg: ${a.toFixed(2)} / 5` : "";
+}
+
+function saveEntry() {
+  const cat = document.getElementById("entry-cat").value;
+  const fields = CAT_FIELDS[cat] || [];
+  const scores = {};
+  fields.forEach(f => { scores[f.key] = parseInt(document.getElementById("field-" + f.key).value); });
+  const vals = Object.values(scores);
+  const a = avg(vals);
+
+  const record = {
+    date:     document.getElementById("entry-date").value,
+    rep_id:   document.getElementById("entry-rep").value,
+    reviewer: document.getElementById("entry-reviewer").value,
+    category: cat,
+    scores,
+    avg: parseFloat(a.toFixed(2))
+  };
+
+  // Add to in-memory data and re-render
+  D.sampling_scores.push(record);
+  renderOverview();
+  renderEntryLog();
+
+  // Show JSON to copy
+  const area = document.getElementById("entry-copy-area");
+  area.textContent = JSON.stringify(record, null, 2);
+  area.classList.add("visible");
+
+  // Copy to clipboard
+  navigator.clipboard?.writeText(JSON.stringify(record, null, 2)).catch(() => {});
+  alert("Entry added! JSON copied to clipboard. Paste into data/sampling_scores.json and run build-data.py.");
+}
+
+function renderEntryLog() {
+  const recent = [...D.sampling_scores].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 10);
+  const repName = id => REPS.find(r => r.id === id)?.name || id;
+  document.getElementById("entry-log-tbody").innerHTML = recent.map(r => {
+    const scale = r.avg > 5 ? 10 : 5;
+    return `<tr>
+      <td>${r.date}</td>
+      <td>${repName(r.rep_id)}</td>
+      <td>Role ${r.category}</td>
+      <td>${r.reviewer}</td>
+      <td>${r.avg.toFixed(2)} / ${scale} (${pct((r.avg / scale) * 100)})</td>
+    </tr>`;
+  }).join("");
+}
+
+// ── Feedback (Rotem's comments) ──────────────────────────────────────────────
+
+// In-memory store for reviewed/response state (persists for this session)
+// Keys: comment id → { reviewed_by: {rep_id: bool}, employee_response: string }
+const feedbackState = {};
+
+function getFeedbackState(id) {
+  if (!feedbackState[id]) {
+    const c = (D.rotem_comments || []).find(x => x.id === id);
+    feedbackState[id] = {
+      reviewed_by: c ? { ...c.reviewed_by } : {},
+      employee_response: c ? c.employee_response : ""
+    };
+  }
+  return feedbackState[id];
+}
+
+function buildFeedbackCard(comment, opts = {}) {
+  const state = getFeedbackState(comment.id);
+  const repName = REPS.find(r => r.id === comment.rep_id)?.name || comment.rep_id;
+  const isReviewedByRep = !!state.reviewed_by[comment.rep_id];
+  const hasContent = comment.links.length > 0 || comment.general_note;
+  const linkCount = comment.links.length;
+  const showInline = opts.inline;
+
+  const linksHtml = comment.links.map(l => `
+    <div class="podio-link">
+      <span class="podio-link-icon">🔗</span>
+      <div class="podio-link-content">
+        <a href="${l.url}" target="_blank" rel="noopener">${l.url}</a>
+        ${l.note ? `<div class="podio-link-note">${escHtml(l.note)}</div>` : ''}
+      </div>
+    </div>`).join('');
+
+  const repliesHtml = (comment.replies || []).map(r =>
+    `<div class="reply-block">💬 ${escHtml(r.text)} <span style="font-size:11px;color:#90a4ae">(${r.date})</span></div>`
+  ).join('');
+
+  const generalHtml = comment.general_note
+    ? `<div class="feedback-general-note">${escHtml(comment.general_note)}</div>` : '';
+
+  const reviewedClass = isReviewedByRep ? 'checked' : '';
+
+  return `
+    <div class="feedback-card" data-id="${comment.id}">
+      <div class="feedback-header" onclick="toggleFeedback('${comment.id}', this)">
+        <div class="fh-left">
+          <span class="feedback-chevron">▶</span>
+          <strong>Role ${comment.category}</strong>
+          ${!showInline ? `· ${repName}` : ''}
+          · <span style="font-size:12px;color:var(--text-muted)">${comment.comment_date}</span>
+          ${linkCount ? `<span class="badge" style="background:#e3f0ff;color:var(--primary);margin-left:4px">${linkCount} link${linkCount>1?'s':''}</span>` : ''}
+        </div>
+        <div style="display:flex;gap:8px;align-items:center">
+          ${isReviewedByRep
+            ? `<span style="font-size:11px;color:var(--success);font-weight:600">✓ Reviewed</span>`
+            : `<span style="font-size:11px;color:var(--text-muted)">Pending review</span>`}
+        </div>
+      </div>
+      <div class="feedback-body" id="fb-body-${comment.id}">
+        <div class="feedback-meta">
+          Observed: <strong>${comment.sheet}</strong> period
+          ${!showInline ? `· Rep: <strong>${repName}</strong>` : ''}
+          · Role: <strong>${comment.category}</strong>
+          · Date: ${comment.comment_date}
+        </div>
+        ${generalHtml}
+        ${linksHtml}
+        ${repliesHtml}
+        <div class="feedback-actions">
+          <label class="reviewed-check ${reviewedClass}" id="check-label-${comment.id}">
+            <input type="checkbox" id="check-${comment.id}"
+              ${isReviewedByRep ? 'checked' : ''}
+              onchange="markReviewed('${comment.id}', '${comment.rep_id}', this.checked)">
+            ✓ I've reviewed this feedback
+          </label>
+          <div class="response-wrap">
+            <textarea id="resp-${comment.id}" placeholder="Add your comment or question here..."
+              onchange="saveResponse('${comment.id}', this.value)">${escHtml(state.employee_response)}</textarea>
+            <button class="response-save-btn" onclick="saveResponse('${comment.id}', document.getElementById('resp-${comment.id}').value)">Save Comment</button>
+            <div class="response-saved" id="saved-${comment.id}">Saved ✓</div>
+          </div>
+        </div>
+      </div>
+    </div>`;
+}
+
+function toggleFeedback(id, headerEl) {
+  const body = document.getElementById(`fb-body-${id}`);
+  const chevron = headerEl.querySelector('.feedback-chevron');
+  const isOpen = body.classList.contains('open');
+  body.classList.toggle('open', !isOpen);
+  chevron.classList.toggle('open', !isOpen);
+}
+
+function markReviewed(commentId, repId, checked) {
+  const state = getFeedbackState(commentId);
+  state.reviewed_by[repId] = checked;
+  const label = document.getElementById(`check-label-${commentId}`);
+  if (label) label.classList.toggle('checked', checked);
+  // Update all instances (might appear in both feedback tab and individual view)
+  document.querySelectorAll(`[id="check-${commentId}"]`).forEach(el => el.checked = checked);
+  document.querySelectorAll(`[id="check-label-${commentId}"]`).forEach(el => el.classList.toggle('checked', checked));
+  // Refresh pending count badge in header
+  document.querySelectorAll(`.feedback-card[data-id="${commentId}"] .fh-left`)
+    .forEach(el => {
+      const statusSpan = el.closest('.feedback-header')?.querySelector('div:last-child span');
+      if (statusSpan) statusSpan.outerHTML = checked
+        ? `<span style="font-size:11px;color:var(--success);font-weight:600">✓ Reviewed</span>`
+        : `<span style="font-size:11px;color:var(--text-muted)">Pending review</span>`;
+    });
+}
+
+function saveResponse(commentId, value) {
+  const state = getFeedbackState(commentId);
+  state.employee_response = value;
+  const savedEl = document.getElementById(`saved-${commentId}`);
+  if (savedEl) {
+    savedEl.style.display = 'block';
+    setTimeout(() => { savedEl.style.display = 'none'; }, 2000);
+  }
+}
+
+function escHtml(str) {
+  return (str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ── Feedback tab ─────────────────────────────────────────────────────────────
+
+function initFeedbackTab() {
+  // Always rebuild rep dropdown with current REPS
+  const repSel = document.getElementById('fb-rep-filter');
+  repSel.innerHTML = '<option value="">All Reps</option>' +
+    REPS.map(r => `<option value="${r.id}">${r.name}</option>`).join('');
+
+  // Wire filter changes (remove old listeners first by cloning)
+  ['fb-rep-filter','fb-cat-filter','fb-sheet-filter','fb-reviewed-filter'].forEach(id => {
+    const el = document.getElementById(id);
+    const clone = el.cloneNode(true);
+    el.parentNode.replaceChild(clone, el);
+    clone.addEventListener('change', renderFeedbackTab);
+  });
+
+  // Re-apply rep filter after cloning (for rep-restricted views)
+  const myId = AUTH.myRepId();
+  if (myId && !AUTH.isManager()) {
+    document.getElementById('fb-rep-filter').value = myId;
+  }
+}
+
+function renderFeedbackTab() {
+  const repFilter      = document.getElementById('fb-rep-filter').value;
+  const catFilter      = document.getElementById('fb-cat-filter').value;
+  const sheetFilter    = document.getElementById('fb-sheet-filter').value;
+  const reviewedFilter = document.getElementById('fb-reviewed-filter').value;
+
+  // Reps only see their own feedback
+  let comments = (D.rotem_comments || []).filter(c =>
+    AUTH.isManager() || c.rep_id === AUTH.myRepId()
+  );
+  if (repFilter)   comments = comments.filter(c => c.rep_id === repFilter);
+  if (catFilter)   comments = comments.filter(c => c.category === catFilter);
+  if (sheetFilter) comments = comments.filter(c => c.sheet === sheetFilter);
+  if (reviewedFilter === 'reviewed')   comments = comments.filter(c => {
+    const st = getFeedbackState(c.id);
+    return !!st.reviewed_by[c.rep_id];
+  });
+  if (reviewedFilter === 'unreviewed') comments = comments.filter(c => {
+    const st = getFeedbackState(c.id);
+    return !st.reviewed_by[c.rep_id];
+  });
+
+  document.getElementById('fb-count').textContent = `${comments.length} comment${comments.length !== 1 ? 's' : ''}`;
+
+  if (!comments.length) {
+    document.getElementById('fb-list').innerHTML = `<div class="fb-no-results">No feedback matches the current filters.</div>`;
+    return;
+  }
+
+  // Group by rep + period
+  const groups = {};
+  comments.forEach(c => {
+    const repName = REPS.find(r => r.id === c.rep_id)?.name || c.rep_id;
+    const key = `${repName} · ${c.sheet}`;
+    if (!groups[key]) groups[key] = [];
+    groups[key].push(c);
+  });
+
+  let html = '';
+  Object.entries(groups).sort().forEach(([key, items]) => {
+    const pendingCount = items.filter(c => !getFeedbackState(c.id).reviewed_by[c.rep_id]).length;
+    html += `<div class="fb-group-header">${key}
+      ${pendingCount > 0
+        ? `<span class="badge badge-junior" style="margin-left:8px">${pendingCount} pending</span>`
+        : `<span style="font-size:11px;color:var(--success);font-weight:600;margin-left:8px">✓ All reviewed</span>`}
+    </div>`;
+    items.forEach(c => { html += buildFeedbackCard(c); });
+  });
+  document.getElementById('fb-list').innerHTML = html;
+}
+
+// ── Update Individual View to include feedback ────────────────────────────────
+
+function buildIndividualFeedbackSection(repId) {
+  const comments = (D.rotem_comments || []).filter(c => c.rep_id === repId);
+  if (!comments.length) return '';
+
+  const pending = comments.filter(c => !getFeedbackState(c.id).reviewed_by[repId]).length;
+  return `
+    <div class="card" style="margin-top:16px">
+      <div class="section-head" style="margin-bottom:12px">
+        <h2>Rotem's Feedback <span style="font-size:13px;color:var(--text-muted);font-weight:400">(${comments.length} total)</span></h2>
+        ${pending > 0
+          ? `<span class="chip chip-warn">${pending} pending review</span>`
+          : `<span class="chip chip-on">All reviewed ✓</span>`}
+      </div>
+      <div class="fb-filter-bar" style="margin-bottom:12px">
+        <select onchange="filterIndFeedback('${repId}', this.value, document.getElementById('ind-cat-fb-filter')?.value || '')" id="ind-sheet-fb-filter">
+          <option value="">All Periods</option>
+          <option value="March">March</option>
+          <option value="May">May</option>
+          <option value="June">June</option>
+        </select>
+        <select onchange="filterIndFeedback('${repId}', document.getElementById('ind-sheet-fb-filter')?.value || '', this.value)" id="ind-cat-fb-filter">
+          <option value="">All Roles</option>
+          <option value="A">Role A</option>
+          <option value="B">Role B</option>
+          <option value="C">Role C</option>
+        </select>
+      </div>
+      <div id="ind-fb-list-${repId}">
+        ${comments.map(c => buildFeedbackCard(c, { inline: true })).join('')}
+      </div>
+    </div>`;
+}
+
+function filterIndFeedback(repId, sheetFilter, catFilter) {
+  let comments = (D.rotem_comments || []).filter(c => c.rep_id === repId);
+  if (sheetFilter) comments = comments.filter(c => c.sheet === sheetFilter);
+  if (catFilter)   comments = comments.filter(c => c.category === catFilter);
+  const container = document.getElementById(`ind-fb-list-${repId}`);
+  if (!container) return;
+  container.innerHTML = comments.length
+    ? comments.map(c => buildFeedbackCard(c, { inline: true })).join('')
+    : `<div class="fb-no-results">No feedback for this filter.</div>`;
+}
+
+// ── Insights Engine ──────────────────────────────────────────────────────────
+
+function computeInsights() {
+  const months = getAllMonths();
+  if (!months.length) return null;
+
+  const cm = months[months.length - 1];
+  const pm = months.length >= 2 ? months[months.length - 2] : null;
+  const pp = months.length >= 3 ? months[months.length - 3] : null;
+
+  const score = (repId, ym) => {
+    if (!ym) return null;
+    const { year, month } = parseMonth(ym);
+    return getMonthlyScore(repId, year, month);
+  };
+
+  // Per-rep insights
+  const repInsights = REPS.map(r => {
+    const curr = score(r.id, cm);
+    const prev = score(r.id, pm);
+    const pprev = score(r.id, pp);
+
+    const nowPct  = curr.overall;
+    const prevPct = prev ? prev.overall : null;
+    const ppPct   = pprev ? pprev.overall : null;
+
+    const delta  = nowPct != null && prevPct != null ? nowPct - prevPct : null;
+    const delta2 = prevPct != null && ppPct != null  ? prevPct - ppPct  : null;
+
+    // Trend: consistent direction over 2 consecutive diffs
+    let trendDir = 'stable';
+    if (delta != null) {
+      if (delta > 3) trendDir = 'up';
+      else if (delta < -3) trendDir = 'down';
+    }
+    let momentum = 'stable';
+    if (delta != null && delta2 != null) {
+      if (delta > 0 && delta2 > 0) momentum = 'accelerating';
+      else if (delta < 0 && delta2 < 0) momentum = 'declining';
+      else if (delta > 0 && delta2 <= 0) momentum = 'recovering';
+      else if (delta < 0 && delta2 >= 0) momentum = 'slipping';
+    }
+
+    const gap = nowPct != null ? nowPct - r.target * 100 : null;
+
+    // Best / worst role
+    const roleScores = [
+      { key: 'catA', label: 'Role A', val: curr.catA },
+      { key: 'catB', label: 'Role B', val: curr.catB },
+      { key: 'catC', label: 'Role C', val: curr.catC },
+    ].filter(x => x.val != null).sort((a, b) => b.val - a.val);
+    const bestRole  = roleScores[0]   || null;
+    const worstRole = roleScores[roleScores.length - 1] || null;
+    const isBestWorstSame = bestRole && worstRole && bestRole.key === worstRole.key;
+
+    // Coaching note
+    const note = generateCoachingNote(r, nowPct, gap, trendDir, momentum, bestRole, worstRole, isBestWorstSame);
+
+    // Priority: how urgently does this rep need attention?
+    let priority = 'low';
+    if (gap != null) {
+      if (gap < -10 || (gap < -5 && trendDir === 'down')) priority = 'high';
+      else if (gap < 0 || trendDir === 'down') priority = 'medium';
+    }
+    if (nowPct == null) priority = 'medium';
+
+    // Pending feedback count
+    const pendingFeedback = (D.rotem_comments || [])
+      .filter(c => c.rep_id === r.id && !getFeedbackState(c.id).reviewed_by[r.id]).length;
+
+    return { ...r, curr, prev, nowPct, prevPct, delta, trendDir, momentum, gap,
+             roleScores, bestRole, worstRole, isBestWorstSame, note, priority, pendingFeedback };
+  });
+
+  // Team insights
+  const { year: cy, month: cmo } = parseMonth(cm);
+  const activeReps = repInsights.filter(r => r.nowPct != null);
+  const teamNow  = avg(activeReps.map(r => r.nowPct));
+  const teamPrev = pm ? (() => {
+    const { year, month } = parseMonth(pm);
+    const vs = REPS.map(r => getMonthlyScore(r.id, year, month).overall).filter(x => x != null);
+    return avg(vs);
+  })() : null;
+  const teamDelta = teamNow != null && teamPrev != null ? teamNow - teamPrev : null;
+
+  const mostImproved  = repInsights.filter(r => r.delta != null).sort((a, b) => b.delta - a.delta)[0] || null;
+  const biggestDrop   = repInsights.filter(r => r.delta != null).sort((a, b) => a.delta - b.delta)[0] || null;
+  const belowTarget   = repInsights.filter(r => r.gap != null && r.gap < 0);
+  const aboveTarget   = repInsights.filter(r => r.gap != null && r.gap >= 0);
+  const criticalReps  = repInsights.filter(r => r.priority === 'high');
+
+  // Weakest role team-wide
+  const roleTeamAvg = ['catA','catB','catC'].map((k, i) => {
+    const label = ['Role A','Role B','Role C'][i];
+    const vals = REPS.map(r => getMonthlyScore(r.id, cy, cmo)[k]).filter(x => x != null);
+    return { key: k, label, val: avg(vals) };
+  }).filter(x => x.val != null).sort((a, b) => a.val - b.val);
+  const weakestRole = roleTeamAvg[0] || null;
+  const strongestRole = roleTeamAvg[roleTeamAvg.length - 1] || null;
+
+  // Team trend sentence
+  const teamTrend = generateTeamInsight(teamNow, teamDelta, activeReps.length, belowTarget,
+                                         mostImproved, biggestDrop, weakestRole, monthLabel(cm));
+
+  return {
+    currentMonth: cm, currentMonthLabel: monthLabel(cm),
+    previousMonth: pm, previousMonthLabel: pm ? monthLabel(pm) : null,
+    teamNow, teamPrev, teamDelta, teamTrend,
+    activeReps: activeReps.length, onTarget: aboveTarget.length, belowTarget, criticalReps,
+    mostImproved, biggestDrop, weakestRole, strongestRole, roleTeamAvg,
+    repInsights: repInsights.sort((a, b) => {
+      const p = { high: 0, medium: 1, low: 2 };
+      return p[a.priority] - p[b.priority];
+    }),
+  };
+}
+
+function generateTeamInsight(teamNow, teamDelta, active, belowTarget, mostImproved, biggestDrop, weakestRole, monthLabel) {
+  const lines = [];
+
+  if (teamNow != null) {
+    const dir = teamDelta != null
+      ? (teamDelta > 2 ? `improving (▲ +${teamDelta.toFixed(1)}pp)`
+       : teamDelta < -2 ? `declining (▼ ${teamDelta.toFixed(1)}pp)`
+       : `stable (${teamDelta > 0 ? '+' : ''}${teamDelta.toFixed(1)}pp)`)
+      : 'at ' + pct(teamNow);
+    lines.push(`The team is ${dir} in ${monthLabel}, averaging ${pct(teamNow)} across ${active} active reps.`);
+  }
+
+  if (belowTarget.length === 0) {
+    lines.push(`All measured reps are meeting their targets — strong month overall.`);
+  } else {
+    const names = belowTarget.map(r => r.name).join(', ');
+    lines.push(`${belowTarget.length} rep${belowTarget.length > 1 ? 's' : ''} below target: ${names}.`);
+  }
+
+  if (weakestRole) {
+    lines.push(`Weakest area team-wide is ${weakestRole.label} (avg ${pct(weakestRole.val, 0)}), which may warrant a team coaching session.`);
+  }
+
+  if (mostImproved && mostImproved.delta > 3) {
+    lines.push(`Biggest improvement: ${mostImproved.name} (+${mostImproved.delta.toFixed(1)}pp).`);
+  }
+  if (biggestDrop && biggestDrop.delta < -3) {
+    lines.push(`Biggest drop: ${biggestDrop.name} (${biggestDrop.delta.toFixed(1)}pp) — check if this is a one-off or a pattern.`);
+  }
+
+  return lines;
+}
+
+function generateCoachingNote(rep, nowPct, gap, trendDir, momentum, bestRole, worstRole, isSame) {
+  if (nowPct == null) return `No data available for this period. Schedule an observation session.`;
+
+  const gapAbs = Math.abs(gap || 0);
+  const lines = [];
+
+  // Gap-based opener
+  if (gap >= 5) {
+    lines.push(`Exceeding target by ${gapAbs.toFixed(1)}pp — strong performance.`);
+  } else if (gap >= 0) {
+    lines.push(`Just meeting the ${pct(rep.target * 100, 0)} target — on track.`);
+  } else if (gap >= -5) {
+    lines.push(`${gapAbs.toFixed(1)}pp below the ${pct(rep.target * 100, 0)} target — close, but needs focus.`);
+  } else {
+    lines.push(`${gapAbs.toFixed(1)}pp below the ${pct(rep.target * 100, 0)} target — needs a coaching conversation.`);
+  }
+
+  // Trend context
+  if (momentum === 'accelerating') lines.push(`On a strong upward trajectory — maintain this momentum.`);
+  else if (momentum === 'recovering') lines.push(`Rebounding from a dip — positive direction.`);
+  else if (momentum === 'declining')  lines.push(`Consistent decline over the last two periods — investigate root cause.`);
+  else if (momentum === 'slipping')   lines.push(`First dip after improvement — watch next cycle closely.`);
+  else if (trendDir === 'up')   lines.push(`Improving trend vs last period.`);
+  else if (trendDir === 'down') lines.push(`Dropped from last period — check what changed.`);
+
+  // Role-specific coaching
+  if (!isSame && worstRole && worstRole.val != null && worstRole.val < 75) {
+    const roleCoaching = {
+      catA: 'Focus on lead prioritization, speed-to-lead, and Podio investigation quality.',
+      catB: 'Prioritize task management: tagging, status updates, and proper handling of leads.',
+      catC: 'Give attention to reviews, reactivate completion, and NTC monitoring.'
+    };
+    lines.push(`Weakest area: ${worstRole.label} (${pct(worstRole.val, 0)}). ${roleCoaching[worstRole.key] || ''}`);
+  }
+
+  if (!isSame && bestRole && bestRole.val != null && bestRole.val >= 85) {
+    lines.push(`Consistent strength in ${bestRole.label} (${pct(bestRole.val, 0)}).`);
+  }
+
+  return lines.join(' ');
+}
+
+function renderInsights() {
+  const ins = computeInsights();
+  if (!ins) {
+    document.getElementById('insights-content').innerHTML =
+      `<div class="no-data-msg">No data available yet. Add observations via Score Entry to see insights.</div>`;
+    return;
+  }
+
+  const teamTrendColor = ins.teamDelta == null ? '#9e9e9e'
+    : ins.teamDelta >= 0 ? 'rgba(46,125,50,.9)' : 'rgba(198,40,40,.9)';
+
+  // Team health card
+  let teamHtml = `
+    <div class="insight-team-card">
+      <h3>Team Health — ${ins.currentMonthLabel}</h3>
+      <div class="itc-headline">${ins.teamTrend.join('<br>')}</div>
+      <div class="itc-stats">
+        <div class="itc-stat">
+          <div class="itc-stat-label">Team Avg</div>
+          <div class="itc-stat-value">${ins.teamNow != null ? pct(ins.teamNow) : '–'}</div>
+        </div>
+        <div class="itc-stat">
+          <div class="itc-stat-label">vs ${ins.previousMonthLabel || 'prev'}</div>
+          <div class="itc-stat-value" style="color:${teamTrendColor}">
+            ${ins.teamDelta != null ? (ins.teamDelta >= 0 ? '+' : '') + ins.teamDelta.toFixed(1) + 'pp' : '–'}
+          </div>
+        </div>
+        <div class="itc-stat">
+          <div class="itc-stat-label">On Target</div>
+          <div class="itc-stat-value">${ins.onTarget} / ${ins.activeReps}</div>
+        </div>
+        ${ins.weakestRole ? `
+        <div class="itc-stat">
+          <div class="itc-stat-label">Weakest Role</div>
+          <div class="itc-stat-value">${ins.weakestRole.label}</div>
+        </div>` : ''}
+      </div>
+      <div class="itc-flags">
+        ${ins.roleTeamAvg.map(r => `
+          <span class="itc-flag ${r.val >= 80 ? 'green' : r.val >= 70 ? 'warn' : 'red'}">
+            ${r.label}: ${pct(r.val, 0)}
+          </span>`).join('')}
+        ${ins.criticalReps.length ? `<span class="itc-flag red">⚠ ${ins.criticalReps.map(r=>r.name).join(', ')} need attention</span>` : ''}
+        ${ins.mostImproved && ins.mostImproved.delta > 3 ? `<span class="itc-flag green">🏆 Most improved: ${ins.mostImproved.name} (+${ins.mostImproved.delta.toFixed(1)}pp)</span>` : ''}
+      </div>
+    </div>`;
+
+  // Rep cards — split by attention level
+  const high   = ins.repInsights.filter(r => r.priority === 'high');
+  const medium = ins.repInsights.filter(r => r.priority === 'medium');
+  const low    = ins.repInsights.filter(r => r.priority === 'low');
+
+  const repCard = (r) => {
+    const scoreCls = r.gap == null ? 'none' : r.gap >= 0 ? 'good' : r.gap >= -5 ? 'warn' : 'bad';
+    const trendHtml = r.delta != null
+      ? `<span style="font-size:13px;font-weight:600;color:${r.delta > 1 ? 'var(--success)' : r.delta < -1 ? 'var(--danger)' : 'var(--text-muted)'}">
+           ${r.delta > 0 ? '▲ +' : r.delta < 0 ? '▼ ' : '→ '}${r.delta.toFixed(1)}pp vs ${ins.previousMonthLabel}
+         </span>` : '';
+
+    const rolePills = r.roleScores.map((rs, i) => {
+      const isBest  = i === 0 && r.roleScores.length > 1;
+      const isWorst = i === r.roleScores.length - 1 && r.roleScores.length > 1;
+      return `<span class="irc-role-pill ${isBest ? 'best' : isWorst ? 'worst' : ''}">
+        ${isBest ? '▲ ' : isWorst ? '▼ ' : ''}${rs.label}: ${pct(rs.val, 0)}
+      </span>`;
+    }).join('');
+
+    return `
+      <div class="insight-rep-card priority-${r.priority}" onclick="switchToIndividual('${r.id}')">
+        <div class="irc-header">
+          <div>
+            <div class="irc-name">${r.name}</div>
+            <div class="irc-meta">${r.role} · Target: ${pct(r.target * 100, 0)}
+              ${r.pendingFeedback > 0 ? `· <span style="color:var(--warn)">${r.pendingFeedback} pending feedback</span>` : ''}
+            </div>
+          </div>
+          <div class="irc-score ${scoreCls}">${r.nowPct != null ? pct(r.nowPct) : 'No data'}</div>
+        </div>
+        ${trendHtml ? `<div style="margin-bottom:10px">${trendHtml}</div>` : ''}
+        ${rolePills ? `<div class="irc-roles">${rolePills}</div>` : ''}
+        <div class="coaching-note">${r.note}</div>
+      </div>`;
+  };
+
+  let repHtml = '';
+  if (high.length) {
+    repHtml += `<div class="insight-section-title">⚠ Needs Attention (${high.length})</div>
+                <div class="insight-grid">${high.map(repCard).join('')}</div>`;
+  }
+  if (medium.length) {
+    repHtml += `<div class="insight-section-title">Watch (${medium.length})</div>
+                <div class="insight-grid">${medium.map(repCard).join('')}</div>`;
+  }
+  if (low.length) {
+    repHtml += `<div class="insight-section-title">On Track (${low.length})</div>
+                <div class="insight-grid">${low.map(repCard).join('')}</div>`;
+  }
+
+  document.getElementById('insights-content').innerHTML = teamHtml + repHtml;
+}
+
+// ── Personal Alerts & Praise ─────────────────────────────────────────────────
+
+function buildPersonalAlerts(repId) {
+  const rep = REPS.find(r => r.id === repId);
+  if (!rep) return '';
+
+  const months  = getAllMonths();
+  const cm      = getActiveMonth();
+  const prevYM  = months[months.indexOf(cm) - 1] || null;
+
+  const { year: cy, month: cmo } = parseMonth(cm);
+  const curr = getMonthlyScore(repId, cy, cmo);
+  const prev = prevYM ? (() => {
+    const { year, month } = parseMonth(prevYM);
+    return getMonthlyScore(repId, year, month);
+  })() : null;
+
+  const score    = curr.overall;
+  const prevScore= prev?.overall ?? null;
+  const target   = rep.target * 100;
+  const delta    = score != null && prevScore != null ? score - prevScore : null;
+
+  if (score == null) return '';
+
+  const alerts = [];
+
+  // ── Above target ──
+  if (score >= target) {
+    const margin = (score - target).toFixed(1);
+    alerts.push(`
+      <div class="alert-banner alert-praise">
+        <span class="alert-icon">🏆</span>
+        <div class="alert-text">
+          <strong>Above target — great work!</strong>
+          You're at ${pct(score)} — ${margin}pp above your ${pct(target, 0)} target.
+          Keep it up!
+        </div>
+      </div>`);
+  } else {
+    // ── Below target ──
+    const gap = (target - score).toFixed(1);
+    alerts.push(`
+      <div class="alert-banner alert-below">
+        <span class="alert-icon">⚠️</span>
+        <div class="alert-text">
+          <strong>Below target</strong>
+          You're at ${pct(score)} — ${gap}pp below your ${pct(target, 0)} target.
+          Focus on your weakest role to close the gap.
+        </div>
+      </div>`);
+  }
+
+  // ── Improved vs last month ──
+  if (delta !== null && delta > 1) {
+    alerts.push(`
+      <div class="alert-banner alert-improved">
+        <span class="alert-icon">📈</span>
+        <div class="alert-text">
+          <strong>Improving trend!</strong>
+          You went from ${pct(prevScore)} to ${pct(score)} — up ${delta.toFixed(1)}pp
+          vs ${monthLabel(prevYM)}.
+        </div>
+      </div>`);
+  } else if (delta !== null && delta < -1) {
+    // ── Declined vs last month ──
+    alerts.push(`
+      <div class="alert-banner alert-declined">
+        <span class="alert-icon">📉</span>
+        <div class="alert-text">
+          <strong>Score dropped this month</strong>
+          ${pct(prevScore)} → ${pct(score)} (${delta.toFixed(1)}pp vs ${monthLabel(prevYM)}).
+          Review your Role breakdown to see what changed.
+        </div>
+      </div>`);
+  }
+
+  return alerts.length
+    ? `<div class="personal-alerts">${alerts.join('')}</div>`
+    : '';
+}
+
+// ── Init ─────────────────────────────────────────────────────────────────────
+
+function initApp() {
+  AUTH._updateUI();
+  const isRep = !AUTH.isManager() && AUTH.myRepId();
+
+  // Tab visibility: reps cannot access Overview (all reps), Insights, Score Entry
+  if (isRep) {
+    ['overview','insights','entry'].forEach(tab => {
+      const btn = document.querySelector(`[data-tab="${tab}"]`);
+      if (btn) btn.style.display = 'none';
+    });
+    // Reps land on Individual tab
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(s => s.classList.remove('active'));
+    const indBtn = document.querySelector('[data-tab="individual"]');
+    if (indBtn) indBtn.classList.add('active');
+    document.getElementById('tab-individual').classList.add('active');
+  }
+
+  initMonthFilter();
+
+  if (isRep) {
+    renderIndividual(AUTH.myRepId());
+    initFeedbackTab();
+  } else {
+    renderOverview();
+    initScoreEntry();
+    initFeedbackTab();
+  }
+}
+
+// On load: restore session or show name-picker
+AUTH.init();
+buildLoginPicker();
+if (AUTH.user) {
+  document.getElementById('login-overlay').classList.add('hidden');
+  initApp();
+}
+</script>
+</body>
+</html>

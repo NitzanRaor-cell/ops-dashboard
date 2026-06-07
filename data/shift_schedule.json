@@ -1,0 +1,48 @@
+[
+  {"date":"2026-04-30","rep_id":"noam",     "role":"A","is_weekend":false,"start":"16:00","end":"00:00"},
+
+  {"date":"2026-05-01","rep_id":"omer",     "role":"A","is_weekend":true, "start":"16:00","end":"22:00"},
+  {"date":"2026-05-02","rep_id":"gal",      "role":"A","is_weekend":true, "start":"16:00","end":"00:00"},
+  {"date":"2026-05-03","rep_id":"eran",     "role":"A","is_weekend":true, "start":"16:00","end":"00:00"},
+
+  {"date":"2026-05-04","rep_id":"noam",     "role":"A","is_weekend":false,"start":"16:00","end":"00:00"},
+  {"date":"2026-05-05","rep_id":"gal",      "role":"A","is_weekend":false,"start":"16:00","end":"00:00"},
+  {"date":"2026-05-06","rep_id":"rotem_i",  "role":"A","is_weekend":false,"start":"16:00","end":"00:00"},
+  {"date":"2026-05-07","rep_id":"omer",     "role":"A","is_weekend":false,"start":"16:00","end":"00:00"},
+  {"date":"2026-05-08","rep_id":"tomer",    "role":"A","is_weekend":true, "start":"16:00","end":"00:00"},
+  {"date":"2026-05-09","rep_id":"omer",     "role":"A","is_weekend":true, "start":"16:00","end":"00:00"},
+  {"date":"2026-05-10","rep_id":"noam",     "role":"A","is_weekend":true, "start":"16:00","end":"00:00"},
+
+  {"date":"2026-05-11","rep_id":"tomer",    "role":"A","is_weekend":false,"start":"16:00","end":"00:00"},
+  {"date":"2026-05-11","rep_id":"eran",     "role":"A","is_weekend":false,"start":"16:00","end":"00:00"},
+  {"date":"2026-05-12","rep_id":"gal",      "role":"A","is_weekend":false,"start":"16:00","end":"00:00"},
+  {"date":"2026-05-13","rep_id":"tomer",    "role":"A","is_weekend":false,"start":"16:00","end":"00:00"},
+  {"date":"2026-05-14","rep_id":"noam",     "role":"A","is_weekend":false,"start":"16:00","end":"00:00"},
+  {"date":"2026-05-15","rep_id":"tomer",    "role":"A","is_weekend":true, "start":"16:00","end":"00:00"},
+  {"date":"2026-05-15","rep_id":"rotem_i",  "role":"A","is_weekend":true, "start":"16:00","end":"00:00"},
+  {"date":"2026-05-16","rep_id":"eran",     "role":"A","is_weekend":true, "start":"16:00","end":"00:00"},
+
+  {"date":"2026-05-18","rep_id":"gal",      "role":"A","is_weekend":false,"start":"16:00","end":"00:00"},
+  {"date":"2026-05-18","rep_id":"noam",     "role":"A","is_weekend":false,"start":"16:00","end":"00:00"},
+  {"date":"2026-05-20","rep_id":"tomer",    "role":"A","is_weekend":false,"start":"16:00","end":"00:00"},
+  {"date":"2026-05-21","rep_id":"tomer",    "role":"A","is_weekend":false,"start":"16:00","end":"00:00"},
+  {"date":"2026-05-22","rep_id":"omer",     "role":"A","is_weekend":true, "start":"16:00","end":"00:00"},
+  {"date":"2026-05-23","rep_id":"omer",     "role":"A","is_weekend":true, "start":"16:00","end":"00:00"},
+  {"date":"2026-05-24","rep_id":"omer",     "role":"A","is_weekend":true, "start":"16:00","end":"00:00"},
+
+  {"date":"2026-05-25","rep_id":"noam",     "role":"A","is_weekend":false,"start":"16:00","end":"00:00"},
+  {"date":"2026-05-26","rep_id":"omer",     "role":"A","is_weekend":false,"start":"16:00","end":"00:00"},
+  {"date":"2026-05-27","rep_id":"eran",     "role":"A","is_weekend":false,"start":"16:00","end":"00:00"},
+  {"date":"2026-05-28","rep_id":"tomer",    "role":"A","is_weekend":false,"start":"16:00","end":"00:00"},
+  {"date":"2026-05-29","rep_id":"gal",      "role":"A","is_weekend":true, "start":"16:00","end":"00:00"},
+  {"date":"2026-05-30","rep_id":"noam",     "role":"A","is_weekend":true, "start":"16:00","end":"00:00"},
+  {"date":"2026-05-31","rep_id":"tomer",    "role":"A","is_weekend":true, "start":"16:00","end":"00:00"},
+
+  {"date":"2026-06-01","rep_id":"noam",     "role":"A","is_weekend":false,"start":"16:00","end":"00:00"},
+  {"date":"2026-06-02","rep_id":"omer",     "role":"A","is_weekend":false,"start":"16:00","end":"00:00"},
+  {"date":"2026-06-03","rep_id":"omer",     "role":"A","is_weekend":false,"start":"16:00","end":"00:00"},
+  {"date":"2026-06-04","rep_id":"eran",     "role":"A","is_weekend":false,"start":"16:00","end":"00:00"},
+  {"date":"2026-06-05","rep_id":"tomer",    "role":"A","is_weekend":true, "start":"16:00","end":"00:00"},
+  {"date":"2026-06-06","rep_id":"noam",     "role":"A","is_weekend":true, "start":"16:00","end":"00:00"},
+  {"date":"2026-06-07","rep_id":"gal",      "role":"A","is_weekend":true, "start":"16:00","end":"00:00"}
+]
