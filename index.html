@@ -856,6 +856,18 @@
       <span class="sub">Daily unique touches &amp; talk time — Febe · Sheryl · Justine</span>
     </div>
 
+    <!-- Live refresh bar -->
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;padding:10px 14px;background:#e8f5e9;border-radius:10px;border:1px solid #a5d6a7">
+      <span style="font-size:13px;color:var(--success);font-weight:600">🟢 Live data</span>
+      <span style="font-size:13px;color:var(--text-muted)">·</span>
+      <span id="va-last-updated" style="font-size:13px;color:var(--text-muted)">Updated: –</span>
+      <span style="font-size:13px;color:var(--text-muted)">·</span>
+      <span id="va-next-refresh" style="font-size:12px;color:var(--text-muted)">Auto-refreshes every 15 min</span>
+      <button onclick="reloadVAData()" style="margin-left:auto;padding:4px 14px;border-radius:8px;border:1px solid var(--success);background:#fff;color:var(--success);font:600 12px var(--font);cursor:pointer">
+        ↻ Refresh now
+      </button>
+    </div>
+
     <!-- Date filter bar -->
     <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:20px">
       <div style="display:flex;gap:6px;flex-wrap:wrap" id="va-quick-dates"></div>
@@ -1402,7 +1414,7 @@ document.querySelectorAll(".tab-btn").forEach(btn => {
     if (tab === "leaderboard") renderLeaderboard();
     if (tab === "feedback")   renderFeedbackTab();
     if (tab === "insights")   renderInsights();
-    if (tab === "vas")        { initVADateFilter(); renderVAs(); }
+    if (tab === "vas")        { initVADateFilter(); renderVAs(); updateVATimestamp(); scheduleVARefresh(); }
     if (tab === "entry")      initScoreEntry();
   });
 });
@@ -3062,6 +3074,57 @@ function buildPersonalAlerts(repId) {
 }
 
 // ── VAs Tab ──────────────────────────────────────────────────────────────────
+
+// Auto-reload VA data every 15 minutes by re-fetching load-data.js from GitHub Pages
+let _vaRefreshTimer = null;
+const VA_REFRESH_MS = 15 * 60 * 1000;  // 15 minutes
+
+function reloadVAData() {
+  const btn = document.querySelector('button[onclick="reloadVAData()"]');
+  if (btn) { btn.textContent = '↻ Loading…'; btn.disabled = true; }
+
+  // Fetch the latest load-data.js with cache-busting
+  const url = 'load-data.js?_=' + Date.now();
+  fetch(url)
+    .then(r => r.text())
+    .then(js => {
+      // Execute the script to update window.OPS_DATA
+      // eslint-disable-next-line no-new-func
+      new Function(js)();
+      // Sync D references
+      Object.assign(D, window.OPS_DATA);
+      REPS.length = 0;
+      D.team_config.reps.forEach(r => REPS.push(r));
+      // Re-render VAs tab
+      renderVAs();
+      updateVATimestamp();
+      if (btn) { btn.textContent = '↻ Refresh now'; btn.disabled = false; }
+    })
+    .catch(() => {
+      // Fallback: just re-render with current data
+      renderVAs();
+      if (btn) { btn.textContent = '↻ Refresh now'; btn.disabled = false; }
+    });
+}
+
+function updateVATimestamp() {
+  const el = document.getElementById('va-last-updated');
+  if (el && D.generated_at) {
+    const dt  = new Date(D.generated_at);
+    const now = new Date();
+    const mins = Math.round((now - dt) / 60000);
+    el.textContent = 'Updated: ' + (mins < 1 ? 'just now' : mins + ' min ago');
+  }
+}
+
+function scheduleVARefresh() {
+  clearInterval(_vaRefreshTimer);
+  _vaRefreshTimer = setInterval(() => {
+    // Only auto-reload if the VAs tab is active
+    const activeTab = document.querySelector('.tab-btn.active')?.dataset.tab;
+    if (activeTab === 'vas') reloadVAData();
+  }, VA_REFRESH_MS);
+}
 
 let vaFilterFrom = null;  // YYYY-MM-DD or null = latest day
 let vaFilterTo   = null;
