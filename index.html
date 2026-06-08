@@ -3204,6 +3204,7 @@ function buildShiftTodayCard(repId) {
         </div>
         <div class="shift-metric-value" style="color:${contactCol}">${cRate != null ? cRate.toFixed(1)+'%' : '–'}</div>
         <div class="shift-metric-sub">${contacted ?? '–'} contacted of ${created ?? '–'} created today</div>
+        ${cRate != null ? `<div class="shift-metric-bar"><div class="shift-metric-bar-fill" style="width:${Math.min((cRate/80)*100,100).toFixed(0)}%;color:${contactCol}"></div></div>` : ''}
         <div style="font-size:10px;color:var(--text-muted);margin-top:4px">Target 80% · does not affect your score</div>
       </div>`;
   }
