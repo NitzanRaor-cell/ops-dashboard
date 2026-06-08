@@ -458,6 +458,40 @@
     .login-divider::before,.login-divider::after { content:''; flex:1; height:1px; background:var(--border); }
     .login-error { color: var(--danger); font-size: 13px; margin-top: 10px; display: none; }
 
+
+    /* ── My Shift Today card ── */
+    .shift-today-card {
+      border-radius: 14px; padding: 20px 22px; margin-bottom: 20px;
+      border: 2px solid transparent;
+    }
+    .shift-today-card.role-a { background: linear-gradient(135deg,#e3f2fd,#bbdefb); border-color: #1565c0; }
+    .shift-today-card.role-b { background: linear-gradient(135deg,#e8f5e9,#c8e6c9); border-color: #2e7d32; }
+    .shift-today-card.role-c { background: linear-gradient(135deg,#f3e5f5,#e1bee7); border-color: #6a1b9a; }
+    .shift-today-header { display:flex; align-items:center; gap:12px; margin-bottom:16px; }
+    .shift-today-role-badge {
+      font-size:22px; font-weight:900; width:48px; height:48px; border-radius:12px;
+      display:flex; align-items:center; justify-content:center; color:#fff; flex-shrink:0;
+    }
+    .role-a .shift-today-role-badge { background:#1565c0; }
+    .role-b .shift-today-role-badge { background:#2e7d32; }
+    .role-c .shift-today-role-badge { background:#6a1b9a; }
+    .shift-today-title { font-size:16px; font-weight:800; }
+    .shift-today-subtitle { font-size:12px; opacity:.7; margin-top:2px; }
+    .shift-metrics-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); gap:12px; }
+    .shift-metric {
+      background:rgba(255,255,255,.7); border-radius:10px; padding:12px 14px;
+    }
+    .shift-metric-label { font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.5px; opacity:.65; margin-bottom:4px; }
+    .shift-metric-value { font-size:24px; font-weight:800; line-height:1; }
+    .shift-metric-sub   { font-size:11px; opacity:.7; margin-top:3px; }
+    .shift-metric-bar { height:5px; background:rgba(0,0,0,.15); border-radius:3px; margin-top:7px; overflow:hidden; }
+    .shift-metric-bar-fill { height:100%; border-radius:3px; transition:width .5s; background:currentColor; }
+    .shift-live-dot {
+      width:8px; height:8px; border-radius:50%; background:#4caf50; display:inline-block;
+      animation:livePulse 2s ease infinite; margin-right:5px;
+    }
+    @keyframes livePulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(.8)} }
+
     /* ── Personal alert banner ── */
     .personal-alerts { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
     .alert-banner {
@@ -1955,6 +1989,8 @@ function renderIndividual(repId) {
   const roleABreakdownHtml = buildRoleABreakdown(id, ay, am, activeMScore);
 
   document.getElementById("ind-content").innerHTML = `
+    ${buildShiftTodayCard(id)}
+
     ${buildPersonalAlerts(id)}
 
     <div style="margin-bottom:16px;display:flex;gap:16px;align-items:center;flex-wrap:wrap">
@@ -2990,6 +3026,132 @@ function renderInsights() {
   }
 
   document.getElementById('insights-content').innerHTML = teamHtml + repHtml;
+}
+
+// ── My Shift Today card ──────────────────────────────────────────────────────
+
+function buildShiftTodayCard(repId) {
+  const today = new Date().toISOString().slice(0, 10);
+  const dayData = (D.shift_daily || []).find(d => d.date === today);
+  if (!dayData) return '';
+
+  const repData = dayData.reps.find(r => r.rep_id === repId);
+  if (!repData || !repData.role_today) return '';
+
+  const role    = repData.role_today;
+  const m       = repData.metrics || {};
+  const team    = dayData.team || {};
+  const updatedAt = dayData.updated_at
+    ? (() => {
+        const dt  = new Date(dayData.updated_at);
+        const now = new Date();
+        const mins = Math.round((now - dt) / 60000);
+        return mins < 1 ? 'just now' : mins + ' min ago';
+      })()
+    : '–';
+
+  let metricsHtml = '';
+
+  // ── Role A ──────────────────────────────────────────────────────────────
+  if (role === 'A') {
+    const dist    = m.dist_5min_pct;
+    const handled = m.handled_5min_pct;
+    const cRate   = m.contact_rate_pct;
+    const created = m.leads_created;
+    const contacted = m.leads_contacted;
+
+    function metric(label, val, target, unit, sub) {
+      if (val == null) return `<div class="shift-metric">
+        <div class="shift-metric-label">${label}</div>
+        <div class="shift-metric-value" style="font-size:16px;opacity:.5">Pending Qlik</div>
+      </div>`;
+      const pct  = Math.min((val / target) * 100, 100);
+      const col  = pct >= 100 ? '#2e7d32' : pct >= 75 ? '#e65100' : '#c62828';
+      return `<div class="shift-metric">
+        <div class="shift-metric-label">${label}</div>
+        <div class="shift-metric-value" style="color:${col}">${val.toFixed(1)}${unit}</div>
+        <div class="shift-metric-sub">${sub} · target ${target}${unit}</div>
+        <div class="shift-metric-bar"><div class="shift-metric-bar-fill" style="width:${pct.toFixed(0)}%;color:${col}"></div></div>
+      </div>`;
+    }
+
+    const contactCol = cRate >= 70 ? '#2e7d32' : cRate >= 50 ? '#e65100' : '#c62828';
+    metricsHtml = `
+      ${metric('Dist within 5 min', dist, 95, '%', 'team metric')}
+      ${metric('Handled within 7 min', handled, 75, '%', 'team metric')}
+      <div class="shift-metric">
+        <div class="shift-metric-label">Contact Rate</div>
+        <div class="shift-metric-value" style="color:${contactCol}">${cRate != null ? cRate.toFixed(1)+'%' : '–'}</div>
+        <div class="shift-metric-sub">${contacted ?? '–'} contacted of ${created ?? '–'} created today</div>
+        ${cRate != null ? `<div class="shift-metric-bar"><div class="shift-metric-bar-fill" style="width:${Math.min(cRate,100).toFixed(0)}%;color:${contactCol}"></div></div>` : ''}
+      </div>`;
+  }
+
+  // ── Role B ──────────────────────────────────────────────────────────────
+  else if (role === 'B') {
+    const qTotal = m.queue_total ?? team.task_queue_total ?? null;
+    const breakdown = m.queue_breakdown || team.task_queue_breakdown || {};
+    const qColor = qTotal === 0 ? '#2e7d32' : qTotal < 20 ? '#e65100' : '#c62828';
+    metricsHtml = `
+      <div class="shift-metric">
+        <div class="shift-metric-label">Total Queue</div>
+        <div class="shift-metric-value" style="color:${qColor}">${qTotal ?? '–'}</div>
+        <div class="shift-metric-sub">tasks remaining · target: 0</div>
+      </div>
+      ${Object.entries(breakdown).map(([name, count]) => `
+        <div class="shift-metric">
+          <div class="shift-metric-label">${name.replace(' Tasks','')}</div>
+          <div class="shift-metric-value" style="color:${count===0?'#2e7d32':count<10?'#e65100':'#c62828'}">${count}</div>
+          <div class="shift-metric-sub">${count === 0 ? '✓ clear' : 'remaining'}</div>
+        </div>`).join('')}`;
+  }
+
+  // ── Role C ──────────────────────────────────────────────────────────────
+  else if (role === 'C') {
+    const reviews     = m.reviews     ?? null;
+    const reactivates = m.reactivates ?? null;
+    const total       = m.total_actions ?? null;
+    const rCol  = reactivates != null ? (reactivates >= 2 ? '#2e7d32' : '#c62828') : '#9e9e9e';
+    const revCol = '#1565c0';
+    metricsHtml = `
+      <div class="shift-metric">
+        <div class="shift-metric-label">Reactivates</div>
+        <div class="shift-metric-value" style="color:${rCol}">${reactivates ?? '–'}</div>
+        <div class="shift-metric-sub">target: 2 per shift</div>
+        ${reactivates != null ? `<div class="shift-metric-bar"><div class="shift-metric-bar-fill" style="width:${Math.min(reactivates/2*100,100).toFixed(0)}%;color:${rCol}"></div></div>` : ''}
+        <div style="margin-top:6px;font-size:11px;font-weight:700;color:${rCol}">
+          ${reactivates == null ? '' : reactivates >= 2 ? '✓ Target met' : `${reactivates}/2 done`}
+        </div>
+      </div>
+      <div class="shift-metric">
+        <div class="shift-metric-label">Reviews (Contacted)</div>
+        <div class="shift-metric-value" style="color:${revCol}">${reviews ?? '–'}</div>
+        <div class="shift-metric-sub">leads reviewed for contacted</div>
+      </div>
+      ${total != null ? `<div class="shift-metric">
+        <div class="shift-metric-label">Total Actions</div>
+        <div class="shift-metric-value" style="color:#555">${total}</div>
+        <div class="shift-metric-sub">goal: 90</div>
+        <div class="shift-metric-bar"><div class="shift-metric-bar-fill" style="width:${Math.min(total/90*100,100).toFixed(0)}%;color:#1565c0"></div></div>
+      </div>` : ''}`;
+  }
+
+  const roleLabels = {A:'Shift / Podio / Lead Inv', B:'Task Management', C:'Reviews & Reactivate'};
+  const roleColors = {A:'role-a', B:'role-b', C:'role-c'};
+
+  return `
+    <div class="shift-today-card ${roleColors[role] || ''}">
+      <div class="shift-today-header">
+        <div class="shift-today-role-badge">R${role}</div>
+        <div>
+          <div class="shift-today-title">Today: Role ${role} — ${roleLabels[role] || ''}</div>
+          <div class="shift-today-subtitle">
+            <span class="shift-live-dot"></span>Live · updated ${updatedAt}
+          </div>
+        </div>
+      </div>
+      <div class="shift-metrics-grid">${metricsHtml}</div>
+    </div>`;
 }
 
 // ── Personal Alerts & Praise ─────────────────────────────────────────────────

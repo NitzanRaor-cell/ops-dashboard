@@ -31,6 +31,7 @@ def main():
     shift_schedule    = load_json("shift_schedule.json",    [])
     rotem_comments    = load_json("rotem_comments.json",    [])
     va_metrics        = load_json("va_metrics.json",        [])
+    shift_daily       = load_json("shift_daily.json",       [])
 
     data = {
         "generated_at":    datetime.now(timezone.utc).isoformat(),
@@ -42,6 +43,7 @@ def main():
         "shift_schedule":  shift_schedule,
         "rotem_comments":  rotem_comments,
         "va_metrics":      va_metrics,
+        "shift_daily":     shift_daily,
     }
 
     out_path = os.path.join(BASE, "load-data.js")
@@ -58,6 +60,7 @@ def main():
     print(f"  shift_schedule:   {len(shift_schedule)} shifts")
     print(f"  shift_history:    {len(shift_history)} records")
     print(f"  va_metrics:       {len(va_metrics)} days")
+    print(f"  shift_daily:      {len(shift_daily)} days")
     print(f"  generated_at:     {data['generated_at']}")
 
 

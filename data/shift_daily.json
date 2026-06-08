@@ -1,0 +1,46 @@
+[
+  {
+    "date": "2026-06-08",
+    "updated_at": "2026-06-08T20:42:06.023986Z",
+    "reps": [
+      {
+        "rep_id": "gal",
+        "role_today": null,
+        "metrics": {}
+      },
+      {
+        "rep_id": "eran",
+        "role_today": "C",
+        "metrics": {
+          "reviews": 9,
+          "reactivates": 4,
+          "total_actions": 97,
+          "scorecard_item_id": 3316587797
+        }
+      },
+      {
+        "rep_id": "tomer",
+        "role_today": "A",
+        "metrics": {
+          "dist_5min_pct": null,
+          "handled_5min_pct": null,
+          "leads_created": 65,
+          "leads_contacted": 40,
+          "contact_rate_pct": 61.5
+        }
+      }
+    ],
+    "team": {
+      "contact_rate_pct": 61.5,
+      "leads_created": 65,
+      "leads_contacted": 40,
+      "task_queue_total": 37,
+      "task_queue_breakdown": {
+        "Uncontacted Tasks": 18,
+        "Contacted Tasks": 19,
+        "OPS Overdue Tasks": 0,
+        "Junior Acquisitions": 0
+      }
+    }
+  }
+]
