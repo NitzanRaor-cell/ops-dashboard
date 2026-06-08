@@ -855,6 +855,24 @@
       <h2>VAs Performance</h2>
       <span class="sub">Daily unique touches &amp; talk time — Febe · Sheryl · Justine</span>
     </div>
+
+    <!-- Date filter bar -->
+    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:20px">
+      <div style="display:flex;gap:6px;flex-wrap:wrap" id="va-quick-dates"></div>
+      <div style="display:flex;align-items:center;gap:8px;margin-left:auto">
+        <label style="font-size:13px;font-weight:600;color:var(--text-muted)">Custom:</label>
+        <input type="date" id="va-date-from"
+          style="padding:5px 10px;border:1px solid var(--border);border-radius:8px;font:13px var(--font)">
+        <span style="font-size:13px;color:var(--text-muted)">to</span>
+        <input type="date" id="va-date-to"
+          style="padding:5px 10px;border:1px solid var(--border);border-radius:8px;font:13px var(--font)">
+        <button onclick="applyVADateFilter()"
+          style="padding:5px 14px;border-radius:8px;border:none;background:var(--primary);color:#fff;font:600 13px var(--font);cursor:pointer">
+          Apply
+        </button>
+      </div>
+    </div>
+
     <div id="va-content"></div>
   </section>
 
@@ -1384,7 +1402,7 @@ document.querySelectorAll(".tab-btn").forEach(btn => {
     if (tab === "leaderboard") renderLeaderboard();
     if (tab === "feedback")   renderFeedbackTab();
     if (tab === "insights")   renderInsights();
-    if (tab === "vas")        renderVAs();
+    if (tab === "vas")        { initVADateFilter(); renderVAs(); }
     if (tab === "entry")      initScoreEntry();
   });
 });
@@ -3045,11 +3063,81 @@ function buildPersonalAlerts(repId) {
 
 // ── VAs Tab ──────────────────────────────────────────────────────────────────
 
+let vaFilterFrom = null;  // YYYY-MM-DD or null = latest day
+let vaFilterTo   = null;
+
+function initVADateFilter() {
+  const data    = D.va_metrics || [];
+  if (!data.length) return;
+
+  const dates   = data.map(d => d.date).sort();
+  const latest  = dates[dates.length - 1];
+  const oneWeekAgo = dates.length >= 7 ? dates[dates.length - 7] : dates[0];
+
+  // Quick buttons
+  const quickBar = document.getElementById('va-quick-dates');
+  if (!quickBar || quickBar.dataset.init) return;
+  quickBar.dataset.init = '1';
+
+  const btns = [
+    { label: 'Today',     from: latest,     to: latest },
+    { label: 'Yesterday', from: dates.length >= 2 ? dates[dates.length - 2] : latest,
+                          to:   dates.length >= 2 ? dates[dates.length - 2] : latest },
+    { label: 'Last 7d',   from: oneWeekAgo,  to: latest },
+    { label: 'All time',  from: dates[0],    to: latest },
+  ];
+
+  quickBar.innerHTML = btns.map(b => `
+    <button class="seg-btn ${b.label === 'Today' ? 'active' : ''}"
+      data-from="${b.from}" data-to="${b.to}"
+      onclick="setVAQuickFilter(this,'${b.from}','${b.to}')">
+      ${b.label}
+    </button>`).join('');
+
+  // Set default date inputs
+  const fromInput = document.getElementById('va-date-from');
+  const toInput   = document.getElementById('va-date-to');
+  if (fromInput) fromInput.value = latest;
+  if (toInput)   toInput.value   = latest;
+
+  vaFilterFrom = latest;
+  vaFilterTo   = latest;
+}
+
+function setVAQuickFilter(btn, from, to) {
+  document.querySelectorAll('#va-quick-dates .seg-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  vaFilterFrom = from;
+  vaFilterTo   = to;
+  const fromInput = document.getElementById('va-date-from');
+  const toInput   = document.getElementById('va-date-to');
+  if (fromInput) fromInput.value = from;
+  if (toInput)   toInput.value   = to;
+  renderVAs();
+}
+
+function applyVADateFilter() {
+  vaFilterFrom = document.getElementById('va-date-from')?.value || null;
+  vaFilterTo   = document.getElementById('va-date-to')?.value   || null;
+  // Deactivate quick buttons since we're using custom range
+  document.querySelectorAll('#va-quick-dates .seg-btn').forEach(b => b.classList.remove('active'));
+  renderVAs();
+}
+
 function renderVAs() {
   const VAS   = (D.team_config.vas || []);
-  const data  = D.va_metrics || [];
+  const allData = D.va_metrics || [];
   const container = document.getElementById('va-content');
   if (!container) return;
+
+  initVADateFilter();
+
+  // Apply date filter
+  const from = vaFilterFrom;
+  const to   = vaFilterTo;
+  const data = from && to
+    ? allData.filter(d => d.date >= from && d.date <= to)
+    : allData;
 
   if (!data.length) {
     container.innerHTML = `
@@ -3064,25 +3152,47 @@ function renderVAs() {
 
   // Sort descending by date
   const sorted = [...data].sort((a, b) => b.date.localeCompare(a.date));
-  const latest = sorted[0];
-  const prev   = sorted[1] || null;
 
-  // ── Latest day KPI row ──────────────────────────────────────────────────
+  // ── Aggregate across the selected date range ────────────────────────────
   const vaColors = {};
   VAS.forEach(v => { vaColors[v.id] = v.color || '#757575'; });
 
-  const totalTouches  = latest.team_total_touches  || 0;
-  const totalTalkHrs  = latest.team_total_talk_hours || 0;
+  const isRange  = sorted.length > 1;
+  const dateLabel = isRange
+    ? `${sorted[sorted.length-1].date} → ${sorted[0].date}  (${sorted.length} days)`
+    : sorted[0]?.date || '–';
 
-  const prevTouches   = prev?.team_total_touches || null;
-  const prevTalkHrs   = prev?.team_total_talk_hours || null;
-  const touchDelta    = prevTouches  != null ? totalTouches - prevTouches  : null;
-  const talkDelta     = prevTalkHrs  != null ? totalTalkHrs - prevTalkHrs  : null;
+  // Sum totals across all days in range
+  let totalTouches = 0, totalTalkHrs = 0;
+  const vaAgg = {};  // va_id → {unique_touches, talk_time_hours}
+  VAS.forEach(v => { vaAgg[v.id] = { unique_touches: 0, talk_time_hours: 0 }; });
 
-  const vaMetrics = latest.vas || [];
+  sorted.forEach(day => {
+    totalTouches += day.team_total_touches   || 0;
+    totalTalkHrs += day.team_total_talk_hours || 0;
+    (day.vas || []).forEach(m => {
+      if (vaAgg[m.va_id]) {
+        vaAgg[m.va_id].unique_touches  += m.unique_touches  || 0;
+        vaAgg[m.va_id].talk_time_hours += m.talk_time_hours || 0;
+      }
+    });
+  });
+
+  // Per-day average (for KPI sub-label)
+  const days = sorted.length;
+  const vaMetrics = VAS.map(v => ({ va_id: v.id, ...vaAgg[v.id] }));
+
+  // Delta: compare total vs same-length prior period (from allData)
+  const allSorted  = [...allData].sort((a, b) => b.date.localeCompare(a.date));
+  const priorStart = allSorted.findIndex(d => d.date < (from || sorted[sorted.length-1]?.date));
+  const priorDays  = priorStart >= 0 ? allSorted.slice(priorStart, priorStart + days) : [];
+  const prevTouches = priorDays.length ? priorDays.reduce((s, d) => s + (d.team_total_touches || 0), 0) : null;
+  const prevTalkHrs = priorDays.length ? priorDays.reduce((s, d) => s + (d.team_total_talk_hours || 0), 0) : null;
+  const touchDelta  = prevTouches != null ? totalTouches - prevTouches : null;
+  const talkDelta   = prevTalkHrs != null ? totalTalkHrs - prevTalkHrs : null;
 
   // ── Call status breakdown ───────────────────────────────────────────────
-  const cs = latest.call_status || {};
+  const cs = sorted[0]?.call_status || {};
   const callStatusHtml = Object.keys(cs).length ? `
     <div class="card" style="margin-top:16px">
       <div class="card-title">Yesterday's Call Status</div>
@@ -3099,26 +3209,34 @@ function renderVAs() {
 
   // ── VA cards ───────────────────────────────────────────────────────────
   const vaCardsHtml = VAS.map(va => {
-    const m   = vaMetrics.find(x => x.va_id === va.id) || {};
-    const touches  = m.unique_touches   ?? '–';
-    const talkHrs  = m.talk_time_hours  != null ? m.talk_time_hours.toFixed(2) : '–';
-    const talkMins = m.talk_time_hours  != null ? Math.round(m.talk_time_hours * 60) : null;
+    const m        = vaMetrics.find(x => x.va_id === va.id) || {};
+    const touches  = m.unique_touches  != null ? Math.round(m.unique_touches)  : '–';
+    const talkHrs  = m.talk_time_hours != null ? m.talk_time_hours.toFixed(2) : '–';
+    const talkMins = m.talk_time_hours != null ? Math.round(m.talk_time_hours * 60) : null;
+    const avgTouch = (days > 1 && m.unique_touches  != null) ? (m.unique_touches  / days).toFixed(1) : null;
+    const avgHours = (days > 1 && m.talk_time_hours != null) ? (m.talk_time_hours / days).toFixed(2) : null;
     return `
       <div class="card" style="border-top:4px solid ${va.color};text-align:center">
         <div style="width:52px;height:52px;border-radius:50%;background:${va.color};
           display:flex;align-items:center;justify-content:center;margin:0 auto 10px;
           font-size:20px;font-weight:800;color:#fff">${va.name.charAt(0)}</div>
-        <div style="font-size:16px;font-weight:700;margin-bottom:14px">${va.name}</div>
-
+        <div style="font-size:16px;font-weight:700;margin-bottom:4px">${va.name}</div>
+        <div style="font-size:11px;color:var(--text-muted);margin-bottom:12px">${dateLabel}</div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
           <div style="background:var(--bg);border-radius:8px;padding:12px">
-            <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);margin-bottom:6px">Unique Touches</div>
+            <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);margin-bottom:6px">
+              ${days > 1 ? 'Total Touches' : 'Unique Touches'}
+            </div>
             <div style="font-size:28px;font-weight:800;color:${va.color}">${touches}</div>
+            ${avgTouch ? `<div style="font-size:11px;color:var(--text-muted)">avg ${avgTouch}/day</div>` : ''}
           </div>
           <div style="background:var(--bg);border-radius:8px;padding:12px">
-            <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);margin-bottom:6px">Talk Time</div>
+            <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);margin-bottom:6px">
+              ${days > 1 ? 'Total Talk Time' : 'Talk Time'}
+            </div>
             <div style="font-size:28px;font-weight:800;color:${va.color}">${talkHrs}h</div>
-            ${talkMins != null ? `<div style="font-size:11px;color:var(--text-muted)">${talkMins} min</div>` : ''}
+            ${avgHours ? `<div style="font-size:11px;color:var(--text-muted)">avg ${avgHours}h/day</div>` :
+              talkMins != null ? `<div style="font-size:11px;color:var(--text-muted)">${talkMins} min</div>` : ''}
           </div>
         </div>
       </div>`;
@@ -3163,16 +3281,16 @@ function renderVAs() {
       <div class="kpi-card">
         <div class="kpi-label">Team Unique Touches</div>
         <div class="kpi-value">${totalTouches}</div>
-        <div class="kpi-sub">${touchDelta != null ? (touchDelta >= 0 ? '▲ +' : '▼ ') + Math.abs(touchDelta) + ' vs prev day' : latest.date}</div>
+        <div class="kpi-sub">${touchDelta != null ? (touchDelta >= 0 ? '▲ +' : '▼ ') + Math.abs(touchDelta) + ' vs prev period' : dateLabel}</div>
       </div>
       <div class="kpi-card">
         <div class="kpi-label">Team Talk Time</div>
         <div class="kpi-value">${totalTalkHrs.toFixed(2)}h</div>
-        <div class="kpi-sub">${talkDelta != null ? (talkDelta >= 0 ? '▲ +' : '▼ ') + Math.abs(talkDelta).toFixed(2) + 'h vs prev day' : latest.date}</div>
+        <div class="kpi-sub">${talkDelta != null ? (talkDelta >= 0 ? '▲ +' : '▼ ') + Math.abs(talkDelta).toFixed(2) + 'h vs prev period' : dateLabel}</div>
       </div>
       <div class="kpi-card">
         <div class="kpi-label">Last Updated</div>
-        <div class="kpi-value" style="font-size:20px">${latest.date}</div>
+        <div class="kpi-value" style="font-size:20px">${dateLabel}</div>
         <div class="kpi-sub">Daily Podio pull</div>
       </div>
     </div>
