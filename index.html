@@ -1440,10 +1440,12 @@ function getMonthlyScore(repId, year, month) {
   else if (roleBQuant != null) catB = roleBQuant;
   else if (roleBQualityAvg != null) catB = roleBQualityAvg;
 
-  // Role C: 50% reactivates quantitative (target 2/shift, only shifts with actual Role C activity) + 50% Rotem quality
+  // Role C: 50% reactivates quantitative (target 2/shift, from 2026-06-08 onward, only actual activity) + 50% Rotem quality
+  const REACTIVATE_QUANT_CUTOFF = "2026-06-08";
   const roleCShifts = (D.op_managers_daily || []).filter(s => {
     const d = new Date(s.date);
     return s.rep_id === repId && d.getFullYear() === year && d.getMonth() + 1 === month
+      && s.date >= REACTIVATE_QUANT_CUTOFF
       && (s.reactivates > 0 || s.reviews_contacted > 0);
   });
   const roleCQuantScore = roleCShifts.length
@@ -1455,8 +1457,16 @@ function getMonthlyScore(repId, year, month) {
   else if (roleCQuantScore != null) catCFinal = roleCQuantScore;
   else if (roleCQualityAvg != null) catCFinal = roleCQualityAvg;
 
-  const parts = [catA, catB, catCFinal].filter(x => x != null);
-  const overall = parts.length ? avg(parts) : null;
+  // Overall = weighted by shift evidence per role (not equal weight per role).
+  // Weight = quant shifts worked OR quality observations, whichever is higher.
+  // This ensures a rep who worked 10 Role A shifts and 1 Role C shift isn't scored 50/50.
+  const aWeight = catA      != null ? Math.max(quantShifts.length,  catAQuality.length) : 0;
+  const bWeight = catB      != null ? Math.max(bQuantShifts.length, catBQuality.length) : 0;
+  const cWeight = catCFinal != null ? Math.max(roleCShifts.length,  catC.length)        : 0;
+  const totalWeight = aWeight + bWeight + cWeight;
+  const overall = totalWeight > 0
+    ? ((catA ?? 0) * aWeight + (catB ?? 0) * bWeight + (catCFinal ?? 0) * cWeight) / totalWeight
+    : null;
   return {
     catA, catB, catC: catCFinal, overall,
     roleAQuant, roleAQuality: roleAQualityAvg, quantShifts,
