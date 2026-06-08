@@ -1367,13 +1367,28 @@ function getMonthlyScore(repId, year, month) {
   else if (roleBQuant != null) catB = roleBQuant;
   else if (roleBQualityAvg != null) catB = roleBQualityAvg;
 
-  const c = avg(catC);
-  const parts = [catA, catB, c].filter(x => x != null);
+  // Role C: 50% reactivates quantitative (target 2/shift) + 50% Rotem quality
+  const roleCShifts = (D.op_managers_daily || []).filter(s => {
+    const d = new Date(s.date);
+    return s.rep_id === repId && d.getFullYear() === year && d.getMonth() + 1 === month;
+  });
+  const roleCQuantScore = roleCShifts.length
+    ? avg(roleCShifts.map(s => Math.min((s.reactivates / 2) * 100, 100)))
+    : null;
+  const roleCQualityAvg = catC.length ? avg(catC) : null;
+  let catCFinal = null;
+  if (roleCQuantScore != null && roleCQualityAvg != null) catCFinal = roleCQuantScore * 0.5 + roleCQualityAvg * 0.5;
+  else if (roleCQuantScore != null) catCFinal = roleCQuantScore;
+  else if (roleCQualityAvg != null) catCFinal = roleCQualityAvg;
+
+  const parts = [catA, catB, catCFinal].filter(x => x != null);
   const overall = parts.length ? avg(parts) : null;
   return {
-    catA, catB, catC: c, overall,
+    catA, catB, catC: catCFinal, overall,
     roleAQuant, roleAQuality: roleAQualityAvg, quantShifts,
-    roleBQuant, roleBQuality: roleBQualityAvg, bQuantShifts
+    roleBQuant, roleBQuality: roleBQualityAvg, bQuantShifts,
+    roleCQuant: roleCQuantScore, roleCQuality: roleCQualityAvg,
+    roleCShiftCount: roleCShifts.length
   };
 }
 
@@ -2204,7 +2219,9 @@ function initScoreEntry() {
   const repSel = document.getElementById('entry-rep');
   repSel.innerHTML = '<option value="">— Select rep —</option>' +
     REPS.map(r => `<option value="${r.id}">${r.name}</option>`).join('');
-  const today = new Date().toISOString().slice(0, 10);
+  // Use local date (not UTC) to match shift dates
+  const _now = new Date();
+  const today = _now.getFullYear()+'-'+String(_now.getMonth()+1).padStart(2,'0')+'-'+String(_now.getDate()).padStart(2,'0');
   document.getElementById('entry-date').value = today;
   const catSel = document.getElementById('entry-cat');
   catSel.removeEventListener('change', renderEntrySubcats);
@@ -3031,7 +3048,9 @@ function renderInsights() {
 // ── My Shift Today card ──────────────────────────────────────────────────────
 
 function buildShiftTodayCard(repId) {
-  const today = new Date().toISOString().slice(0, 10);
+  // Use local date (not UTC) to match shift dates
+  const _now = new Date();
+  const today = _now.getFullYear()+'-'+String(_now.getMonth()+1).padStart(2,'0')+'-'+String(_now.getDate()).padStart(2,'0');
   const dayData = (D.shift_daily || []).find(d => d.date === today);
   if (!dayData) return '';
 

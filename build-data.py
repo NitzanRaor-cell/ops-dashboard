@@ -32,6 +32,7 @@ def main():
     rotem_comments    = load_json("rotem_comments.json",    [])
     va_metrics        = load_json("va_metrics.json",        [])
     shift_daily       = load_json("shift_daily.json",       [])
+    op_managers_daily = load_json("op_managers_daily.json", [])
 
     data = {
         "generated_at":    datetime.now(timezone.utc).isoformat(),
@@ -44,6 +45,7 @@ def main():
         "rotem_comments":  rotem_comments,
         "va_metrics":      va_metrics,
         "shift_daily":     shift_daily,
+        "op_managers_daily": op_managers_daily,
     }
 
     out_path = os.path.join(BASE, "load-data.js")
