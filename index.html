@@ -1866,7 +1866,8 @@ function buildTrendsTable() {
   const thead = document.getElementById("trends-thead-row");
   const tbody = document.getElementById("trends-tbody");
   thead.innerHTML = `<th>Rep</th>` + months.map(m => `<th>${monthLabel(m)}</th>`).join("") + `<th>Trend</th>`;
-  tbody.innerHTML = REPS.map(r => {
+  const tableReps = AUTH.isManager() ? REPS : REPS.filter(r => r.id === AUTH.myRepId());
+  tbody.innerHTML = tableReps.map(r => {
     const scores = months.map(m => {
       const { year, month } = parseMonth(m);
       return getMonthlyScore(r.id, year, month).overall;
@@ -3464,8 +3465,8 @@ function renderMyShifts() {
   // Gather all known shifts for this rep from multiple sources
   const history = [];
 
-  // C shifts from op_managers_daily
-  (D.op_managers_daily || []).filter(s => s.rep_id === repId).forEach(s => {
+  // C shifts from op_managers_daily — only show when there's actual Role C activity
+  (D.op_managers_daily || []).filter(s => s.rep_id === repId && (s.reactivates > 0 || s.reviews_contacted > 0)).forEach(s => {
     history.push({
       date: s.date, role: 'C',
       metrics: {
