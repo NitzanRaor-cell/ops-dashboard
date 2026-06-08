@@ -3209,34 +3209,78 @@ function renderVAs() {
 
   // ── VA cards ───────────────────────────────────────────────────────────
   const vaCardsHtml = VAS.map(va => {
-    const m        = vaMetrics.find(x => x.va_id === va.id) || {};
-    const touches  = m.unique_touches  != null ? Math.round(m.unique_touches)  : '–';
-    const talkHrs  = m.talk_time_hours != null ? m.talk_time_hours.toFixed(2) : '–';
-    const talkMins = m.talk_time_hours != null ? Math.round(m.talk_time_hours * 60) : null;
-    const avgTouch = (days > 1 && m.unique_touches  != null) ? (m.unique_touches  / days).toFixed(1) : null;
-    const avgHours = (days > 1 && m.talk_time_hours != null) ? (m.talk_time_hours / days).toFixed(2) : null;
+    const m       = vaMetrics.find(x => x.va_id === va.id) || {};
+    const touches = m.unique_touches  != null ? Math.round(m.unique_touches) : null;
+    const talkHrs = m.talk_time_hours != null ? m.talk_time_hours : null;
+
+    // For multi-day ranges compare daily average vs target
+    const avgTouch = touches != null ? touches / days : null;
+    const avgTalk  = talkHrs != null ? talkHrs / days : null;
+    const cmpTouch = days > 1 ? avgTouch : touches;
+    const cmpTalk  = days > 1 ? avgTalk  : talkHrs;
+
+    const tgt_t = va.target_touches;
+    const tgt_h = va.target_talk_hours;
+    const touchPct = (tgt_t && cmpTouch != null) ? Math.min((cmpTouch / tgt_t) * 100, 100) : null;
+    const talkPct  = (tgt_h && cmpTalk  != null) ? Math.min((cmpTalk  / tgt_h) * 100, 100) : null;
+
+    function sColor(pct) {
+      return pct == null ? '#9e9e9e' : pct >= 100 ? 'var(--success)' : pct >= 75 ? 'var(--warn)' : 'var(--danger)';
+    }
+    function bar(pct, col) {
+      if (pct == null) return '';
+      return `<div style="height:6px;background:#e0e0e0;border-radius:3px;margin-top:8px;overflow:hidden">
+        <div style="height:100%;width:${pct.toFixed(0)}%;background:${col};border-radius:3px;transition:width .4s"></div>
+      </div>`;
+    }
+    function badge(pct, target, unit) {
+      if (!target || pct == null) return '';
+      return `<span style="font-size:10px;padding:2px 8px;border-radius:999px;font-weight:700;margin-top:6px;display:inline-block;
+        background:${pct>=100?'var(--success-bg)':'var(--danger-bg)'};
+        color:${pct>=100?'var(--success)':'var(--danger)'}">
+        ${pct>=100 ? '✓ Hit target' : `${(((cmpTouch||cmpTalk||0)/(target))*100).toFixed(0)}% of ${target}${unit}`}
+      </span>`;
+    }
+
+    const tcCol = sColor(touchPct);
+    const thCol = sColor(talkPct);
+
     return `
-      <div class="card" style="border-top:4px solid ${va.color};text-align:center">
-        <div style="width:52px;height:52px;border-radius:50%;background:${va.color};
-          display:flex;align-items:center;justify-content:center;margin:0 auto 10px;
-          font-size:20px;font-weight:800;color:#fff">${va.name.charAt(0)}</div>
-        <div style="font-size:16px;font-weight:700;margin-bottom:4px">${va.name}</div>
-        <div style="font-size:11px;color:var(--text-muted);margin-bottom:12px">${dateLabel}</div>
+      <div class="card" style="border-top:5px solid ${va.color}">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
+          <div style="width:46px;height:46px;border-radius:50%;background:${va.color};flex-shrink:0;
+            display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;color:#fff">
+            ${va.name.charAt(0)}</div>
+          <div>
+            <div style="font-size:16px;font-weight:700">${va.name}</div>
+            <div style="font-size:11px;color:var(--text-muted)">${dateLabel}</div>
+          </div>
+        </div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
           <div style="background:var(--bg);border-radius:8px;padding:12px">
-            <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);margin-bottom:6px">
+            <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);margin-bottom:4px">
               ${days > 1 ? 'Total Touches' : 'Unique Touches'}
             </div>
-            <div style="font-size:28px;font-weight:800;color:${va.color}">${touches}</div>
-            ${avgTouch ? `<div style="font-size:11px;color:var(--text-muted)">avg ${avgTouch}/day</div>` : ''}
+            <div style="font-size:26px;font-weight:800;color:${tcCol};line-height:1.1">
+              ${touches != null ? touches.toLocaleString() : '–'}
+            </div>
+            ${days > 1 && avgTouch != null ? `<div style="font-size:11px;color:var(--text-muted)">${avgTouch.toFixed(0)}/day avg</div>` : ''}
+            ${tgt_t ? `<div style="font-size:11px;color:var(--text-muted)">Target: ${tgt_t}/day</div>` : ''}
+            ${bar(touchPct, tcCol)}
+            ${badge(touchPct, tgt_t, '')}
           </div>
           <div style="background:var(--bg);border-radius:8px;padding:12px">
-            <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);margin-bottom:6px">
+            <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);margin-bottom:4px">
               ${days > 1 ? 'Total Talk Time' : 'Talk Time'}
             </div>
-            <div style="font-size:28px;font-weight:800;color:${va.color}">${talkHrs}h</div>
-            ${avgHours ? `<div style="font-size:11px;color:var(--text-muted)">avg ${avgHours}h/day</div>` :
-              talkMins != null ? `<div style="font-size:11px;color:var(--text-muted)">${talkMins} min</div>` : ''}
+            <div style="font-size:26px;font-weight:800;color:${thCol};line-height:1.1">
+              ${talkHrs != null ? talkHrs.toFixed(2)+'h' : '–'}
+            </div>
+            ${days > 1 && avgTalk != null ? `<div style="font-size:11px;color:var(--text-muted)">${avgTalk.toFixed(2)}h/day avg</div>` :
+              talkHrs != null ? `<div style="font-size:11px;color:var(--text-muted)">${Math.round(talkHrs*60)} min</div>` : ''}
+            ${tgt_h ? `<div style="font-size:11px;color:var(--text-muted)">Target: ${tgt_h}h/day</div>` : ''}
+            ${bar(talkPct, thCol)}
+            ${badge(talkPct, tgt_h, 'h')}
           </div>
         </div>
       </div>`;

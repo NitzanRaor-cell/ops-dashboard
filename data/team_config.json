@@ -8,9 +8,9 @@
     { "id": "lior",    "name": "Lior",         "role": "Junior Ops",  "target": 0.80, "gmail": "lior@zoomrei.com" }
   ],
   "vas": [
-    { "id": "febe",    "name": "Febe Tagaban", "color": "#00897b" },
-    { "id": "sheryl",  "name": "Sheryl",       "color": "#8e24aa" },
-    { "id": "justine", "name": "Justine",      "color": "#e53935" }
+    { "id": "febe",    "name": "Febe Tagaban", "color": "#00897b", "target_touches": 350, "target_talk_hours": 3.5 },
+    { "id": "sheryl",  "name": "Sheryl",       "color": "#8e24aa", "target_touches": null, "target_talk_hours": null },
+    { "id": "justine", "name": "Justine",      "color": "#e53935", "target_touches": 350, "target_talk_hours": 3.5 }
   ],
   "managers": [
     { "email": "nitzan.raor@zoomrei.com",  "name": "Nitzan Raor" },
