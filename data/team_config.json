@@ -7,6 +7,11 @@
     { "id": "eran",    "name": "Eran Retman",  "role": "Junior Ops",  "target": 0.80, "gmail": "eran.retman@zoomrei.com" },
     { "id": "lior",    "name": "Lior",         "role": "Junior Ops",  "target": 0.80, "gmail": "lior@zoomrei.com" }
   ],
+  "vas": [
+    { "id": "febe",    "name": "Febe Tagaban", "color": "#00897b" },
+    { "id": "sheryl",  "name": "Sheryl",       "color": "#8e24aa" },
+    { "id": "justine", "name": "Justine",      "color": "#e53935" }
+  ],
   "managers": [
     { "email": "nitzan.raor@zoomrei.com",  "name": "Nitzan Raor" },
     { "email": "rotem.itzhak@zoomrei.com", "name": "Rotem Itzhak" }

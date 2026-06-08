@@ -30,6 +30,7 @@ def main():
     shift_history     = load_json("shift_history.json",     [])
     shift_schedule    = load_json("shift_schedule.json",    [])
     rotem_comments    = load_json("rotem_comments.json",    [])
+    va_metrics        = load_json("va_metrics.json",        [])
 
     data = {
         "generated_at":    datetime.now(timezone.utc).isoformat(),
@@ -40,6 +41,7 @@ def main():
         "shift_history":   shift_history,
         "shift_schedule":  shift_schedule,
         "rotem_comments":  rotem_comments,
+        "va_metrics":      va_metrics,
     }
 
     out_path = os.path.join(BASE, "load-data.js")
@@ -55,6 +57,7 @@ def main():
     print(f"  qlik_team_daily:  {len(qlik_team_daily)} days")
     print(f"  shift_schedule:   {len(shift_schedule)} shifts")
     print(f"  shift_history:    {len(shift_history)} records")
+    print(f"  va_metrics:       {len(va_metrics)} days")
     print(f"  generated_at:     {data['generated_at']}")
 
 

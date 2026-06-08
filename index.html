@@ -613,6 +613,7 @@
   <button class="tab-btn" data-tab="entry">Score Entry</button>
   <button class="tab-btn" data-tab="feedback">Feedback</button>
   <button class="tab-btn" data-tab="insights">Insights</button>
+  <button class="tab-btn" data-tab="vas">VAs</button>
 </nav>
 
 <!-- Preview mode banner -->
@@ -845,6 +846,16 @@
       <span class="fb-count" id="fb-count"></span>
     </div>
     <div id="fb-list"></div>
+  </section>
+
+
+  <!-- ════════════════════════════ VAs TAB ════════════════════════════════ -->
+  <section id="tab-vas" class="tab-content">
+    <div class="section-head">
+      <h2>VAs Performance</h2>
+      <span class="sub">Daily unique touches &amp; talk time — Febe · Sheryl · Justine</span>
+    </div>
+    <div id="va-content"></div>
   </section>
 
 </main>
@@ -1373,6 +1384,7 @@ document.querySelectorAll(".tab-btn").forEach(btn => {
     if (tab === "leaderboard") renderLeaderboard();
     if (tab === "feedback")   renderFeedbackTab();
     if (tab === "insights")   renderInsights();
+    if (tab === "vas")        renderVAs();
     if (tab === "entry")      initScoreEntry();
   });
 });
@@ -3029,6 +3041,183 @@ function buildPersonalAlerts(repId) {
   return alerts.length
     ? `<div class="personal-alerts">${alerts.join('')}</div>`
     : '';
+}
+
+// ── VAs Tab ──────────────────────────────────────────────────────────────────
+
+function renderVAs() {
+  const VAS   = (D.team_config.vas || []);
+  const data  = D.va_metrics || [];
+  const container = document.getElementById('va-content');
+  if (!container) return;
+
+  if (!data.length) {
+    container.innerHTML = `
+      <div class="card" style="text-align:center;padding:48px;color:var(--text-muted)">
+        <div style="font-size:32px;margin-bottom:12px">📞</div>
+        <div style="font-size:16px;font-weight:700;margin-bottom:8px">No VA data yet</div>
+        <div style="font-size:13px">VA metrics will appear here once the Podio fetcher is configured.<br>
+        Share the Podio App ID and view IDs with Nitzan to connect the data.</div>
+      </div>`;
+    return;
+  }
+
+  // Sort descending by date
+  const sorted = [...data].sort((a, b) => b.date.localeCompare(a.date));
+  const latest = sorted[0];
+  const prev   = sorted[1] || null;
+
+  // ── Latest day KPI row ──────────────────────────────────────────────────
+  const vaColors = {};
+  VAS.forEach(v => { vaColors[v.id] = v.color || '#757575'; });
+
+  const totalTouches  = latest.team_total_touches  || 0;
+  const totalTalkHrs  = latest.team_total_talk_hours || 0;
+
+  const prevTouches   = prev?.team_total_touches || null;
+  const prevTalkHrs   = prev?.team_total_talk_hours || null;
+  const touchDelta    = prevTouches  != null ? totalTouches - prevTouches  : null;
+  const talkDelta     = prevTalkHrs  != null ? totalTalkHrs - prevTalkHrs  : null;
+
+  const vaMetrics = latest.vas || [];
+
+  // ── Call status breakdown ───────────────────────────────────────────────
+  const cs = latest.call_status || {};
+  const callStatusHtml = Object.keys(cs).length ? `
+    <div class="card" style="margin-top:16px">
+      <div class="card-title">Yesterday's Call Status</div>
+      <table class="rep-table">
+        <tbody>
+          ${Object.entries(cs).map(([k, v]) => `
+            <tr>
+              <td style="color:var(--text-muted);font-size:13px">${k.replace(/_/g,' ').replace(/\w/g,l=>l.toUpperCase())}</td>
+              <td style="font-weight:700;font-size:16px;text-align:right">${v}</td>
+            </tr>`).join('')}
+        </tbody>
+      </table>
+    </div>` : '';
+
+  // ── VA cards ───────────────────────────────────────────────────────────
+  const vaCardsHtml = VAS.map(va => {
+    const m   = vaMetrics.find(x => x.va_id === va.id) || {};
+    const touches  = m.unique_touches   ?? '–';
+    const talkHrs  = m.talk_time_hours  != null ? m.talk_time_hours.toFixed(2) : '–';
+    const talkMins = m.talk_time_hours  != null ? Math.round(m.talk_time_hours * 60) : null;
+    return `
+      <div class="card" style="border-top:4px solid ${va.color};text-align:center">
+        <div style="width:52px;height:52px;border-radius:50%;background:${va.color};
+          display:flex;align-items:center;justify-content:center;margin:0 auto 10px;
+          font-size:20px;font-weight:800;color:#fff">${va.name.charAt(0)}</div>
+        <div style="font-size:16px;font-weight:700;margin-bottom:14px">${va.name}</div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div style="background:var(--bg);border-radius:8px;padding:12px">
+            <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);margin-bottom:6px">Unique Touches</div>
+            <div style="font-size:28px;font-weight:800;color:${va.color}">${touches}</div>
+          </div>
+          <div style="background:var(--bg);border-radius:8px;padding:12px">
+            <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);margin-bottom:6px">Talk Time</div>
+            <div style="font-size:28px;font-weight:800;color:${va.color}">${talkHrs}h</div>
+            ${talkMins != null ? `<div style="font-size:11px;color:var(--text-muted)">${talkMins} min</div>` : ''}
+          </div>
+        </div>
+      </div>`;
+  }).join('');
+
+  // ── Historical trend table ─────────────────────────────────────────────
+  const histHtml = sorted.length > 1 ? `
+    <div class="card" style="margin-top:16px">
+      <div class="card-title">History — Unique Touches per Day</div>
+      <table class="rep-table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            ${VAS.map(v => `<th>${v.name.split(' ')[0]}</th>`).join('')}
+            <th>Team Total</th>
+            <th>Team Talk</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${sorted.map(day => {
+            const cells = VAS.map(va => {
+              const m = (day.vas || []).find(x => x.va_id === va.id) || {};
+              const t = m.unique_touches ?? '–';
+              const color = vaColors[va.id] || '#9e9e9e';
+              return `<td style="font-weight:700;color:${color}">${t}</td>`;
+            }).join('');
+            return `<tr>
+              <td style="font-size:13px">${day.date}</td>
+              ${cells}
+              <td style="font-weight:700">${day.team_total_touches ?? '–'}</td>
+              <td style="font-size:13px;color:var(--text-muted)">${day.team_total_talk_hours != null ? day.team_total_talk_hours.toFixed(2)+'h' : '–'}</td>
+            </tr>`;
+          }).join('')}
+        </tbody>
+      </table>
+    </div>` : '';
+
+  // ── Trend chart ────────────────────────────────────────────────────────
+  container.innerHTML = `
+    <!-- KPI bar -->
+    <div class="kpi-grid" style="margin-bottom:20px">
+      <div class="kpi-card">
+        <div class="kpi-label">Team Unique Touches</div>
+        <div class="kpi-value">${totalTouches}</div>
+        <div class="kpi-sub">${touchDelta != null ? (touchDelta >= 0 ? '▲ +' : '▼ ') + Math.abs(touchDelta) + ' vs prev day' : latest.date}</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Team Talk Time</div>
+        <div class="kpi-value">${totalTalkHrs.toFixed(2)}h</div>
+        <div class="kpi-sub">${talkDelta != null ? (talkDelta >= 0 ? '▲ +' : '▼ ') + Math.abs(talkDelta).toFixed(2) + 'h vs prev day' : latest.date}</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Last Updated</div>
+        <div class="kpi-value" style="font-size:20px">${latest.date}</div>
+        <div class="kpi-sub">Daily Podio pull</div>
+      </div>
+    </div>
+
+    <!-- VA cards grid -->
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px;margin-bottom:20px">
+      ${vaCardsHtml}
+    </div>
+
+    ${callStatusHtml}
+    ${histHtml}
+
+    <!-- Trend chart (only when >1 day of data) -->
+    ${sorted.length > 1 ? `
+    <div class="card" style="margin-top:16px">
+      <div class="card-title">Unique Touches Trend</div>
+      <div style="position:relative;height:280px"><canvas id="va-chart"></canvas></div>
+    </div>` : ''}
+  `;
+
+  // Draw chart if enough data
+  if (sorted.length > 1) {
+    const labels = sorted.map(d => d.date.slice(5)).reverse();
+    const datasets = VAS.map(va => ({
+      label:           va.name.split(' ')[0],
+      borderColor:     va.color,
+      backgroundColor: va.color + '33',
+      data:            sorted.map(d => (d.vas||[]).find(x=>x.va_id===va.id)?.unique_touches ?? null).reverse(),
+      tension: 0.35, pointRadius: 5, fill: false
+    }));
+    datasets.push({
+      label: 'Team Total', borderColor: '#9e9e9e', borderDash: [5,3],
+      data: sorted.map(d => d.team_total_touches ?? null).reverse(),
+      tension: 0.35, pointRadius: 4, fill: false
+    });
+    new Chart(document.getElementById('va-chart'), {
+      type: 'line',
+      data: { labels, datasets },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { labels: { font: { size: 11 } } } },
+        scales: { y: { beginAtZero: true, grid: { color: '#f0f0f0' } }, x: { grid: { display: false } } }
+      }
+    });
+  }
 }
 
 // ── Init ─────────────────────────────────────────────────────────────────────

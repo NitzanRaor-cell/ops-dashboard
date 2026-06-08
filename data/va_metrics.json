@@ -1,0 +1,20 @@
+[
+  {
+    "date": "2026-06-07",
+    "vas": [
+      { "va_id": "febe",    "unique_touches": 1,  "talk_time_hours": 0.01 },
+      { "va_id": "sheryl",  "unique_touches": 0,  "talk_time_hours": 0.0  },
+      { "va_id": "justine", "unique_touches": 0,  "talk_time_hours": 0.0  }
+    ],
+    "team_total_touches": 32,
+    "team_total_talk_hours": 0.82,
+    "call_status": {
+      "overall": 54,
+      "contacted": 24,
+      "new_untouched": 12,
+      "discovery_hot": 11,
+      "discovery": 5,
+      "initial_contact_scheduled": 2
+    }
+  }
+]
