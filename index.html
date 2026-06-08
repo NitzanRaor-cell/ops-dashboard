@@ -609,11 +609,31 @@
   <div class="login-card">
     <div class="login-logo">⚡</div>
     <div class="login-title">Ops Team Dashboard</div>
-    <div class="login-sub">ZoomREI Operations · Who are you?</div>
-    <div class="name-picker" id="name-picker">
-      <!-- Populated by JavaScript from team_config -->
+    <div class="login-sub">ZoomREI Operations</div>
+
+    <div class="form-group" style="margin-bottom:14px;text-align:left">
+      <label style="font-size:13px;font-weight:600;color:var(--text-muted);display:block;margin-bottom:6px">Who are you?</label>
+      <select id="login-name-sel"
+        style="width:100%;padding:11px 14px;border:2px solid var(--border);border-radius:10px;font:15px var(--font);background:#fff;cursor:pointer"
+        onchange="document.getElementById('login-password').focus()">
+        <option value="">— Select your name —</option>
+      </select>
     </div>
-    <div class="login-error" id="login-error"></div>
+
+    <div class="form-group" style="margin-bottom:18px;text-align:left">
+      <label style="font-size:13px;font-weight:600;color:var(--text-muted);display:block;margin-bottom:6px">Password</label>
+      <input type="password" id="login-password"
+        placeholder="Enter your password"
+        style="width:100%;padding:11px 14px;border:2px solid var(--border);border-radius:10px;font:15px var(--font)"
+        onkeydown="if(event.key==='Enter') attemptPasswordLogin()">
+    </div>
+
+    <button onclick="attemptPasswordLogin()"
+      style="width:100%;padding:13px;border:none;border-radius:10px;background:var(--primary);color:#fff;font:600 15px var(--font);cursor:pointer">
+      Sign In
+    </button>
+
+    <div class="login-error" id="login-error" style="margin-top:12px"></div>
   </div>
 </div>
 
@@ -1203,40 +1223,82 @@ function signOut() {
   location.reload();
 }
 
+// ── PBKDF2 password hashing (Web Crypto API — no external library) ────────────
+async function pbkdf2Hash(password, salt) {
+  const enc    = new TextEncoder();
+  const keyMat = await crypto.subtle.importKey(
+    'raw', enc.encode(password), 'PBKDF2', false, ['deriveBits']
+  );
+  const bits = await crypto.subtle.deriveBits(
+    { name: 'PBKDF2', salt: enc.encode(salt), iterations: 100000, hash: 'SHA-256' },
+    keyMat, 256
+  );
+  return Array.from(new Uint8Array(bits))
+    .map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
 function buildLoginPicker() {
-  const picker = document.getElementById('name-picker');
-  if (!picker) return;
+  const sel = document.getElementById('login-name-sel');
+  if (!sel || sel.options.length > 1) return;
+  REPS.forEach(r => {
+    const opt = document.createElement('option');
+    opt.value = r.id; opt.textContent = r.name;
+    sel.appendChild(opt);
+  });
+  [{ id:'nitzan', name:'Nitzan Raor' }, { id:'rotem', name:'Rotem Itzhak' }].forEach(m => {
+    const opt = document.createElement('option');
+    opt.value = m.id; opt.textContent = m.name + ' (Manager)';
+    sel.appendChild(opt);
+  });
+}
 
-  const avatarColors = {
-    noam:'#7B1FA2', omer:'#0277BD', tal:'#2E7D32', gal:'#E65100',
-    tomer:'#AD1457', eran:'#00695C', lior:'#1565C0',
-    nitzan:'#1565C0', rotem:'#6A1B9A'
-  };
+async function attemptPasswordLogin() {
+  const id       = document.getElementById('login-name-sel').value;
+  const password = document.getElementById('login-password').value;
+  const errEl    = document.getElementById('login-error');
+  const btn      = document.querySelector('#login-overlay button');
 
-  // Team members
-  const repCards = REPS.map(r => {
-    const color = avatarColors[r.id] || '#9E9E9E';
-    return `<div class="name-card" onclick="selectIdentity('${r.id}')">
-      <div class="name-card-avatar" style="background:${color}">${r.name.charAt(0)}</div>
-      <div class="name-card-name">${r.name.split(' ')[0]}</div>
-      <div class="name-card-role">${r.role}</div>
-    </div>`;
-  }).join('');
+  if (!id)       { errEl.textContent = 'Please select your name.';   errEl.style.display='block'; return; }
+  if (!password) { errEl.textContent = 'Please enter your password.'; errEl.style.display='block'; return; }
 
-  // Manager entries
-  const mgrCards = [
-    { id: 'nitzan', name: 'Nitzan Raor',   color: avatarColors.nitzan },
-    { id: 'rotem',  name: 'Rotem Itzhak',  color: avatarColors.rotem  },
-  ].map(m => `<div class="name-card manager" onclick="selectIdentity('${m.id}')">
-    <div class="name-card-avatar" style="background:${m.color}">${m.name.charAt(0)}</div>
-    <div class="name-card-name">${m.name.split(' ')[0]}</div>
-    <div class="name-card-badge">Manager</div>
-  </div>`).join('');
+  if (btn) { btn.textContent = 'Signing in…'; btn.disabled = true; }
 
-  picker.innerHTML = repCards + mgrCards;
+  const allEntries = [
+    ...REPS.map(r => ({ id: r.id, hash: r.password_hash })),
+    ...(D.team_config.managers || []).map(m => ({
+      id:   m.email?.includes('nitzan') ? 'nitzan' : 'rotem',
+      hash: m.password_hash
+    }))
+  ];
+  const entry = allEntries.find(e => e.id === id);
+
+  if (!entry?.hash) {
+    errEl.textContent = 'No password set for this account. Contact Nitzan.';
+    errEl.style.display = 'block';
+    if (btn) { btn.textContent = 'Sign In'; btn.disabled = false; }
+    return;
+  }
+
+  const hash = await pbkdf2Hash(password, id);
+
+  if (hash === entry.hash) {
+    errEl.style.display = 'none';
+    AUTH.loginAs(id);
+    document.getElementById('login-overlay').classList.add('hidden');
+    document.getElementById('login-password').value = '';
+    if (btn) { btn.textContent = 'Sign In'; btn.disabled = false; }
+    initApp();
+  } else {
+    errEl.textContent = 'Wrong password. Try again or contact Nitzan.';
+    errEl.style.display = 'block';
+    document.getElementById('login-password').value = '';
+    document.getElementById('login-password').focus();
+    if (btn) { btn.textContent = 'Sign In'; btn.disabled = false; }
+  }
 }
 
 function selectIdentity(id) {
+  // Only used internally (View As — manager already authenticated)
   AUTH.loginAs(id);
   document.getElementById('login-overlay').classList.add('hidden');
   initApp();
