@@ -647,6 +647,7 @@
   <button class="tab-btn" data-tab="entry">Score Entry</button>
   <button class="tab-btn" data-tab="feedback">Feedback</button>
   <button class="tab-btn" data-tab="insights">Insights</button>
+  <button class="tab-btn" data-tab="my-shifts">My Shifts</button>
   <button class="tab-btn" data-tab="vas">VAs</button>
 </nav>
 
@@ -882,6 +883,15 @@
     <div id="fb-list"></div>
   </section>
 
+
+  <!-- ════════════════════════════ MY SHIFTS TAB ═════════════════════════ -->
+  <section id="tab-my-shifts" class="tab-content">
+    <div class="section-head">
+      <h2>My Shifts</h2>
+      <span class="sub">Your recent shift history and role checklist</span>
+    </div>
+    <div id="my-shifts-content"></div>
+  </section>
 
   <!-- ════════════════════════════ VAs TAB ════════════════════════════════ -->
   <section id="tab-vas" class="tab-content">
@@ -1163,17 +1173,18 @@ function _rerenderAsRep(repId) {
     const btn = document.querySelector(`[data-tab="${t}"]`);
     if (btn) btn.style.display = 'none';
   });
-  ['individual','leaderboard','trends','feedback'].forEach(t => {
+  ['individual','leaderboard','trends','feedback','my-shifts'].forEach(t => {
     const btn = document.querySelector(`[data-tab="${t}"]`);
     if (btn) btn.style.display = '';
   });
-  // Switch to individual tab
+  // Switch to My Shifts tab
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   document.querySelectorAll('.tab-content').forEach(s => s.classList.remove('active'));
-  const indBtn = document.querySelector('[data-tab="individual"]');
-  if (indBtn) indBtn.classList.add('active');
-  document.getElementById('tab-individual').classList.add('active');
-  renderIndividual(repId);
+  const msBtn = document.querySelector('[data-tab="my-shifts"]');
+  if (msBtn) msBtn.classList.add('active');
+  const msEl = document.getElementById('tab-my-shifts');
+  if (msEl) msEl.classList.add('active');
+  renderMyShifts();
 }
 
 function _rerenderAsManager() {
@@ -1463,6 +1474,7 @@ document.querySelectorAll(".tab-btn").forEach(btn => {
     if (tab === "leaderboard") renderLeaderboard();
     if (tab === "feedback")   renderFeedbackTab();
     if (tab === "insights")   renderInsights();
+    if (tab === "my-shifts")  renderMyShifts();
     if (tab === "vas")        { initVADateFilter(); renderVAs(); updateVATimestamp(); scheduleVARefresh(); }
     if (tab === "entry")      initScoreEntry();
   });
@@ -3045,6 +3057,93 @@ function renderInsights() {
   document.getElementById('insights-content').innerHTML = teamHtml + repHtml;
 }
 
+
+// ── Role task checklists (from Operations Managers Roles doc) ─────────────────
+const ROLE_TASKS = {
+  A: {
+    title: "Role A — Lead Distribution (16:00–00:00)",
+    blocks: [
+      { time: "16:00–19:00", tasks: [
+        "Uncontacted tasks (if no C on shift)",
+        "Renos (if no C on shift)",
+        "Lead Distribution",
+        "NTC: WS 0-9 + 10-30 NTC distribution; all NTC if no C",
+        "Monitor and redistribute leads as needed"
+      ]},
+      { time: "22:00 (10 PM)", tasks: [
+        "Redistribute NTC leads that didn't get enough calls — by availability (if no C)"
+      ]}
+    ]
+  },
+  B: {
+    title: "Role B — Task Management (19:00–03:00)",
+    blocks: [
+      { time: "19:00–00:00", tasks: [
+        "Public Tasks: Uncontacted + Contacted + Junior + Overdue",
+        "OP managers' email",
+        "Off-shift personal tasks"
+      ]},
+      { time: "00:00–03:00", tasks: [
+        "Lead distribution & NTC",
+        "01:00 AM — Redistribute leads for late-shift ACQ managers",
+        "Uncontacted tasks"
+      ]}
+    ]
+  },
+  C: {
+    title: "Role C — Operations Management (17:00–01:00)",
+    blocks: [
+      { time: "17:00–19:00", tasks: [
+        "Renos (50K+ profit → assign to Yoav; look up address; don't assign to lead's ACQ; update renos channel)",
+        "SF + SEA NTC Distribution",
+        "Public Tasks: Contacted + Uncontacted + Junior + Overdue"
+      ]},
+      { time: "19:00–01:00", tasks: [
+        "Ongoing NTC Monitoring + redistribution",
+        "22:00 (10 PM) — Manage Q / Febe: call all 10-30 leads that didn't get a call today",
+        "Only On Contacted: Initial Contact Scheduled (no task) + Interested (no task)",
+        "Reviews: check wants over ARV, over 30%, no longer wants to sell, unengaged, outside target area, etc.",
+        "⭐ Reactivate at least 2 leads — Mark YES → add note 'Reactivate + Reason' → tag Nitzan → tag ACQ to call (don't change status unless indicated)",
+        "Rock — 1 hour"
+      ]}
+    ]
+  },
+  Q: {
+    title: "Role Q — Calling (18:00–02:00)",
+    blocks: [
+      { time: "18:00–00:00", tasks: [
+        "Calling NTC 10-30 — Ongoing",
+        "22:00 — Go over NTC 10-30 and call all leads that didn't get a call today",
+        "Bonus Leads",
+        "Calling Waiting-for-OP tasks"
+      ]},
+      { time: "00:00–02:00", tasks: [
+        "Doing B (task management)"
+      ]}
+    ]
+  }
+};
+
+function buildRoleTasksHtml(role) {
+  const rt = ROLE_TASKS[role];
+  if (!rt) return '';
+  return `
+    <div style="margin-top:14px;border-top:1px solid rgba(0,0,0,.1);padding-top:12px">
+      <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;opacity:.65;margin-bottom:10px">
+        📋 Shift Checklist
+      </div>
+      ${rt.blocks.map(block => `
+        <div style="margin-bottom:10px">
+          <div style="font-size:11px;font-weight:700;opacity:.6;margin-bottom:5px">${block.time}</div>
+          ${block.tasks.map(task => `
+            <div style="display:flex;align-items:flex-start;gap:8px;padding:4px 0;font-size:13px;line-height:1.4">
+              <span style="margin-top:2px;opacity:.5;flex-shrink:0">○</span>
+              <span>${task}</span>
+            </div>`).join('')}
+        </div>`).join('')}
+    </div>`;
+}
+
 // ── My Shift Today card ──────────────────────────────────────────────────────
 
 function buildShiftTodayCard(repId) {
@@ -3094,15 +3193,15 @@ function buildShiftTodayCard(repId) {
       </div>`;
     }
 
-    const contactCol = cRate >= 70 ? '#2e7d32' : cRate >= 50 ? '#e65100' : '#c62828';
+    const contactCol = cRate >= 80 ? '#2e7d32' : cRate >= 65 ? '#e65100' : '#c62828';
     metricsHtml = `
       ${metric('Dist within 5 min', dist, 95, '%', 'team metric')}
       ${metric('Handled within 7 min', handled, 75, '%', 'team metric')}
       <div class="shift-metric">
         <div class="shift-metric-label">Contact Rate</div>
         <div class="shift-metric-value" style="color:${contactCol}">${cRate != null ? cRate.toFixed(1)+'%' : '–'}</div>
-        <div class="shift-metric-sub">${contacted ?? '–'} contacted of ${created ?? '–'} created today</div>
-        ${cRate != null ? `<div class="shift-metric-bar"><div class="shift-metric-bar-fill" style="width:${Math.min(cRate,100).toFixed(0)}%;color:${contactCol}"></div></div>` : ''}
+        <div class="shift-metric-sub">${contacted ?? '–'} contacted of ${created ?? '–'} created today · target 80%</div>
+        ${cRate != null ? `<div class="shift-metric-bar"><div class="shift-metric-bar-fill" style="width:${Math.min((cRate/80)*100,100).toFixed(0)}%;color:${contactCol}"></div></div>` : ''}
       </div>`;
   }
 
@@ -3170,6 +3269,7 @@ function buildShiftTodayCard(repId) {
         </div>
       </div>
       <div class="shift-metrics-grid">${metricsHtml}</div>
+      ${buildRoleTasksHtml(role)}
     </div>`;
 }
 
@@ -3252,6 +3352,137 @@ function buildPersonalAlerts(repId) {
   return alerts.length
     ? `<div class="personal-alerts">${alerts.join('')}</div>`
     : '';
+}
+
+
+// ── My Shifts Tab ─────────────────────────────────────────────────────────────
+
+function renderMyShifts() {
+  const repId    = AUTH.myRepId() || (AUTH.viewingAs?.id) || null;
+  const container = document.getElementById('my-shifts-content');
+  if (!container) return;
+
+  // ── Today's role + live card ──────────────────────────────────────────
+  const todayCard = buildShiftTodayCard(repId);
+
+  // ── Full role checklist for today's role ──────────────────────────────
+  const today = (() => {
+    const n = new Date();
+    return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0');
+  })();
+  const todayShift = ((D.shift_daily || []).find(d => d.date === today)?.reps || []).find(r => r.rep_id === repId);
+  const todayRole  = todayShift?.role_today;
+
+  const fullChecklistHtml = todayRole ? `
+    <div class="card" style="margin-bottom:20px">
+      <div class="section-head" style="margin-bottom:12px">
+        <h2>Today's Full Checklist — Role ${todayRole}</h2>
+        <span class="sub">${ROLE_TASKS[todayRole]?.title || ''}</span>
+      </div>
+      ${(ROLE_TASKS[todayRole]?.blocks || []).map(block => `
+        <div style="margin-bottom:16px">
+          <div style="font-size:13px;font-weight:700;color:var(--primary);margin-bottom:8px;padding:6px 12px;background:var(--primary-light);border-radius:6px;display:inline-block">${block.time}</div>
+          ${block.tasks.map(task => `
+            <div style="display:flex;align-items:flex-start;gap:10px;padding:8px 12px;margin-bottom:4px;background:#fafafa;border-radius:8px;font-size:14px;line-height:1.5">
+              <span style="font-size:16px;flex-shrink:0;margin-top:1px">○</span>
+              <span>${task}</span>
+            </div>`).join('')}
+        </div>`).join('')}
+    </div>` : '';
+
+  // ── Shift history ─────────────────────────────────────────────────────
+  // Gather all known shifts for this rep from multiple sources
+  const history = [];
+
+  // C shifts from op_managers_daily
+  (D.op_managers_daily || []).filter(s => s.rep_id === repId).forEach(s => {
+    history.push({
+      date: s.date, role: 'C',
+      metrics: {
+        reactivates: s.reactivates,
+        reviews:     s.reviews_contacted,
+        total_actions: s.total_actions
+      }
+    });
+  });
+
+  // B shifts from shift_history (task counter)
+  (D.shift_history || []).filter(s => s.rep_id === repId).forEach(s => {
+    history.push({
+      date: s.date, role: 'B',
+      metrics: {
+        completion_rate: s.completion_rate,
+        tasks_handled:   s.tasks_handled,
+        tasks_start:     s.tasks_start
+      }
+    });
+  });
+
+  // A shifts from shift_schedule — attach qlik data for that day
+  (D.shift_schedule || []).filter(s => s.rep_id === repId && s.role === 'A').forEach(s => {
+    const q = (D.qlik_team_daily || []).find(q => q.date === s.date);
+    history.push({
+      date: s.date, role: 'A', is_weekend: s.is_weekend,
+      metrics: q ? {
+        dist_5min_pct:    q.leads_distributed_5min_pct,
+        handled_5min_pct: q.leads_handled_5min_pct,
+        leads_distributed: q.leads_distributed
+      } : {}
+    });
+  });
+
+  // Sort descending, deduplicate by date+role
+  const seen = new Set();
+  const deduped = history
+    .sort((a, b) => b.date.localeCompare(a.date))
+    .filter(s => { const k = s.date+s.role; if (seen.has(k)) return false; seen.add(k); return true; });
+
+  const historyHtml = deduped.length ? `
+    <div class="card" style="margin-top:20px">
+      <div class="card-title">Shift History</div>
+      <table class="rep-table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Role</th>
+            <th>Key Metrics</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${deduped.map(s => {
+            const roleColor = {A:'var(--primary)',B:'var(--success)',C:'var(--purple)'}[s.role] || '#9e9e9e';
+            const roleBg    = {A:'var(--primary-light)',B:'var(--success-bg)',C:'var(--purple-bg)'}[s.role] || '#f5f5f5';
+
+            let metricsText = '–';
+            let statusHtml  = '';
+
+            if (s.role === 'C' && s.metrics.reactivates != null) {
+              const r = s.metrics.reactivates;
+              const met = r >= 2;
+              metricsText = `${r} reactivates · ${s.metrics.reviews ?? '–'} reviews`;
+              statusHtml  = `<span class="chip ${met ? 'chip-on' : 'chip-below'}">${met ? '✓ Reactivate target' : `${r}/2 reactivates`}</span>`;
+            } else if (s.role === 'B' && s.metrics.completion_rate != null) {
+              metricsText = `${s.metrics.completion_rate}% completion · ${s.metrics.tasks_handled} handled`;
+              statusHtml  = `<span class="chip ${s.metrics.completion_rate >= 90 ? 'chip-on' : 'chip-below'}">${s.metrics.completion_rate}%</span>`;
+            } else if (s.role === 'A' && s.metrics.dist_5min_pct != null) {
+              metricsText = `Dist ${s.metrics.dist_5min_pct}% · Handled ${s.metrics.handled_5min_pct}%`;
+              const ok = s.metrics.dist_5min_pct >= 95 && s.metrics.handled_5min_pct >= 75;
+              statusHtml  = `<span class="chip ${ok ? 'chip-on' : 'chip-warn'}">${s.is_weekend ? '🗓 WE' : ''} ${ok ? 'On target' : 'Check'}</span>`;
+            }
+
+            return `<tr>
+              <td style="font-size:13px">${s.date}</td>
+              <td><span style="font-weight:700;color:${roleColor};background:${roleBg};padding:2px 10px;border-radius:6px;font-size:12px">Role ${s.role}</span></td>
+              <td style="font-size:13px;color:var(--text-muted)">${metricsText}</td>
+              <td>${statusHtml}</td>
+            </tr>`;
+          }).join('')}
+        </tbody>
+      </table>
+    </div>` : `<div class="no-data-msg">No shift history found yet.</div>`;
+
+  container.innerHTML = (todayCard || '') + fullChecklistHtml + historyHtml;
 }
 
 // ── VAs Tab ──────────────────────────────────────────────────────────────────
@@ -3638,18 +3869,19 @@ function initApp() {
       const btn = document.querySelector(`[data-tab="${tab}"]`);
       if (btn) btn.style.display = 'none';
     });
-    // Reps land on Individual tab
+    // Reps land on My Shifts tab (today's role + checklist)
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
     document.querySelectorAll('.tab-content').forEach(s => s.classList.remove('active'));
-    const indBtn = document.querySelector('[data-tab="individual"]');
-    if (indBtn) indBtn.classList.add('active');
-    document.getElementById('tab-individual').classList.add('active');
+    const myShiftsBtn = document.querySelector('[data-tab="my-shifts"]');
+    if (myShiftsBtn) myShiftsBtn.classList.add('active');
+    const myShiftsEl = document.getElementById('tab-my-shifts');
+    if (myShiftsEl) myShiftsEl.classList.add('active');
   }
 
   initMonthFilter();
 
   if (isRep) {
-    renderIndividual(AUTH.myRepId());
+    renderMyShifts();
     initFeedbackTab();
   } else {
     renderOverview();
