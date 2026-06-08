@@ -3151,12 +3151,12 @@ function buildShiftTodayCard(repId) {
   const _now = new Date();
   const today = _now.getFullYear()+'-'+String(_now.getMonth()+1).padStart(2,'0')+'-'+String(_now.getDate()).padStart(2,'0');
   const dayData = (D.shift_daily || []).find(d => d.date === today);
-  if (!dayData) return '';
+  const repData = dayData?.reps?.find(r => r.rep_id === repId);
 
-  const repData = dayData.reps.find(r => r.rep_id === repId);
-  if (!repData || !repData.role_today) return '';
-
-  const role    = repData.role_today;
+  // Fall back to shift_organizer if Shift Tracker seat is blank
+  const organizerRole = (D.shift_organizer || {})[today]?.[repId] || null;
+  const role = repData?.role_today || organizerRole;
+  if (!role) return '';   // No role known for today
   const m       = repData.metrics || {};
   const team    = dayData.team || {};
   const updatedAt = dayData.updated_at
@@ -3197,11 +3197,14 @@ function buildShiftTodayCard(repId) {
     metricsHtml = `
       ${metric('Dist within 5 min', dist, 95, '%', 'team metric')}
       ${metric('Handled within 7 min', handled, 75, '%', 'team metric')}
-      <div class="shift-metric">
-        <div class="shift-metric-label">Contact Rate</div>
+      <div class="shift-metric" style="border:1px dashed var(--border)">
+        <div class="shift-metric-label" style="display:flex;align-items:center;gap:6px">
+          Contact Rate
+          <span style="font-size:9px;background:#f5f5f5;color:var(--text-muted);padding:1px 6px;border-radius:4px;font-weight:700">INFO ONLY</span>
+        </div>
         <div class="shift-metric-value" style="color:${contactCol}">${cRate != null ? cRate.toFixed(1)+'%' : '–'}</div>
-        <div class="shift-metric-sub">${contacted ?? '–'} contacted of ${created ?? '–'} created today · target 80%</div>
-        ${cRate != null ? `<div class="shift-metric-bar"><div class="shift-metric-bar-fill" style="width:${Math.min((cRate/80)*100,100).toFixed(0)}%;color:${contactCol}"></div></div>` : ''}
+        <div class="shift-metric-sub">${contacted ?? '–'} contacted of ${created ?? '–'} created today</div>
+        <div style="font-size:10px;color:var(--text-muted);margin-top:4px">Target 80% · does not affect your score</div>
       </div>`;
   }
 
@@ -3371,7 +3374,7 @@ function renderMyShifts() {
     return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0');
   })();
   const todayShift = ((D.shift_daily || []).find(d => d.date === today)?.reps || []).find(r => r.rep_id === repId);
-  const todayRole  = todayShift?.role_today;
+  const todayRole  = todayShift?.role_today || (D.shift_organizer || {})[today]?.[repId] || null;
 
   const fullChecklistHtml = todayRole ? `
     <div class="card" style="margin-bottom:20px">
