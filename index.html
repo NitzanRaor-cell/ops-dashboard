@@ -1440,10 +1440,12 @@ function getMonthlyScore(repId, year, month) {
   else if (roleBQuant != null) catB = roleBQuant;
   else if (roleBQualityAvg != null) catB = roleBQualityAvg;
 
-  // Role C: 50% reactivates quantitative (target 2/shift) + 50% Rotem quality
+  // Role C: 50% reactivates quantitative (target 2/shift, only from 2026-06-08 onward) + 50% Rotem quality
+  const REACTIVATE_QUANT_CUTOFF = "2026-06-08";
   const roleCShifts = (D.op_managers_daily || []).filter(s => {
     const d = new Date(s.date);
-    return s.rep_id === repId && d.getFullYear() === year && d.getMonth() + 1 === month;
+    return s.rep_id === repId && d.getFullYear() === year && d.getMonth() + 1 === month
+      && s.date >= REACTIVATE_QUANT_CUTOFF;
   });
   const roleCQuantScore = roleCShifts.length
     ? avg(roleCShifts.map(s => Math.min((s.reactivates / 2) * 100, 100)))
@@ -1718,7 +1720,9 @@ function renderTrends() {
 function buildRepToggles() {
   const container = document.getElementById("rep-toggles");
   if (container.childElementCount > 0) return;
-  container.innerHTML = REPS.map(r => `
+  // Reps only see their own toggle; managers see all
+  const visible = AUTH.isManager() ? REPS : REPS.filter(r => r.id === AUTH.myRepId());
+  container.innerHTML = visible.map(r => `
     <button class="rep-toggle active" data-rep="${r.id}"
       style="color:${repColor(r.id)}"
       onclick="toggleRep('${r.id}', this)">
