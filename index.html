@@ -3623,40 +3623,41 @@ let vaFilterTo   = null;
 
 function initVADateFilter() {
   const data    = D.va_metrics || [];
-  if (!data.length) return;
+  const quickBar = document.getElementById('va-quick-dates');
+  if (!quickBar) return;
+  if (!data.length) { vaFilterFrom = null; vaFilterTo = null; return; }
 
-  const dates   = data.map(d => d.date).sort();
-  const latest  = dates[dates.length - 1];
+  const dates      = data.map(d => d.date).sort();
+  const latest     = dates[dates.length - 1];
+  const prevDay    = dates.length >= 2 ? dates[dates.length - 2] : latest;
   const oneWeekAgo = dates.length >= 7 ? dates[dates.length - 7] : dates[0];
 
-  // Quick buttons
-  const quickBar = document.getElementById('va-quick-dates');
-  if (!quickBar || quickBar.dataset.init) return;
-  quickBar.dataset.init = '1';
+  // Only rebuild buttons if they haven't been built yet
+  if (!quickBar.dataset.init) {
+    quickBar.dataset.init = '1';
+    const btns = [
+      { label: 'Latest',   from: latest,     to: latest },
+      { label: 'Previous', from: prevDay,     to: prevDay },
+      { label: 'Last 7d',  from: oneWeekAgo,  to: latest },
+      { label: 'All time', from: dates[0],    to: latest },
+    ];
+    quickBar.innerHTML = btns.map(b => `
+      <button class="seg-btn ${b.label === 'Latest' ? 'active' : ''}"
+        data-from="${b.from}" data-to="${b.to}"
+        onclick="setVAQuickFilter(this,'${b.from}','${b.to}')">
+        ${b.label}
+      </button>`).join('');
+  }
 
-  const btns = [
-    { label: 'Today',     from: latest,     to: latest },
-    { label: 'Yesterday', from: dates.length >= 2 ? dates[dates.length - 2] : latest,
-                          to:   dates.length >= 2 ? dates[dates.length - 2] : latest },
-    { label: 'Last 7d',   from: oneWeekAgo,  to: latest },
-    { label: 'All time',  from: dates[0],    to: latest },
-  ];
-
-  quickBar.innerHTML = btns.map(b => `
-    <button class="seg-btn ${b.label === 'Today' ? 'active' : ''}"
-      data-from="${b.from}" data-to="${b.to}"
-      onclick="setVAQuickFilter(this,'${b.from}','${b.to}')">
-      ${b.label}
-    </button>`).join('');
-
-  // Set default date inputs
-  const fromInput = document.getElementById('va-date-from');
-  const toInput   = document.getElementById('va-date-to');
-  if (fromInput) fromInput.value = latest;
-  if (toInput)   toInput.value   = latest;
-
-  vaFilterFrom = latest;
-  vaFilterTo   = latest;
+  // Always set to latest if no filter has been chosen yet
+  if (!vaFilterFrom) {
+    const fromInput = document.getElementById('va-date-from');
+    const toInput   = document.getElementById('va-date-to');
+    if (fromInput) fromInput.value = latest;
+    if (toInput)   toInput.value   = latest;
+    vaFilterFrom = latest;
+    vaFilterTo   = latest;
+  }
 }
 
 function setVAQuickFilter(btn, from, to) {
@@ -3685,8 +3686,6 @@ function renderVAs() {
   const container = document.getElementById('va-content');
   if (!container) return;
 
-  initVADateFilter();
-
   // Apply date filter
   const from = vaFilterFrom;
   const to   = vaFilterTo;
@@ -3694,13 +3693,26 @@ function renderVAs() {
     ? allData.filter(d => d.date >= from && d.date <= to)
     : allData;
 
-  if (!data.length) {
+  if (!allData.length) {
     container.innerHTML = `
       <div class="card" style="text-align:center;padding:48px;color:var(--text-muted)">
         <div style="font-size:32px;margin-bottom:12px">📞</div>
         <div style="font-size:16px;font-weight:700;margin-bottom:8px">No VA data yet</div>
         <div style="font-size:13px">VA metrics will appear here once the Podio fetcher is configured.<br>
         Share the Podio App ID and view IDs with Nitzan to connect the data.</div>
+      </div>`;
+    return;
+  }
+
+  if (!data.length) {
+    const latest = allData.map(d => d.date).sort().pop();
+    container.innerHTML = `
+      <div class="card" style="text-align:center;padding:48px;color:var(--text-muted)">
+        <div style="font-size:32px;margin-bottom:12px">📅</div>
+        <div style="font-size:16px;font-weight:700;margin-bottom:8px">No data for this date range</div>
+        <div style="font-size:13px">Latest available data: <strong>${latest}</strong><br>
+        <a href="#" onclick="setVAQuickFilter(document.querySelector('#va-quick-dates .seg-btn'),'${latest}','${latest}');return false"
+          style="color:var(--primary)">View latest data →</a></div>
       </div>`;
     return;
   }
