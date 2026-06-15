@@ -42,5 +42,57 @@
         "Junior Acquisitions": 0
       }
     }
+  },
+  {
+    "date": "2026-06-15",
+    "updated_at": "2026-06-15T21:38:19.843436Z",
+    "reps": [
+      {
+        "rep_id": "noam",
+        "role_today": "B",
+        "metrics": {
+          "queue_total": 37,
+          "queue_breakdown": {
+            "Uncontacted Tasks": 8,
+            "Contacted Tasks": 29,
+            "OPS Overdue Tasks": 0,
+            "Junior Acquisitions": 0
+          }
+        }
+      },
+      {
+        "rep_id": "tomer",
+        "role_today": "C",
+        "metrics": {
+          "reviews": 21,
+          "reactivates": 0,
+          "total_actions": 18,
+          "scorecard_item_id": 3320458369
+        }
+      },
+      {
+        "rep_id": "eran",
+        "role_today": "A",
+        "metrics": {
+          "dist_5min_pct": null,
+          "handled_5min_pct": null,
+          "leads_created": 58,
+          "leads_contacted": 42,
+          "contact_rate_pct": 72.4
+        }
+      }
+    ],
+    "team": {
+      "contact_rate_pct": 72.4,
+      "leads_created": 58,
+      "leads_contacted": 42,
+      "task_queue_total": 37,
+      "task_queue_breakdown": {
+        "Uncontacted Tasks": 8,
+        "Contacted Tasks": 29,
+        "OPS Overdue Tasks": 0,
+        "Junior Acquisitions": 0
+      }
+    }
   }
 ]
