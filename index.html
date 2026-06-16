@@ -2687,11 +2687,15 @@ function buildFeedbackCard(comment, opts = {}) {
   const linkCount = comment.links.length;
   const showInline = opts.inline;
 
+  const subcatLabel = comment.subcat_label || '';
+  const subcatScore = (comment.subcat_score !== undefined && comment.subcat_score !== null)
+    ? comment.subcat_score : null;
+
   const linksHtml = comment.links.map(l => `
     <div class="podio-link">
       <span class="podio-link-icon">🔗</span>
       <div class="podio-link-content">
-        <a href="${l.url}" target="_blank" rel="noopener">${l.url}</a>
+        ${l.url ? `<a href="${l.url}" target="_blank" rel="noopener">${l.url}</a>` : ''}
         ${l.note ? `<div class="podio-link-note">${escHtml(l.note)}</div>` : ''}
       </div>
     </div>`).join('');
@@ -2711,6 +2715,8 @@ function buildFeedbackCard(comment, opts = {}) {
         <div class="fh-left">
           <span class="feedback-chevron">▶</span>
           <strong>Role ${comment.category}</strong>
+          ${subcatLabel ? `<span style="font-size:12px;color:var(--text-muted);margin-left:2px">· ${escHtml(subcatLabel)}</span>` : ''}
+          ${subcatScore !== null ? `<span class="badge" style="background:#e8f5e9;color:#2e7d32;margin-left:4px">${subcatScore}/5</span>` : ''}
           ${!showInline ? `· ${repName}` : ''}
           · <span style="font-size:12px;color:var(--text-muted)">${comment.comment_date}</span>
           ${linkCount ? `<span class="badge" style="background:#e3f0ff;color:var(--primary);margin-left:4px">${linkCount} link${linkCount>1?'s':''}</span>` : ''}
@@ -2726,6 +2732,8 @@ function buildFeedbackCard(comment, opts = {}) {
           Observed: <strong>${comment.sheet}</strong> period
           ${!showInline ? `· Rep: <strong>${repName}</strong>` : ''}
           · Role: <strong>${comment.category}</strong>
+          ${subcatLabel ? `· <strong>${escHtml(subcatLabel)}</strong>` : ''}
+          ${subcatScore !== null ? `· Score: <strong>${subcatScore}/5</strong>` : ''}
           · Date: ${comment.comment_date}
         </div>
         ${generalHtml}
