@@ -894,12 +894,6 @@
         <option value="B">Role B</option>
         <option value="C">Role C</option>
       </select>
-      <select id="fb-sheet-filter">
-        <option value="">All Periods</option>
-        <option value="March">March</option>
-        <option value="May">May</option>
-        <option value="June">June</option>
-      </select>
       <select id="fb-reviewed-filter">
         <option value="">All Status</option>
         <option value="unreviewed">Not Reviewed</option>
@@ -2806,7 +2800,7 @@ function initFeedbackTab() {
     REPS.map(r => `<option value="${r.id}">${r.name}</option>`).join('');
 
   // Wire filter changes (remove old listeners first by cloning)
-  ['fb-rep-filter','fb-cat-filter','fb-sheet-filter','fb-reviewed-filter'].forEach(id => {
+  ['fb-rep-filter','fb-cat-filter','fb-reviewed-filter'].forEach(id => {
     const el = document.getElementById(id);
     const clone = el.cloneNode(true);
     el.parentNode.replaceChild(clone, el);
@@ -2823,19 +2817,18 @@ function initFeedbackTab() {
 function renderFeedbackTab() {
   const repFilter      = document.getElementById('fb-rep-filter').value;
   const catFilter      = document.getElementById('fb-cat-filter').value;
-  const sheetFilter    = document.getElementById('fb-sheet-filter').value;
   const reviewedFilter = document.getElementById('fb-reviewed-filter').value;
 
   // Reps only see their own feedback
   let comments = (D.rotem_comments || []).filter(c =>
     AUTH.isManager() || c.rep_id === AUTH.myRepId()
   );
-  if (repFilter)   comments = comments.filter(c => c.rep_id === repFilter);
-  if (catFilter)   comments = comments.filter(c => c.category === catFilter);
-  if (sheetFilter) comments = comments.filter(c => c.sheet === sheetFilter);
-  // Filter by the global month bar (comment_date takes priority over sheet name)
+  if (repFilter) comments = comments.filter(c => c.rep_id === repFilter);
+  if (catFilter) comments = comments.filter(c => c.category === catFilter);
+  // Filter by the active month — map "YYYY-MM" to the sheet name Rotem uses
   const am = getActiveMonth(); // "YYYY-MM"
-  comments = comments.filter(c => (c.comment_date || '').startsWith(am));
+  const amSheetName = ["January","February","March","April","May","June","July","August","September","October","November","December"][parseInt(am.split("-")[1], 10) - 1];
+  comments = comments.filter(c => c.sheet === amSheetName);
   if (reviewedFilter === 'reviewed')   comments = comments.filter(c => {
     const st = getFeedbackState(c.id);
     return !!st.reviewed_by[c.rep_id];
