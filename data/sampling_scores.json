@@ -525,21 +525,36 @@
       "prioritizing_step2_keyword_managing_acq": {
         "score": 5,
         "examples": [
-          {"link": "https://podio.com/zoomreicom/acquisitions/apps/seller-leads/items/196341", "comment": "עיגון שיעורת הכלוקה"},
-          {"link": "https://podio.com/zoomreicom/acquisitions/apps/seller-leads/items/235250", "comment": "מיונים נכון לפי פריוריטי"}
+          {
+            "link": "https://podio.com/zoomreicom/acquisitions/apps/seller-leads/items/196341",
+            "comment": "מעולה שהעברת למייקי"
+          },
+          {
+            "link": "https://podio.com/zoomreicom/acquisitions/apps/seller-leads/items/235250",
+            "comment": "חלוקה נכונה לפי פריוריטי"
+          }
         ]
       },
       "returning_dup_initial": {
         "score": 5,
         "examples": [
-          {"link": "https://podio.com/zoomreicom/acquisitions/apps/seller-leads/items/107541", "comment": "עיגון שישית לו שינה נ לא ס בתוצאות מסוית"},
-          {"link": "https://podio.com/zoomreicom/acquisitions/apps/seller-leads/items/235144", "comment": "עיגון שסיכרת הקלל הקלל תוצאות"}
+          {
+            "link": "https://podio.com/zoomreicom/acquisitions/apps/seller-leads/items/107541",
+            "comment": "מעולה ששמת לב שהליד נכנס מכתובת אחרת"
+          },
+          {
+            "link": "https://podio.com/zoomreicom/acquisitions/apps/seller-leads/items/235144",
+            "comment": "מעולה שהחזרת לקונטקטד ותייגת"
+          }
         ]
       },
       "activity_zillow_maps": {
         "score": 5,
         "examples": [
-          {"link": "https://podio.com/zoomreicom/acquisitions/apps/seller-leads/items/235228", "comment": "מינוי נכון של הנומסנות"}
+          {
+            "link": "https://podio.com/zoomreicom/acquisitions/apps/seller-leads/items/235228",
+            "comment": "זיהוי נכון של אאוטסייד"
+          }
         ]
       }
     }
@@ -557,23 +572,60 @@
     },
     "avg": 5,
     "subcat_details": {
-      "monitoring_ntc": {"score": 5, "examples": [{"link": "", "comment": ""}]},
-      "renos": {"score": 5, "examples": [{"link": "", "comment": ""}]},
+      "monitoring_ntc": {
+        "score": 5,
+        "examples": [
+          {
+            "link": "",
+            "comment": "התנהלות נכונה מול הVA'S]["
+          }
+        ]
+      },
+      "renos": {
+        "score": 5,
+        "examples": [
+          {
+            "link": "",
+            "comment": "התנהלות טובה עם הרינואים ותקשורת בקבוצה"
+          }
+        ]
+      },
       "reviews": {
         "score": 5,
         "examples": [
-          {"link": "https://podio.com/zoomreicom/acquisitions/apps/seller-leads/items/130610", "comment": ""},
-          {"link": "https://podio.com/zoomreicom/acquisitions/apps/seller-leads/items/140657", "comment": ""},
-          {"link": "https://podio.com/zoomreicom/acquisitions/apps/seller-leads/items/171844", "comment": ""},
-          {"link": "https://podio.com/zoomreicom/acquisitions/apps/seller-leads/items/234081", "comment": ""},
-          {"link": "https://podio.com/zoomreicom/acquisitions/apps/seller-leads/items/96615", "comment": ""}
+          {
+            "link": "https://podio.com/zoomreicom/acquisitions/apps/seller-leads/items/130610",
+            "comment": "מעולה"
+          },
+          {
+            "link": "https://podio.com/zoomreicom/acquisitions/apps/seller-leads/items/140657",
+            "comment": "מעולה"
+          },
+          {
+            "link": "https://podio.com/zoomreicom/acquisitions/apps/seller-leads/items/171844",
+            "comment": "מעולה"
+          },
+          {
+            "link": "https://podio.com/zoomreicom/acquisitions/apps/seller-leads/items/234081",
+            "comment": "מעולה"
+          },
+          {
+            "link": "https://podio.com/zoomreicom/acquisitions/apps/seller-leads/items/96615",
+            "comment": "מעולה"
+          }
         ]
       },
       "reactivate": {
         "score": 5,
         "examples": [
-          {"link": "https://podio.com/zoomreicom/acquisitions/apps/seller-leads/items/234639", "comment": ""},
-          {"link": "https://podio.com/zoomreicom/acquisitions/apps/seller-leads/items/191742", "comment": ""}
+          {
+            "link": "https://podio.com/zoomreicom/acquisitions/apps/seller-leads/items/234639",
+            "comment": "ריאקטיבייט תקין"
+          },
+          {
+            "link": "https://podio.com/zoomreicom/acquisitions/apps/seller-leads/items/191742",
+            "comment": "ריאקטיבייט תקין"
+          }
         ]
       }
     }
@@ -591,16 +643,46 @@
     },
     "avg": 5,
     "subcat_details": {
-      "tagging": {"score": 5, "examples": [{"link": "https://podio.com/zoomreicom/acquisitions/apps/seller-leads/items/234879", "comment": ""}]},
-      "prioritizing": {"score": 5, "examples": [{"link": "https://podio.com/zoomreicom/acquisitions/apps/seller-leads/items/210674", "comment": ""}]},
+      "tagging": {
+        "score": 5,
+        "examples": [
+          {
+            "link": "https://podio.com/zoomreicom/acquisitions/apps/seller-leads/items/234879",
+            "comment": "מעולה שתייגת והעברת לניו אנטצד"
+          }
+        ]
+      },
+      "prioritizing": {
+        "score": 5,
+        "examples": [
+          {
+            "link": "https://podio.com/zoomreicom/acquisitions/apps/seller-leads/items/210674",
+            "comment": "טוב שתייגת את פיבי לבדוק"
+          }
+        ]
+      },
       "updating_status": {
         "score": 5,
         "examples": [
-          {"link": "https://podio.com/zoomreicom/acquisitions/apps/seller-leads/items/223886", "comment": ""},
-          {"link": "https://podio.com/zoomreicom/acquisitions/apps/seller-leads/items/105656", "comment": ""}
+          {
+            "link": "https://podio.com/zoomreicom/acquisitions/apps/seller-leads/items/223886",
+            "comment": "מעולה שנתת לפיבי לבדוק, עדכנת את הסטטוס ורשמת נוטס"
+          },
+          {
+            "link": "https://podio.com/zoomreicom/acquisitions/apps/seller-leads/items/105656",
+            "comment": "טוב שניקית את הליד אחרי שעבר כל כך הרבה זמן"
+          }
         ]
       },
-      "properly_handling": {"score": 5, "examples": [{"link": "https://podio.com/zoomreicom/acquisitions/apps/seller-leads/items/235142", "comment": ""}]}
+      "properly_handling": {
+        "score": 5,
+        "examples": [
+          {
+            "link": "https://podio.com/zoomreicom/acquisitions/apps/seller-leads/items/235142",
+            "comment": "התנהלות נכונה"
+          }
+        ]
+      }
     }
   },
   {
@@ -615,13 +697,35 @@
     },
     "avg": 4,
     "subcat_details": {
-      "prioritizing_step2_keyword_managing_acq": {"score": 5, "examples": [{"link": "https://podio.com/zoomreicom/acquisitions/apps/seller-leads/items/235411", "comment": ""}]},
-      "returning_dup_initial": {"score": 4, "examples": [{"link": "https://podio.com/zoomreicom/acquisitions/apps/seller-leads/items/235357", "comment": ""}]},
+      "prioritizing_step2_keyword_managing_acq": {
+        "score": 5,
+        "examples": [
+          {
+            "link": "https://podio.com/zoomreicom/acquisitions/apps/seller-leads/items/235411",
+            "comment": "זיהוי נכון של ליד שעשוי להיות חם"
+          }
+        ]
+      },
+      "returning_dup_initial": {
+        "score": 4,
+        "examples": [
+          {
+            "link": "https://podio.com/zoomreicom/acquisitions/apps/seller-leads/items/235357",
+            "comment": "מעולה שחילקת שוב לברק את הליד אבל אם הוא לא זמין אפשר היה להעביר את הליד קצת קודם למישהו אחר"
+          }
+        ]
+      },
       "activity_zillow_maps": {
         "score": 3,
         "examples": [
-          {"link": "https://podio.com/zoomreicom/acquisitions/apps/seller-leads/items/235454", "comment": ""},
-          {"link": "https://podio.com/zoomreicom/acquisitions/apps/seller-leads/items/235421", "comment": ""}
+          {
+            "link": "https://podio.com/zoomreicom/acquisitions/apps/seller-leads/items/235454",
+            "comment": "אלינוי זה אאוטסייד נכון לכרגע"
+          },
+          {
+            "link": "https://podio.com/zoomreicom/acquisitions/apps/seller-leads/items/235421",
+            "comment": "כתובת חלקית מחלקים רגיל"
+          }
         ]
       }
     }
@@ -641,13 +745,38 @@
       "prioritizing_step2_keyword_managing_acq": {
         "score": 4,
         "examples": [
-          {"link": "https://podio.com/zoomreicom/acquisitions/apps/seller-leads/items/235514", "comment": ""},
-          {"link": "https://podio.com/zoomreicom/acquisitions/apps/seller-leads/items/235489", "comment": ""},
-          {"link": "https://podio.com/zoomreicom/acquisitions/apps/seller-leads/items/235505", "comment": ""}
+          {
+            "link": "https://podio.com/zoomreicom/acquisitions/apps/seller-leads/items/235514",
+            "comment": "לא מסתמכים על הזמן שביקשו שיחה לפי הסטפ 2. מתקשרים רגיל"
+          },
+          {
+            "link": "https://podio.com/zoomreicom/acquisitions/apps/seller-leads/items/235489",
+            "comment": "חלוקה נכונה לפי פריוריטי"
+          },
+          {
+            "link": "https://podio.com/zoomreicom/acquisitions/apps/seller-leads/items/235505",
+            "comment": "זיהוי נכון של פוטנציאל לליד מעניין לפי הסטפ 2"
+          }
         ]
       },
-      "returning_dup_initial": {"score": 4, "examples": [{"link": "https://podio.com/zoomreicom/acquisitions/apps/seller-leads/items/231808", "comment": ""}]},
-      "activity_zillow_maps": {"score": 5, "examples": [{"link": "https://podio.com/zoomreicom/acquisitions/apps/seller-leads/items/235526", "comment": ""}]}
+      "returning_dup_initial": {
+        "score": 4,
+        "examples": [
+          {
+            "link": "https://podio.com/zoomreicom/acquisitions/apps/seller-leads/items/231808",
+            "comment": "שים לב לתייג באינישל אחרת הליד לא קופץ להם"
+          }
+        ]
+      },
+      "activity_zillow_maps": {
+        "score": 5,
+        "examples": [
+          {
+            "link": "https://podio.com/zoomreicom/acquisitions/apps/seller-leads/items/235526",
+            "comment": "זיהוי נכון של אאוטסייד"
+          }
+        ]
+      }
     }
   },
   {
@@ -663,16 +792,46 @@
     },
     "avg": 4.25,
     "subcat_details": {
-      "tagging": {"score": 5, "examples": [{"link": "https://podio.com/zoomreicom/acquisitions/apps/seller-leads/items/105656", "comment": ""}]},
+      "tagging": {
+        "score": 5,
+        "examples": [
+          {
+            "link": "https://podio.com/zoomreicom/acquisitions/apps/seller-leads/items/105656",
+            "comment": "מעולה שתייגת את פיבי לבדוק. באופן כללי התנהלות נכונה מול הטסקים"
+          }
+        ]
+      },
       "prioritizing": {
         "score": 3,
         "examples": [
-          {"link": "https://podio.com/zoomreicom/acquisitions/apps/seller-leads/items/223451", "comment": ""},
-          {"link": "https://podio.com/zoomreicom/acquisitions/apps/seller-leads/items/228179", "comment": ""}
+          {
+            "link": "https://podio.com/zoomreicom/acquisitions/apps/seller-leads/items/223451",
+            "comment": "אם הסלר התקשר בתגובה לחיוג של פיבי, נתייג אותה חזרה ולא אקווזישן, בייחוד בסופש שהם יותר עמוסים"
+          },
+          {
+            "link": "https://podio.com/zoomreicom/acquisitions/apps/seller-leads/items/228179",
+            "comment": "כאן שוב לא הייתי מתייגת את טים לידר, אומנם רצה פולואפ לסוף יוני ואזור מעניין אבל המחיר שמבקש יחסית גבוהה, PPL, הייתי נותנת קודם לפיבי לבדוק ואם רלוונטי מעבירה לאקווזישן או למישהו בדרגה נמוכה יותר. בכל אופן אחרי שלא ענה לתיוג פעם אחת אז מעבירה למישהו אחר/ מעבירה לניו אנטצטד"
+          }
         ]
       },
-      "updating_status": {"score": 4, "examples": [{"link": "https://podio.com/zoomreicom/acquisitions/apps/seller-leads/items/225460", "comment": ""}]},
-      "properly_handling": {"score": 5, "examples": [{"link": "https://podio.com/zoomreicom/acquisitions/apps/seller-leads/items/229320", "comment": ""}]}
+      "updating_status": {
+        "score": 4,
+        "examples": [
+          {
+            "link": "https://podio.com/zoomreicom/acquisitions/apps/seller-leads/items/225460",
+            "comment": "לא לשכוח ללחוץ על וויטינג פור או פי אם אתה עושה פולו אפ"
+          }
+        ]
+      },
+      "properly_handling": {
+        "score": 5,
+        "examples": [
+          {
+            "link": "https://podio.com/zoomreicom/acquisitions/apps/seller-leads/items/229320",
+            "comment": "5- טוב ששמת לב שהוא שואל על כתובת אחרת ושאלת שאלת הבהרה"
+          }
+        ]
+      }
     }
   }
 ]

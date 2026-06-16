@@ -1039,7 +1039,10 @@ if (!window.OPS_DATA) {
 const COMMENTS_GITHUB_OWNER  = 'NitzanRaor-cell';
 const COMMENTS_GITHUB_REPO   = 'ops-dashboard';
 const COMMENTS_GITHUB_PATH   = 'data/shift_comments.json';
-const SCORES_GITHUB_PATH     = 'data/sampling_scores.json';
+// Scores go to the PRIVATE repo so GitHub Actions doesn't overwrite them on the next sync
+const SCORES_GITHUB_OWNER    = 'NitzanRaor-cell';
+const SCORES_GITHUB_REPO     = 'Nitzan-projects-v2';
+const SCORES_GITHUB_PATH     = 'ops-dashboard/data/sampling_scores.json';
 // Token is injected by GitHub Actions into data/write-token.json (not stored in source)
 let COMMENTS_GITHUB_TOKEN = '';
 (async () => {
@@ -4098,7 +4101,7 @@ async function saveShiftComment(repId, today, noteText) {
   if (!getR.ok) throw new Error('Could not read comments file');
   const getJson = await getR.json();
   const sha = getJson.sha;
-  const existing = JSON.parse(atob(getJson.content.replace(/\n/g, '')));
+  const existing = JSON.parse(decodeURIComponent(escape(atob(getJson.content.replace(/\n/g, '')))));
 
   // Update entry
   if (!existing[today]) existing[today] = {};
@@ -4124,14 +4127,17 @@ async function saveShiftComment(repId, today, noteText) {
 }
 
 async function pushSamplingScoreToGitHub(entry) {
-  const apiBase = `https://api.github.com/repos/${COMMENTS_GITHUB_OWNER}/${COMMENTS_GITHUB_REPO}/contents/${SCORES_GITHUB_PATH}`;
+  // Write to the PRIVATE repo so GitHub Actions (which copies private→public) doesn't erase entries.
+  const apiBase = `https://api.github.com/repos/${SCORES_GITHUB_OWNER}/${SCORES_GITHUB_REPO}/contents/${SCORES_GITHUB_PATH}`;
   const headers = { Authorization: `token ${COMMENTS_GITHUB_TOKEN}`, 'Content-Type': 'application/json' };
 
   const getR = await fetch(apiBase, { headers });
   if (!getR.ok) throw new Error('Could not read sampling_scores.json from GitHub');
   const getJson = await getR.json();
   const sha = getJson.sha;
-  const existing = JSON.parse(atob(getJson.content.replace(/\n/g, '')));
+  // atob returns a binary string (one char per byte); decodeURIComponent(escape(...)) re-encodes
+  // those bytes as proper UTF-8 so Hebrew and other non-ASCII text survives the round-trip.
+  const existing = JSON.parse(decodeURIComponent(escape(atob(getJson.content.replace(/\n/g, '')))));
 
   const { _local_id, ...clean } = entry;
   existing.push(clean);
