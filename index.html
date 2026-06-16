@@ -1042,13 +1042,18 @@ if (!window.OPS_DATA) {
 <!-- ═══════════════════════════════ MAIN LOGIC ════════════════════════════ -->
 <script>
 // ── Shift comments config ──────────────────────────────────────────────────
-// Fine-grained PAT with contents:write on NitzanRaor-cell/ops-dashboard only.
-// To rotate: Settings → Developer settings → Personal access tokens → Fine-grained.
 const COMMENTS_GITHUB_OWNER  = 'NitzanRaor-cell';
 const COMMENTS_GITHUB_REPO   = 'ops-dashboard';
 const COMMENTS_GITHUB_PATH   = 'data/shift_comments.json';
 const SCORES_GITHUB_PATH     = 'data/sampling_scores.json';
-const COMMENTS_GITHUB_TOKEN  = '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';
+// Token is injected by GitHub Actions into data/write-token.json (not stored in source)
+let COMMENTS_GITHUB_TOKEN = '';
+(async () => {
+  try {
+    const r = await fetch(`https://raw.githubusercontent.com/${COMMENTS_GITHUB_OWNER}/${COMMENTS_GITHUB_REPO}/main/data/write-token.json?_=${Date.now()}`);
+    if (r.ok) { const d = await r.json(); COMMENTS_GITHUB_TOKEN = d.token || ''; }
+  } catch {}
+})();
 
 const RECAP_GIFS = [
   'https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3MzZudzhtNTB3bHJuMDh5a2EwajJoN3diM2ZpaTRxNDF6dWloNGV5cSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/LlYjGi9rErbLjyaMNr/giphy.gif',
@@ -1400,6 +1405,7 @@ function setActiveMonth(ym) {
   if (activeTab === 'individual')  renderIndividual();
   if (activeTab === 'insights')    renderInsights();
   if (activeTab === 'trends')      renderTrends();
+  if (activeTab === 'feedback')    renderFeedbackTab();
 }
 
 // ── Data Engine ─────────────────────────────────────────────────────────────
@@ -2750,11 +2756,13 @@ function buildFeedbackCard(comment, opts = {}) {
 }
 
 function toggleFeedback(id, headerEl) {
-  const body = document.getElementById(`fb-body-${id}`);
+  const card    = headerEl.closest('.feedback-card');
+  const body    = card ? card.querySelector('.feedback-body') : document.getElementById(`fb-body-${id}`);
   const chevron = headerEl.querySelector('.feedback-chevron');
+  if (!body) return;
   const isOpen = body.classList.contains('open');
   body.classList.toggle('open', !isOpen);
-  chevron.classList.toggle('open', !isOpen);
+  if (chevron) chevron.classList.toggle('open', !isOpen);
 }
 
 function markReviewed(commentId, repId, checked) {
@@ -2825,6 +2833,9 @@ function renderFeedbackTab() {
   if (repFilter)   comments = comments.filter(c => c.rep_id === repFilter);
   if (catFilter)   comments = comments.filter(c => c.category === catFilter);
   if (sheetFilter) comments = comments.filter(c => c.sheet === sheetFilter);
+  // Filter by the global month bar (comment_date takes priority over sheet name)
+  const am = getActiveMonth(); // "YYYY-MM"
+  comments = comments.filter(c => (c.comment_date || '').startsWith(am));
   if (reviewedFilter === 'reviewed')   comments = comments.filter(c => {
     const st = getFeedbackState(c.id);
     return !!st.reviewed_by[c.rep_id];
