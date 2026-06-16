@@ -509,5 +509,170 @@
       "properly_handling": 4
     },
     "avg": 4.75
+  },
+  {
+    "date": "2026-06-10",
+    "rep_id": "tomer",
+    "reviewer": "rotem",
+    "category": "A",
+    "scores": {
+      "prioritizing_step2_keyword_managing_acq": 5,
+      "returning_dup_initial": 5,
+      "activity_zillow_maps": 5
+    },
+    "avg": 5,
+    "subcat_details": {
+      "prioritizing_step2_keyword_managing_acq": {
+        "score": 5,
+        "examples": [
+          {"link": "https://podio.com/zoomreicom/acquisitions/apps/seller-leads/items/196341", "comment": "עיגון שיעורת הכלוקה"},
+          {"link": "https://podio.com/zoomreicom/acquisitions/apps/seller-leads/items/235250", "comment": "מיונים נכון לפי פריוריטי"}
+        ]
+      },
+      "returning_dup_initial": {
+        "score": 5,
+        "examples": [
+          {"link": "https://podio.com/zoomreicom/acquisitions/apps/seller-leads/items/107541", "comment": "עיגון שישית לו שינה נ לא ס בתוצאות מסוית"},
+          {"link": "https://podio.com/zoomreicom/acquisitions/apps/seller-leads/items/235144", "comment": "עיגון שסיכרת הקלל הקלל תוצאות"}
+        ]
+      },
+      "activity_zillow_maps": {
+        "score": 5,
+        "examples": [
+          {"link": "https://podio.com/zoomreicom/acquisitions/apps/seller-leads/items/235228", "comment": "מינוי נכון של הנומסנות"}
+        ]
+      }
+    }
+  },
+  {
+    "date": "2026-06-12",
+    "rep_id": "noam",
+    "reviewer": "rotem",
+    "category": "C",
+    "scores": {
+      "monitoring_ntc": 5,
+      "renos": 5,
+      "reviews": 5,
+      "reactivate": 5
+    },
+    "avg": 5,
+    "subcat_details": {
+      "monitoring_ntc": {"score": 5, "examples": [{"link": "", "comment": ""}]},
+      "renos": {"score": 5, "examples": [{"link": "", "comment": ""}]},
+      "reviews": {
+        "score": 5,
+        "examples": [
+          {"link": "https://podio.com/zoomreicom/acquisitions/apps/seller-leads/items/130610", "comment": ""},
+          {"link": "https://podio.com/zoomreicom/acquisitions/apps/seller-leads/items/140657", "comment": ""},
+          {"link": "https://podio.com/zoomreicom/acquisitions/apps/seller-leads/items/171844", "comment": ""},
+          {"link": "https://podio.com/zoomreicom/acquisitions/apps/seller-leads/items/234081", "comment": ""},
+          {"link": "https://podio.com/zoomreicom/acquisitions/apps/seller-leads/items/96615", "comment": ""}
+        ]
+      },
+      "reactivate": {
+        "score": 5,
+        "examples": [
+          {"link": "https://podio.com/zoomreicom/acquisitions/apps/seller-leads/items/234639", "comment": ""},
+          {"link": "https://podio.com/zoomreicom/acquisitions/apps/seller-leads/items/191742", "comment": ""}
+        ]
+      }
+    }
+  },
+  {
+    "date": "2026-06-12",
+    "rep_id": "tomer",
+    "reviewer": "rotem",
+    "category": "B",
+    "scores": {
+      "tagging": 5,
+      "prioritizing": 5,
+      "updating_status": 5,
+      "properly_handling": 5
+    },
+    "avg": 5,
+    "subcat_details": {
+      "tagging": {"score": 5, "examples": [{"link": "https://podio.com/zoomreicom/acquisitions/apps/seller-leads/items/234879", "comment": ""}]},
+      "prioritizing": {"score": 5, "examples": [{"link": "https://podio.com/zoomreicom/acquisitions/apps/seller-leads/items/210674", "comment": ""}]},
+      "updating_status": {
+        "score": 5,
+        "examples": [
+          {"link": "https://podio.com/zoomreicom/acquisitions/apps/seller-leads/items/223886", "comment": ""},
+          {"link": "https://podio.com/zoomreicom/acquisitions/apps/seller-leads/items/105656", "comment": ""}
+        ]
+      },
+      "properly_handling": {"score": 5, "examples": [{"link": "https://podio.com/zoomreicom/acquisitions/apps/seller-leads/items/235142", "comment": ""}]}
+    }
+  },
+  {
+    "date": "2026-06-12",
+    "rep_id": "omer",
+    "reviewer": "rotem",
+    "category": "A",
+    "scores": {
+      "prioritizing_step2_keyword_managing_acq": 5,
+      "returning_dup_initial": 4,
+      "activity_zillow_maps": 3
+    },
+    "avg": 4,
+    "subcat_details": {
+      "prioritizing_step2_keyword_managing_acq": {"score": 5, "examples": [{"link": "https://podio.com/zoomreicom/acquisitions/apps/seller-leads/items/235411", "comment": ""}]},
+      "returning_dup_initial": {"score": 4, "examples": [{"link": "https://podio.com/zoomreicom/acquisitions/apps/seller-leads/items/235357", "comment": ""}]},
+      "activity_zillow_maps": {
+        "score": 3,
+        "examples": [
+          {"link": "https://podio.com/zoomreicom/acquisitions/apps/seller-leads/items/235454", "comment": ""},
+          {"link": "https://podio.com/zoomreicom/acquisitions/apps/seller-leads/items/235421", "comment": ""}
+        ]
+      }
+    }
+  },
+  {
+    "date": "2026-06-13",
+    "rep_id": "eran",
+    "reviewer": "rotem",
+    "category": "A",
+    "scores": {
+      "prioritizing_step2_keyword_managing_acq": 4,
+      "returning_dup_initial": 4,
+      "activity_zillow_maps": 5
+    },
+    "avg": 4.33,
+    "subcat_details": {
+      "prioritizing_step2_keyword_managing_acq": {
+        "score": 4,
+        "examples": [
+          {"link": "https://podio.com/zoomreicom/acquisitions/apps/seller-leads/items/235514", "comment": ""},
+          {"link": "https://podio.com/zoomreicom/acquisitions/apps/seller-leads/items/235489", "comment": ""},
+          {"link": "https://podio.com/zoomreicom/acquisitions/apps/seller-leads/items/235505", "comment": ""}
+        ]
+      },
+      "returning_dup_initial": {"score": 4, "examples": [{"link": "https://podio.com/zoomreicom/acquisitions/apps/seller-leads/items/231808", "comment": ""}]},
+      "activity_zillow_maps": {"score": 5, "examples": [{"link": "https://podio.com/zoomreicom/acquisitions/apps/seller-leads/items/235526", "comment": ""}]}
+    }
+  },
+  {
+    "date": "2026-06-13",
+    "rep_id": "omer",
+    "reviewer": "rotem",
+    "category": "B",
+    "scores": {
+      "tagging": 5,
+      "prioritizing": 3,
+      "updating_status": 4,
+      "properly_handling": 5
+    },
+    "avg": 4.25,
+    "subcat_details": {
+      "tagging": {"score": 5, "examples": [{"link": "https://podio.com/zoomreicom/acquisitions/apps/seller-leads/items/105656", "comment": ""}]},
+      "prioritizing": {
+        "score": 3,
+        "examples": [
+          {"link": "https://podio.com/zoomreicom/acquisitions/apps/seller-leads/items/223451", "comment": ""},
+          {"link": "https://podio.com/zoomreicom/acquisitions/apps/seller-leads/items/228179", "comment": ""}
+        ]
+      },
+      "updating_status": {"score": 4, "examples": [{"link": "https://podio.com/zoomreicom/acquisitions/apps/seller-leads/items/225460", "comment": ""}]},
+      "properly_handling": {"score": 5, "examples": [{"link": "https://podio.com/zoomreicom/acquisitions/apps/seller-leads/items/229320", "comment": ""}]}
+    }
   }
 ]
