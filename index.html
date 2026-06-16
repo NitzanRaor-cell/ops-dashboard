@@ -262,6 +262,12 @@
     .section-head h2 { font-size: 16px; font-weight: 700; }
     .section-head .sub { font-size: 13px; color: var(--text-muted); }
 
+    .recap-metrics-grid { display: flex; flex-direction: column; gap: 2px; }
+    .recap-metric-row { display: flex; justify-content: space-between; align-items: center; padding: 9px 12px; border-radius: 7px; background: #fafafa; font-size: 14px; }
+    .recap-metric-row:nth-child(even) { background: #f3f4f6; }
+    .recap-label { color: var(--text); font-weight: 500; }
+    .recap-value { font-weight: 700; font-size: 15px; }
+
     .month-badge {
       display: inline-block; padding: 3px 10px; border-radius: 6px;
       background: var(--primary-light); color: var(--primary);
@@ -669,6 +675,7 @@
   <button class="tab-btn" data-tab="insights">Insights</button>
   <button class="tab-btn" data-tab="my-shifts">My Shifts</button>
   <button class="tab-btn" data-tab="vas">VAs</button>
+  <button class="tab-btn" data-tab="shift-recap">Shift Recap</button>
 </nav>
 
 <!-- Preview mode banner -->
@@ -952,6 +959,15 @@
     <div id="va-content"></div>
   </section>
 
+  <!-- ════════════════════════════ SHIFT RECAP TAB ══════════════════════════ -->
+  <section id="tab-shift-recap" class="tab-content">
+    <div class="section-head">
+      <h2>Shift Recap</h2>
+      <span class="sub">Your daily shift summary — sent via Slack 30 min before shift end</span>
+    </div>
+    <div id="shift-recap-content"></div>
+  </section>
+
 </main>
 
 <!-- ═══════════════════════════════ EMBEDDED SEED DATA ════════════════════ -->
@@ -1025,6 +1041,40 @@ if (!window.OPS_DATA) {
 
 <!-- ═══════════════════════════════ MAIN LOGIC ════════════════════════════ -->
 <script>
+// ── Shift comments config ──────────────────────────────────────────────────
+// Fine-grained PAT with contents:write on NitzanRaor-cell/ops-dashboard only.
+// To rotate: Settings → Developer settings → Personal access tokens → Fine-grained.
+const COMMENTS_GITHUB_OWNER  = 'NitzanRaor-cell';
+const COMMENTS_GITHUB_REPO   = 'ops-dashboard';
+const COMMENTS_GITHUB_PATH   = 'data/shift_comments.json';
+const SCORES_GITHUB_PATH     = 'data/sampling_scores.json';
+const COMMENTS_GITHUB_TOKEN  = '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';
+
+const RECAP_GIFS = [
+  'https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3MzZudzhtNTB3bHJuMDh5a2EwajJoN3diM2ZpaTRxNDF6dWloNGV5cSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/LlYjGi9rErbLjyaMNr/giphy.gif',
+  'https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExdHVoNzV5b3k5cnRnczlkMjRmeGduazk2dmVrd2E0c3poZ29zMXU3ZiZlcD12MV9naWZzX3NlYXJjaCZjdD1n/1dMNqVx9Kb12EBjFrc/giphy.gif',
+  'https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExdHVoNzV5b3k5cnRnczlkMjRmeGduazk2dmVrd2E0c3poZ29zMXU3ZiZlcD12MV9naWZzX3NlYXJjaCZjdD1n/Jp4dchTKX6BzGkZ5DL/giphy.gif',
+  'https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExdHVoNzV5b3k5cnRnczlkMjRmeGduazk2dmVrd2E0c3poZ29zMXU3ZiZlcD12MV9naWZzX3NlYXJjaCZjdD1n/dtxA3U6yLPRW569tCu/giphy.gif',
+  'https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExdjFmOGFlM2xxNWQ3MzJseHF6ZXNoMDl5M25rOHp3ZWRtODN0MXd6eCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/6vaX3rmgrO2sWEXZQz/giphy.gif',
+  'https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExdjFmOGFlM2xxNWQ3MzJseHF6ZXNoMDl5M25rOHp3ZWRtODN0MXd6eCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/a0h7sAqON67nO/giphy.gif',
+  'https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExdjFmOGFlM2xxNWQ3MzJseHF6ZXNoMDl5M25rOHp3ZWRtODN0MXd6eCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/AgrfqPt5AyiTm/giphy.gif',
+  'https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExdjFmOGFlM2xxNWQ3MzJseHF6ZXNoMDl5M25rOHp3ZWRtODN0MXd6eCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/xNBcChLQt7s9a/giphy.gif',
+  'https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExdjFmOGFlM2xxNWQ3MzJseHF6ZXNoMDl5M25rOHp3ZWRtODN0MXd6eCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/Q81NcsY6YxK7jxnr4v/giphy.gif',
+  'https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExdjFmOGFlM2xxNWQ3MzJseHF6ZXNoMDl5M25rOHp3ZWRtODN0MXd6eCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/o75ajIFH0QnQC3nCeD/giphy.gif',
+  'https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3bjZucXhpMHJ4bHp3MnE1aWh6MGllZTd4dm5rbmZ5NmFrdmIycmpxayZlcD12MV9naWZzX3NlYXJjaCZjdD1n/qlrBlSDevEdFeW5JwV/giphy.gif',
+  'https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExaHFlNXkyb2F4MTIzeXM5c21zcG1tZWFmbGR2dHNjNnJzbHVwMjdzbCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/JPsFUPp3vLS5q/giphy.gif',
+  'https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExaHFlNXkyb2F4MTIzeXM5c21zcG1tZWFmbGR2dHNjNnJzbHVwMjdzbCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/YnBntKOgnUSBkV7bQH/giphy.gif',
+  'https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExaHFlNXkyb2F4MTIzeXM5c21zcG1tZWFmbGR2dHNjNnJzbHVwMjdzbCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/SGkufeMafyuBhIw796/giphy.gif',
+];
+
+// Picks a gif deterministically by repId + today so it's stable per shift but rotates each day
+function pickCelebrationGif(repId, today) {
+  const key = (repId + today);
+  let h = 0;
+  for (let i = 0; i < key.length; i++) h = (h * 31 + key.charCodeAt(i)) >>> 0;
+  return RECAP_GIFS[h % RECAP_GIFS.length];
+}
+
 // ── Utilities ──────────────────────────────────────────────────────────────
 
 const D = window.OPS_DATA;
@@ -1549,6 +1599,7 @@ document.querySelectorAll(".tab-btn").forEach(btn => {
     if (tab === "insights")   renderInsights();
     if (tab === "my-shifts")  renderMyShifts();
     if (tab === "vas")        { initVADateFilter(); renderVAs(); updateVATimestamp(); scheduleVARefresh(); }
+    if (tab === "shift-recap") renderShiftRecap();
     if (tab === "entry")      initScoreEntry();
   });
 });
@@ -2489,6 +2540,24 @@ ${lines.join(' · ')}`, 'success');
 
   renderEntryLog();
   renderEntrySubcats();
+
+  // Push to GitHub so the score persists without requiring a manual export
+  const saveBtn = document.querySelector('#score-entry-tab .btn-primary') || document.querySelector('button[onclick="saveEntry()"]');
+  const origLabel = saveBtn ? saveBtn.textContent : '';
+  if (saveBtn) { saveBtn.disabled = true; saveBtn.textContent = 'Saving to GitHub…'; }
+  pushSamplingScoreToGitHub(entry)
+    .then(() => {
+      if (saveBtn) { saveBtn.disabled = false; saveBtn.textContent = origLabel; }
+      showToast('Score saved to dashboard ✓', 'success');
+      // Remove from pending now that it's persisted
+      const updated = getPendingEntries().filter(e => e._local_id !== entry._local_id);
+      savePendingEntries(updated);
+      renderEntryLog();
+    })
+    .catch(err => {
+      if (saveBtn) { saveBtn.disabled = false; saveBtn.textContent = origLabel; }
+      showToast(`GitHub sync failed — score is saved locally. Use Export to back it up. (${err.message})`, 'error');
+    });
 
   const activeTab = document.querySelector('.tab-btn.active')?.dataset.tab;
   if (activeTab === 'overview')    renderOverview();
@@ -3980,6 +4049,356 @@ function initApp() {
     initScoreEntry();
     initFeedbackTab();
   }
+}
+
+// ── Shift comments helpers ────────────────────────────────────────────────────
+
+async function fetchShiftComments() {
+  try {
+    const url = `https://raw.githubusercontent.com/${COMMENTS_GITHUB_OWNER}/${COMMENTS_GITHUB_REPO}/main/${COMMENTS_GITHUB_PATH}?_=${Date.now()}`;
+    const r = await fetch(url);
+    if (!r.ok) return {};
+    return await r.json();
+  } catch { return {}; }
+}
+
+async function saveShiftComment(repId, today, noteText) {
+  if (!COMMENTS_GITHUB_TOKEN || COMMENTS_GITHUB_TOKEN === 'REPLACE_WITH_PAT') {
+    throw new Error('GitHub token not configured');
+  }
+  const apiBase = `https://api.github.com/repos/${COMMENTS_GITHUB_OWNER}/${COMMENTS_GITHUB_REPO}/contents/${COMMENTS_GITHUB_PATH}`;
+  const headers = { Authorization: `token ${COMMENTS_GITHUB_TOKEN}`, 'Content-Type': 'application/json' };
+
+  // Read current file to get SHA
+  const getR = await fetch(apiBase, { headers });
+  if (!getR.ok) throw new Error('Could not read comments file');
+  const getJson = await getR.json();
+  const sha = getJson.sha;
+  const existing = JSON.parse(atob(getJson.content.replace(/\n/g, '')));
+
+  // Update entry
+  if (!existing[today]) existing[today] = {};
+  existing[today][repId] = { note: noteText, saved_at: new Date().toISOString() };
+
+  // Write back
+  const putR = await fetch(apiBase, {
+    method: 'PUT', headers,
+    body: JSON.stringify({
+      message: `note: ${repId} recap ${today} [skip ci]`,
+      content: btoa(unescape(encodeURIComponent(JSON.stringify(existing, null, 2)))),
+      sha,
+    })
+  });
+  if (!putR.ok) {
+    const err = await putR.json();
+    throw new Error(err.message || 'GitHub write failed');
+  }
+  // Update local cache so managers see it immediately without refresh
+  if (!D.shift_comments) D.shift_comments = {};
+  if (!D.shift_comments[today]) D.shift_comments[today] = {};
+  D.shift_comments[today][repId] = existing[today][repId];
+}
+
+async function pushSamplingScoreToGitHub(entry) {
+  const apiBase = `https://api.github.com/repos/${COMMENTS_GITHUB_OWNER}/${COMMENTS_GITHUB_REPO}/contents/${SCORES_GITHUB_PATH}`;
+  const headers = { Authorization: `token ${COMMENTS_GITHUB_TOKEN}`, 'Content-Type': 'application/json' };
+
+  const getR = await fetch(apiBase, { headers });
+  if (!getR.ok) throw new Error('Could not read sampling_scores.json from GitHub');
+  const getJson = await getR.json();
+  const sha = getJson.sha;
+  const existing = JSON.parse(atob(getJson.content.replace(/\n/g, '')));
+
+  const { _local_id, ...clean } = entry;
+  existing.push(clean);
+
+  const putR = await fetch(apiBase, {
+    method: 'PUT', headers,
+    body: JSON.stringify({
+      message: `score: ${entry.rep_id} ${entry.category} ${entry.date} [skip ci]`,
+      content: btoa(unescape(encodeURIComponent(JSON.stringify(existing, null, 2)))),
+      sha,
+    })
+  });
+  if (!putR.ok) {
+    const err = await putR.json();
+    throw new Error(err.message || 'GitHub write failed');
+  }
+}
+
+async function submitShiftNote(repId, today) {
+  const textarea  = document.getElementById(`recap-note-${repId}`);
+  const btn       = document.getElementById(`recap-save-btn-${repId}`);
+  const statusEl  = document.getElementById(`recap-note-status-${repId}`);
+  if (!textarea || !btn || !statusEl) return;
+
+  const noteText = textarea.value.trim();
+  btn.disabled = true;
+  statusEl.textContent = 'Saving…';
+  statusEl.style.color = 'var(--text-muted)';
+
+  try {
+    await saveShiftComment(repId, today, noteText);
+    statusEl.textContent = 'Saved ✓';
+    statusEl.style.color = '#22c55e';
+  } catch (e) {
+    statusEl.textContent = `Error: ${e.message}`;
+    statusEl.style.color = '#ef4444';
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+// ── Shift Recap ───────────────────────────────────────────────────────────────
+
+async function renderShiftRecap() {
+  const container = document.getElementById('shift-recap-content');
+  if (!container) return;
+
+  const today = (() => {
+    const n = new Date();
+    return n.getFullYear() + '-' + String(n.getMonth()+1).padStart(2,'0') + '-' + String(n.getDate()).padStart(2,'0');
+  })();
+
+  const todayRecord = (D.shift_daily || []).find(r => r.date === today);
+  const isManager   = AUTH.isManager();
+  const viewRepId   = isManager ? (AUTH.viewingAs?.id || null) : AUTH.myRepId();
+
+  const repsToShow = todayRecord?.reps?.filter(r => {
+    if (viewRepId) return r.rep_id === viewRepId;
+    return isManager;
+  }) || [];
+
+  if (!todayRecord || repsToShow.length === 0) {
+    container.innerHTML = `
+      <div class="card" style="text-align:center;padding:48px 24px;color:var(--text-muted)">
+        <div style="font-size:36px;margin-bottom:12px">📋</div>
+        <div style="font-size:16px;font-weight:600;color:var(--text)">No shift data for today yet</div>
+        <div style="font-size:13px;margin-top:6px">Data refreshes every 15 minutes during shift hours.</div>
+      </div>`;
+    return;
+  }
+
+  // Fetch latest comments from GitHub (always fresh, bypasses load-data.js cache)
+  const freshComments = await fetchShiftComments();
+  if (!D.shift_comments) D.shift_comments = {};
+  Object.assign(D.shift_comments, freshComments);
+
+  const team = todayRecord.team || {};
+  container.innerHTML = repsToShow.map(rep => buildRecapCard(rep, team, today)).join('');
+}
+
+function buildRecapCard(rep, team, today) {
+  const repId   = rep.rep_id;
+  const role    = rep.role_today;
+  const metrics = rep.metrics || {};
+  const repName = (D.config?.reps || []).find(r => r.id === repId)?.name || repId;
+  const firstName = repName.split(' ')[0];
+  const roleColor   = { A: 'var(--warn)', B: 'var(--primary)', C: 'var(--purple)' }[role] || 'var(--text-muted)';
+  const roleColorBg = { A: 'var(--warn-bg)', B: 'var(--blue-bg)', C: 'var(--purple-bg)' }[role] || '#f5f5f5';
+
+  let metricsHtml = '';
+  let statusBanner = '';
+
+  if (role === 'A') {
+    const leads     = metrics.leads_created       ?? team.leads_created ?? '—';
+    const wkHours   = metrics.leads_within_hours  ?? team.leads_within_hours ?? '—';
+    const contacted = metrics.leads_contacted     ?? team.leads_contacted ?? '—';
+    const rate      = metrics.contact_rate_pct    ?? team.contact_rate_pct;
+    const dist5     = metrics.dist_5min_pct;
+    const handled7  = metrics.handled_5min_pct;
+    const rateStr   = rate != null ? rate.toFixed(1) + '%' : '—';
+
+    metricsHtml = `
+      <div class="recap-metric-row">
+        <span class="recap-label">New leads today <small style="font-weight:400;color:var(--text-muted)">(to handle)</small></span>
+        <span class="recap-value">${leads}</span>
+      </div>
+      <div class="recap-metric-row">
+        <span class="recap-label">Within working hours</span>
+        <span class="recap-value">${wkHours}</span>
+      </div>
+      <div class="recap-metric-row">
+        <span class="recap-label">Leads contacted</span>
+        <span class="recap-value">${contacted}</span>
+      </div>
+      <div class="recap-metric-row">
+        <span class="recap-label">Contact rate <small style="font-weight:400;color:var(--text-muted)">info · target 80%</small></span>
+        <span class="recap-value" style="color:var(--text-muted);font-size:14px">${rateStr}</span>
+      </div>
+      <div class="recap-metric-row">
+        <span class="recap-label">Dist ≤5 min <small style="font-weight:400;color:var(--text-muted)">(target 95%)</small></span>
+        <span class="recap-value" style="${dist5 != null ? 'color:'+(dist5>=95?'var(--success)':dist5>=88?'var(--warn)':'var(--danger)') : 'color:var(--text-muted);font-size:13px;font-style:italic'}">${dist5 != null ? dist5.toFixed(1)+'%' : 'Pending (Qlik)'}</span>
+      </div>
+      <div class="recap-metric-row">
+        <span class="recap-label">Handled ≤7 min <small style="font-weight:400;color:var(--text-muted)">(target 75%)</small></span>
+        <span class="recap-value" style="${handled7 != null ? 'color:'+(handled7>=75?'var(--success)':handled7>=67?'var(--warn)':'var(--danger)') : 'color:var(--text-muted);font-size:13px;font-style:italic'}">${handled7 != null ? handled7.toFixed(1)+'%' : 'Pending (Qlik)'}</span>
+      </div>`;
+
+    if (dist5 != null && handled7 != null) {
+      if (dist5 >= 95 && handled7 >= 75) {
+        statusBanner = `<div style="margin-top:14px;padding:14px;border-radius:8px;background:var(--success-bg);color:var(--success);border:1px solid #a5d6a7;font-size:14px;font-weight:500;text-align:center">
+          <div>🎉 Great shift ${firstName} — you hit both speed targets today!</div>
+          <img src="${pickCelebrationGif(repId, today)}" alt="" style="margin-top:12px;max-width:100%;max-height:200px;border-radius:6px;display:block;margin-left:auto;margin-right:auto">
+        </div>`;
+      } else {
+        const lines = [];
+        if (dist5 < 95)   lines.push(`Dist ≤5 min: ${dist5.toFixed(1)}% (target 95%)`);
+        if (handled7 < 75) lines.push(`Handled ≤7 min: ${handled7.toFixed(1)}% (target 75%)`);
+        statusBanner = `<div style="margin-top:14px;padding:12px 14px;border-radius:8px;background:var(--warn-bg);color:#5d3100;border:1px solid #ffcc80;font-size:14px">
+          <div style="font-weight:600;margin-bottom:6px">${lines.join(' · ')}</div>
+          <div style="display:flex;flex-direction:column;gap:3px;font-size:13px">
+            <span>→ What got in the way today?</span>
+            <span>→ What would you do differently?</span>
+            <span>→ Is there anything you need help with?</span>
+          </div></div>`;
+      }
+    } else {
+      statusBanner = `<div style="margin-top:14px;padding:10px 14px;border-radius:8px;background:#f5f5f5;color:var(--text-muted);font-size:13px;font-style:italic">Qlik metrics pending — your scored performance will appear here once Qlik is connected.</div>`;
+    }
+
+  } else if (role === 'B') {
+    const qStart  = team.task_queue_start;
+    const qNow    = metrics.queue_total ?? team.task_queue_total;
+    // Prefer accurate task counter values from shift_history when available
+    const handled = team.tasks_handled  ?? (qStart != null && qNow != null ? Math.max(0, qStart - qNow) : null);
+    const added   = team.tasks_added    ?? null;
+    const pct     = team.completion_rate ?? (qStart > 0 && handled != null ? parseFloat((handled / qStart * 100).toFixed(1)) : null);
+    const pctColor = pct != null ? (pct >= 90 ? 'var(--success)' : pct >= 70 ? 'var(--warn)' : 'var(--danger)') : 'var(--text-muted)';
+
+    metricsHtml = `
+      <div class="recap-metric-row">
+        <span class="recap-label">Queue at start of shift</span>
+        <span class="recap-value">${qStart ?? '—'}</span>
+      </div>
+      <div class="recap-metric-row">
+        <span class="recap-label">Tasks added during shift</span>
+        <span class="recap-value">${added ?? '—'}</span>
+      </div>
+      <div class="recap-metric-row">
+        <span class="recap-label">Queue right now</span>
+        <span class="recap-value">${qNow ?? '—'}</span>
+      </div>
+      <div class="recap-metric-row">
+        <span class="recap-label">% handled <small style="font-weight:400;color:var(--text-muted)">(target 90%)</small></span>
+        <span class="recap-value" style="color:${pctColor}">${pct != null ? pct+'%' : '—'}</span>
+      </div>`;
+
+    if (pct != null) {
+      if (pct >= 90) {
+        statusBanner = `<div style="margin-top:14px;padding:14px;border-radius:8px;background:var(--success-bg);color:var(--success);border:1px solid #a5d6a7;font-size:14px;font-weight:500;text-align:center">
+          <div>🎉 Great shift ${firstName} — you hit the 90% task handling target!</div>
+          <img src="${pickCelebrationGif(repId, today)}" alt="" style="margin-top:12px;max-width:100%;max-height:200px;border-radius:6px;display:block;margin-left:auto;margin-right:auto">
+        </div>`;
+      } else {
+        const gap = (90 - pct).toFixed(1);
+        statusBanner = `<div style="margin-top:14px;padding:12px 14px;border-radius:8px;background:var(--warn-bg);color:#5d3100;border:1px solid #ffcc80;font-size:14px">
+          <div style="font-weight:600;margin-bottom:6px">You're ${gap}% short of the 90% target.</div>
+          <div style="display:flex;flex-direction:column;gap:3px;font-size:13px">
+            <span>→ What got in the way today?</span>
+            <span>→ What would you do differently?</span>
+            <span>→ Is there anything you need help with?</span>
+          </div></div>`;
+      }
+    }
+
+  } else if (role === 'C') {
+    const reviews     = metrics.reviews ?? 0;
+    const reactivates = metrics.reactivates ?? 0;
+    const reactColor  = reactivates >= 2 ? 'var(--success)' : reactivates === 1 ? 'var(--warn)' : 'var(--danger)';
+
+    metricsHtml = `
+      <div class="recap-metric-row">
+        <span class="recap-label">Leads reviewed for contacted</span>
+        <span class="recap-value">${reviews}</span>
+      </div>
+      <div class="recap-metric-row">
+        <span class="recap-label">Leads reactivated <small style="font-weight:400;color:var(--text-muted)">(target 2)</small></span>
+        <span class="recap-value" style="color:${reactColor}">${reactivates}</span>
+      </div>
+      <div class="recap-metric-row">
+        <span class="recap-label">Reactivated → active opportunity</span>
+        <span class="recap-value" style="color:var(--text-muted);font-size:13px;font-style:italic">Pending</span>
+      </div>`;
+
+    if (reactivates >= 2) {
+      statusBanner = `<div style="margin-top:14px;padding:14px;border-radius:8px;background:var(--success-bg);color:var(--success);border:1px solid #a5d6a7;font-size:14px;font-weight:500;text-align:center">
+        <div>🎉 Great shift ${firstName} — you hit the reactivation target today!</div>
+        <img src="${pickCelebrationGif(repId, today)}" alt="" style="margin-top:12px;max-width:100%;max-height:200px;border-radius:6px;display:block;margin-left:auto;margin-right:auto">
+      </div>`;
+    } else {
+      const gap = 2 - reactivates;
+      statusBanner = `<div style="margin-top:14px;padding:12px 14px;border-radius:8px;background:var(--warn-bg);color:#5d3100;border:1px solid #ffcc80;font-size:14px">
+        <div style="font-weight:600;margin-bottom:6px">You reactivated ${reactivates} lead${reactivates!==1?'s':''} today — ${gap} short of the 2/shift target.</div>
+        <div style="display:flex;flex-direction:column;gap:3px;font-size:13px">
+          <span>→ Which leads were close to reactivation?</span>
+          <span>→ What would you try differently next shift?</span>
+          <span>→ Anything you need from the team?</span>
+        </div></div>`;
+    }
+
+  } else {
+    metricsHtml = `<div style="color:var(--text-muted);font-size:14px;padding:8px 0">No role assigned for today.</div>`;
+  }
+
+  const isOwnCard     = AUTH.myRepId() === repId;
+  const canSeeNote    = isOwnCard || AUTH.isManager();
+  const savedNote     = (D.shift_comments?.[today]?.[repId]?.note) || '';
+  const savedAt       = D.shift_comments?.[today]?.[repId]?.saved_at;
+  const savedAtStr    = savedAt ? new Date(savedAt).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}) : '';
+
+  let commentSection = '';
+  if (canSeeNote) {
+    if (isOwnCard) {
+      // Rep: editable textarea + save button
+      commentSection = `
+        <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border)">
+          <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);margin-bottom:8px">
+            My Notes
+            ${savedAtStr ? `<span style="font-weight:400;text-transform:none;letter-spacing:0;margin-left:8px">Saved at ${savedAtStr}</span>` : ''}
+          </div>
+          <textarea id="recap-note-${repId}"
+            placeholder="Write notes about your shift — your managers will see this."
+            style="width:100%;min-height:80px;padding:10px 12px;border:1px solid var(--border);border-radius:8px;font:14px var(--font);resize:vertical;color:var(--text);background:#fafafa;outline:none"
+          >${savedNote}</textarea>
+          <div style="display:flex;align-items:center;gap:10px;margin-top:10px">
+            <button onclick="submitShiftNote('${repId}','${today}')"
+              id="recap-save-btn-${repId}"
+              style="padding:7px 20px;background:var(--primary);color:#fff;border:none;border-radius:8px;font:600 13px var(--font);cursor:pointer">
+              Save Note
+            </button>
+            <span id="recap-note-status-${repId}" style="font-size:13px;color:var(--text-muted)"></span>
+          </div>
+        </div>`;
+    } else {
+      // Manager: read-only view of rep's note
+      commentSection = `
+        <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border)">
+          <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);margin-bottom:8px">
+            Rep's Notes ${savedAtStr ? `<span style="font-weight:400;text-transform:none;letter-spacing:0;margin-left:6px">saved at ${savedAtStr}</span>` : ''}
+          </div>
+          ${savedNote
+            ? `<div style="padding:10px 12px;background:#fafafa;border:1px solid var(--border);border-radius:8px;font-size:14px;line-height:1.6;color:var(--text)">${savedNote}</div>`
+            : `<div style="font-size:13px;color:var(--text-muted);font-style:italic">No note submitted yet.</div>`
+          }
+        </div>`;
+    }
+  }
+
+  return `
+    <div class="card" style="margin-bottom:20px">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+        <div style="font-size:20px;font-weight:700;padding:6px 14px;background:${roleColorBg};color:${roleColor};border-radius:8px;letter-spacing:.5px">Role ${role || '?'}</div>
+        <div>
+          <div style="font-size:17px;font-weight:600">${repName}</div>
+          <div style="font-size:13px;color:var(--text-muted)">${today}</div>
+        </div>
+        <div style="margin-left:auto;font-size:12px;color:var(--text-muted)">📩 Recap sent 30 min before shift end</div>
+      </div>
+      <div class="recap-metrics-grid">${metricsHtml}</div>
+      ${statusBanner}
+      ${commentSection}
+    </div>`;
 }
 
 // On load: restore session or show name-picker
