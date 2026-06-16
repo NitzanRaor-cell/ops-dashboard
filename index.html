@@ -2690,6 +2690,18 @@ function buildFeedbackCard(comment, opts = {}) {
   const subcatLabel = comment.subcat_label || '';
   const subcatScore = (comment.subcat_score !== undefined && comment.subcat_score !== null)
     ? comment.subcat_score : null;
+  // For original Google Sheet entries (no subcat_score), look up the session avg
+  const sessionAvg = subcatScore === null
+    ? (() => {
+        const sc = (D.sampling_scores || []).find(s =>
+          s.rep_id === comment.rep_id &&
+          s.date   === comment.comment_date &&
+          s.category === comment.category
+        );
+        return sc ? sc.avg : null;
+      })()
+    : null;
+  const scoreDisplay = subcatScore !== null ? subcatScore : sessionAvg;
 
   const linksHtml = comment.links.map(l => `
     <div class="podio-link">
@@ -2716,7 +2728,7 @@ function buildFeedbackCard(comment, opts = {}) {
           <span class="feedback-chevron">▶</span>
           <strong>Role ${comment.category}</strong>
           ${subcatLabel ? `<span style="font-size:12px;color:var(--text-muted);margin-left:2px">· ${escHtml(subcatLabel)}</span>` : ''}
-          ${subcatScore !== null ? `<span class="badge" style="background:#e8f5e9;color:#2e7d32;margin-left:4px">${subcatScore}/5</span>` : ''}
+          ${scoreDisplay !== null ? `<span class="badge" style="background:#e8f5e9;color:#2e7d32;margin-left:4px">${subcatScore !== null ? `${scoreDisplay}/5` : `avg ${scoreDisplay}`}</span>` : ''}
           ${!showInline ? `· ${repName}` : ''}
           · <span style="font-size:12px;color:var(--text-muted)">${comment.comment_date}</span>
           ${linkCount ? `<span class="badge" style="background:#e3f0ff;color:var(--primary);margin-left:4px">${linkCount} link${linkCount>1?'s':''}</span>` : ''}
@@ -2733,7 +2745,7 @@ function buildFeedbackCard(comment, opts = {}) {
           ${!showInline ? `· Rep: <strong>${repName}</strong>` : ''}
           · Role: <strong>${comment.category}</strong>
           ${subcatLabel ? `· <strong>${escHtml(subcatLabel)}</strong>` : ''}
-          ${subcatScore !== null ? `· Score: <strong>${subcatScore}/5</strong>` : ''}
+          ${scoreDisplay !== null ? `· Score: <strong>${subcatScore !== null ? `${scoreDisplay}/5` : `avg ${scoreDisplay}/5`}</strong>` : ''}
           · Date: ${comment.comment_date}
         </div>
         ${generalHtml}
