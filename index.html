@@ -1435,11 +1435,13 @@ function computeRoleAQuantScore(repId, year, month) {
   for (const s of shifts) {
     const q = (D.qlik_team_daily || []).find(q => q.date === s.date);
     if (!q) return { score: null, shifts: [] };
+    const dow = new Date(s.date + 'T12:00:00').getDay(); // 0=Sun,5=Fri,6=Sat
+    const is_weekend = (dow === 0 || dow === 5 || dow === 6);
     const dist_score    = scoreDistMetric(q.leads_distributed_5min_pct);
-    const handled_score = scoreHandledMetric(q.leads_handled_5min_pct, s.is_weekend);
+    const handled_score = scoreHandledMetric(q.leads_handled_5min_pct, is_weekend);
     const daily_score   = (dist_score + handled_score) / 2;
     dailyScores.push({
-      date: s.date, is_weekend: s.is_weekend,
+      date: s.date, is_weekend,
       dist_raw:     q.leads_distributed_5min_pct,
       handled_raw:  q.leads_handled_5min_pct,
       dist_score, handled_score, daily_score
