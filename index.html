@@ -1420,17 +1420,21 @@ function scoreHandledMetric(pct, is_weekend) {
 }
 
 function computeRoleAQuantScore(repId, year, month) {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
   const shifts = (D.shift_schedule || []).filter(s => {
     const d = new Date(s.date);
     return s.rep_id === repId && s.role === 'A'
-      && d.getFullYear() === year && d.getMonth() + 1 === month;
+      && d.getFullYear() === year && d.getMonth() + 1 === month
+      && d <= today;
   });
   if (!shifts.length) return { score: null, shifts: [] };
 
   const dailyScores = [];
-  shifts.forEach(s => {
+  for (const s of shifts) {
     const q = (D.qlik_team_daily || []).find(q => q.date === s.date);
-    if (!q) return;
+    if (!q) return { score: null, shifts: [] };
     const dist_score    = scoreDistMetric(q.leads_distributed_5min_pct);
     const handled_score = scoreHandledMetric(q.leads_handled_5min_pct, s.is_weekend);
     const daily_score   = (dist_score + handled_score) / 2;
@@ -1440,7 +1444,7 @@ function computeRoleAQuantScore(repId, year, month) {
       handled_raw:  q.leads_handled_5min_pct,
       dist_score, handled_score, daily_score
     });
-  });
+  }
 
   const score = dailyScores.length ? avg(dailyScores.map(d => d.daily_score)) : null;
   return { score, shifts: dailyScores };
