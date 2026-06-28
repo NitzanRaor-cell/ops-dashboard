@@ -833,5 +833,60 @@
         ]
       }
     }
+  },
+  {
+    "date": "2026-06-27",
+    "rep_id": "omer",
+    "reviewer": "rotem",
+    "category": "B",
+    "scores": {
+      "tagging": 5,
+      "prioritizing": 5,
+      "updating_status": 3,
+      "properly_handling": 4
+    },
+    "avg": 4.25,
+    "subcat_details": {
+      "tagging": {
+        "score": 5,
+        "examples": [
+          {
+            "link": "",
+            "comment": "פה אני רואה שכבר סנצ'ס התקשר. היה צורך בתיוג נוסף? כי נראלי ההודעה שלך גם מספיקה"
+          }
+        ]
+      },
+      "prioritizing": {
+        "score": 5,
+        "examples": [
+          {
+            "link": "",
+            "comment": "התנהלות נכונה"
+          }
+        ]
+      },
+      "updating_status": {
+        "score": 3,
+        "examples": [
+          {
+            "link": "",
+            "comment": "לא לשכוח להוריד את הוויטינג פור אופי"
+          },
+          {
+            "link": "",
+            "comment": "שים לב שזה אחריות שלנו לבדוק שיש מספרים ולהכניס אם אנחנו יודעים אותם"
+          }
+        ]
+      },
+      "properly_handling": {
+        "score": 4,
+        "examples": [
+          {
+            "link": "",
+            "comment": "פה היה גם מקום לשאול על פולו אף עתידי"
+          }
+        ]
+      }
+    }
   }
 ]
