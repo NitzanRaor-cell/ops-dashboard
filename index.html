@@ -53,7 +53,7 @@
 
     /* ── Tab nav ── */
     .tab-nav {
-      background: #fff;
+      background: var(--input-bg);
       border-bottom: 1px solid var(--border);
       display: flex;
       padding: 0 24px;
@@ -109,7 +109,7 @@
     }
     .rep-table td { padding: 12px 14px; border-bottom: 1px solid var(--border); font-size: 14px; }
     .rep-table tr:last-child td { border-bottom: none; }
-    .rep-table tr:hover td { background: #fafafa; }
+    .rep-table tr:hover td { background: var(--glass-strong); }
 
     /* ── Badges ── */
     .badge {
@@ -172,7 +172,7 @@
     .trend-controls { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 20px; align-items: center; }
     .seg-btn {
       padding: 6px 16px; border-radius: 20px; border: 1px solid var(--border);
-      background: #fff; font: 13px var(--font); cursor: pointer; transition: all .15s;
+      background: var(--input-bg); font: 13px var(--font); cursor: pointer; transition: all .15s;
     }
     .seg-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
     .chart-wrap { position: relative; height: 340px; }
@@ -183,13 +183,13 @@
       font: 12px var(--font); font-weight: 600; cursor: pointer; transition: all .15s;
       background: var(--bg);
     }
-    .rep-toggle.active { border-color: currentColor; background: #fff; }
+    .rep-toggle.active { border-color: currentColor; background: var(--input-bg); }
 
     /* ── Individual view ── */
     .ind-header { display: flex; gap: 16px; align-items: center; margin-bottom: 24px; }
     .ind-header select {
       padding: 8px 14px; border: 1px solid var(--border); border-radius: 8px;
-      font: 14px var(--font); background: #fff; cursor: pointer;
+      font: 14px var(--font); background: var(--input-bg); cursor: pointer;
     }
     .ind-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
     @media (max-width: 700px) { .ind-grid { grid-template-columns: 1fr; } }
@@ -207,11 +207,11 @@
     .form-group label { font-size: 13px; font-weight: 600; color: var(--text-muted); }
     .form-group select, .form-group input {
       padding: 8px 12px; border: 1px solid var(--border); border-radius: 8px;
-      font: 14px var(--font); background: #fff;
+      font: 14px var(--font); background: var(--input-bg);
     }
     /* ── Subcategory score cards ── */
     .subcat-card {
-      background: #fff; border: 1px solid var(--border); border-radius: 12px;
+      background: var(--input-bg); border: 1px solid var(--border); border-radius: 12px;
       padding: 18px 20px; margin-bottom: 12px; box-shadow: var(--shadow);
     }
     .subcat-title { font-size: 15px; font-weight: 700; margin-bottom: 14px; color: var(--text); }
@@ -239,11 +239,11 @@
     /* saved log */
     .entry-log-card {
       border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px;
-      margin-bottom: 10px; background: #fafafa;
+      margin-bottom: 10px; background: var(--glass-strong);
     }
     .entry-log-header { display: flex; justify-content: space-between; align-items: center; }
     .entry-log-subs { margin-top: 10px; display: flex; flex-direction: column; gap: 6px; }
-    .entry-log-sub { font-size: 12px; padding: 4px 10px; background: #fff; border-radius: 6px; border: 1px solid var(--border); }
+    .entry-log-sub { font-size: 12px; padding: 4px 10px; background: var(--input-bg); border-radius: 6px; border: 1px solid var(--border); }
     .btn {
       padding: 10px 24px; border-radius: 8px; border: none;
       font: 14px var(--font); font-weight: 600; cursor: pointer; transition: all .15s;
@@ -253,7 +253,7 @@
     .btn-secondary { background: #f5f5f5; color: var(--text); }
     .entry-log { margin-top: 24px; }
     .entry-log table { width: 100%; border-collapse: collapse; font-size: 13px; }
-    .entry-log th { padding: 8px 10px; background: #fafafa; border-bottom: 2px solid var(--border);
+    .entry-log th { padding: 8px 10px; background: var(--glass-strong); border-bottom: 2px solid var(--border);
       text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: .5px; color: var(--text-muted); }
     .entry-log td { padding: 8px 10px; border-bottom: 1px solid var(--border); }
 
@@ -263,7 +263,7 @@
     .section-head .sub { font-size: 13px; color: var(--text-muted); }
 
     .recap-metrics-grid { display: flex; flex-direction: column; gap: 2px; }
-    .recap-metric-row { display: flex; justify-content: space-between; align-items: center; padding: 9px 12px; border-radius: 7px; background: #fafafa; font-size: 14px; }
+    .recap-metric-row { display: flex; justify-content: space-between; align-items: center; padding: 9px 12px; border-radius: 7px; background: var(--glass-strong); font-size: 14px; }
     .recap-metric-row:nth-child(even) { background: #f3f4f6; }
     .recap-label { color: var(--text); font-weight: 500; }
     .recap-value { font-weight: 700; font-size: 15px; }
@@ -287,7 +287,7 @@
     /* ── Feedback / Comments ── */
     .feedback-card {
       border: 1px solid var(--border); border-radius: 8px;
-      background: #fafafa; margin-top: 12px; overflow: hidden;
+      background: var(--glass-strong); margin-top: 12px; overflow: hidden;
     }
     .feedback-header {
       display: flex; align-items: center; justify-content: space-between;
@@ -304,12 +304,12 @@
     .feedback-meta { font-size: 12px; color: var(--text-muted); margin-bottom: 10px; }
     .feedback-general-note {
       font-size: 14px; line-height: 1.6; direction: rtl; text-align: right;
-      background: #fff; border: 1px solid var(--border); border-radius: 6px;
+      background: var(--input-bg); border: 1px solid var(--border); border-radius: 6px;
       padding: 10px 12px; margin-bottom: 10px; color: var(--text);
     }
     .podio-link {
       display: flex; gap: 10px; padding: 10px 12px; margin-bottom: 8px;
-      background: #fff; border: 1px solid var(--border); border-radius: 8px;
+      background: var(--input-bg); border: 1px solid var(--border); border-radius: 8px;
       align-items: flex-start;
     }
     .podio-link-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
@@ -338,7 +338,7 @@
       display: flex; align-items: center; gap: 6px;
       font-size: 13px; font-weight: 600; cursor: pointer;
       padding: 6px 12px; border-radius: 8px; border: 2px solid var(--border);
-      background: #fff; transition: all .15s; user-select: none; white-space: nowrap;
+      background: var(--input-bg); transition: all .15s; user-select: none; white-space: nowrap;
     }
     .reviewed-check input { width: 16px; height: 16px; cursor: pointer; accent-color: var(--success); }
     .reviewed-check.checked { border-color: var(--success); background: var(--success-bg); color: var(--success); }
@@ -432,7 +432,7 @@
     }
     #login-overlay.hidden { display: none; }
     .login-card {
-      background: #fff; border-radius: 20px; padding: 36px 32px;
+      background: var(--input-bg); border-radius: 20px; padding: 36px 32px;
       width: 100%; max-width: 640px; box-shadow: 0 24px 64px rgba(0,0,0,.4);
       text-align: center;
     }
@@ -444,7 +444,7 @@
     .name-picker { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 12px; margin-bottom: 20px; }
     .name-card {
       border: 2px solid var(--border); border-radius: 14px; padding: 16px 10px;
-      cursor: pointer; transition: all .18s; background: #fafafa;
+      cursor: pointer; transition: all .18s; background: var(--glass-strong);
       display: flex; flex-direction: column; align-items: center; gap: 8px;
     }
     .name-card:hover { border-color: var(--primary); background: var(--primary-light); transform: translateY(-2px); box-shadow: 0 4px 14px rgba(21,101,192,.2); }
@@ -529,14 +529,14 @@
 
     /* View As bar */
     #view-as-bar {
-      background: #fff; border-bottom: 2px solid var(--primary);
+      background: var(--input-bg); border-bottom: 2px solid var(--primary);
       padding: 6px 24px; display: none; align-items: center; gap: 10px;
       font-size: 13px; font-weight: 600;
     }
     #view-as-bar label { color: var(--text-muted); }
     #view-as-select {
       padding: 4px 10px; border: 1px solid var(--border); border-radius: 8px;
-      font: 13px var(--font); background: #fff; cursor: pointer; min-width: 180px;
+      font: 13px var(--font); background: var(--input-bg); cursor: pointer; min-width: 180px;
     }
 
     /* Preview banner (rep view while manager is impersonating) */
@@ -549,7 +549,7 @@
     #preview-banner strong { color: #e65100; }
     #preview-banner button {
       margin-left: auto; padding: 4px 14px; border-radius: 6px;
-      border: 1px solid #e65100; background: #fff; color: #e65100;
+      border: 1px solid #e65100; background: var(--input-bg); color: #e65100;
       font: 600 12px var(--font); cursor: pointer;
     }
     #preview-banner button:hover { background: #fff3e0; }
@@ -561,14 +561,14 @@
 
     /* ── Month filter bar ── */
     .month-filter-bar {
-      background: #fff; border-bottom: 1px solid var(--border);
+      background: var(--input-bg); border-bottom: 1px solid var(--border);
       padding: 8px 24px; display: flex; align-items: center; gap: 8px;
       flex-wrap: wrap; position: sticky; top: 113px; z-index: 98;
     }
     .month-filter-bar .mf-label { font-size: 12px; font-weight: 600; color: var(--text-muted); margin-right: 4px; }
     .month-btn {
       padding: 5px 14px; border-radius: 20px; border: 1px solid var(--border);
-      background: #fff; font: 12px var(--font); font-weight: 600; cursor: pointer; transition: all .15s;
+      background: var(--input-bg); font: 12px var(--font); font-weight: 600; cursor: pointer; transition: all .15s;
       color: var(--text-muted);
     }
     .month-btn:hover { border-color: var(--primary); color: var(--primary); }
@@ -597,7 +597,7 @@
 
     /* feedback tab (full list) */
     .fb-filter-bar { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; align-items: center; }
-    .fb-filter-bar select { padding: 7px 12px; border: 1px solid var(--border); border-radius: 8px; font: 13px var(--font); background: #fff; }
+    .fb-filter-bar select { padding: 7px 12px; border: 1px solid var(--border); border-radius: 8px; font: 13px var(--font); background: var(--input-bg); }
     .fb-count { font-size: 13px; color: var(--text-muted); margin-left: auto; }
     .fb-group-header {
       font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px;
@@ -621,7 +621,7 @@
     <div class="form-group" style="margin-bottom:14px;text-align:left">
       <label style="font-size:13px;font-weight:600;color:var(--text-muted);display:block;margin-bottom:6px">Who are you?</label>
       <select id="login-name-sel"
-        style="width:100%;padding:11px 14px;border:2px solid var(--border);border-radius:10px;font:15px var(--font);background:#fff;cursor:pointer"
+        style="width:100%;padding:11px 14px;border:2px solid var(--border);border-radius:10px;font:15px var(--font);background:var(--input-bg);cursor:pointer"
         onchange="document.getElementById('login-password').focus()">
         <option value="">— Select your name —</option>
       </select>
@@ -644,40 +644,64 @@
   </div>
 </div>
 
-<header>
-  <h1>⚡ Ops Team Dashboard</h1>
+<div class="app-shell">
+
+<aside class="sidebar">
+  <div class="sb-logo">
+    <div class="sb-logo-icon"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 4 13.5h6L9 22l10-12.5h-6L13 2Z"/></svg></div>
+    <div><div class="sb-logo-name">Ops Team</div><div class="sb-logo-sub">ZoomREI</div></div>
+  </div>
+  <nav class="tab-nav">
+    <button class="tab-btn active" data-tab="overview"><span class="ti"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></svg></span>Overview</button>
+    <button class="tab-btn" data-tab="my-scores" style="display:none"><span class="ti"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9 6.8 19.6l1-5.8L3.5 9.7l5.9-.9L12 3Z"/></svg></span>My Scores</button>
+    <button class="tab-btn" data-tab="leaderboard"><span class="ti"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4h10v4a5 5 0 0 1-10 0V4Z"/><path d="M7 6H4v1.5a3 3 0 0 0 3 3"/><path d="M17 6h3v1.5a3 3 0 0 1-3 3"/><path d="M9 20h6"/><path d="M12 13v4"/></svg></span>Leaderboard</button>
+    <button class="tab-btn" data-tab="trends"><span class="ti"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4v16h16"/><path d="M7 14l4-4 3 2 5-6"/></svg></span>Trends</button>
+    <button class="tab-btn" data-tab="individual"><span class="ti"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c0-3.5 3.1-5.5 7-5.5s7 2 7 5.5"/></svg></span>Individual</button>
+    <button class="tab-btn" data-tab="entry"><span class="ti"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 4 13.5h6L9 22l10-12.5h-6L13 2Z"/></svg></span>Score Entry</button>
+    <button class="tab-btn" data-tab="feedback"><span class="ti"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11.5A7.5 7.5 0 0 1 5.5 15L4 20l1.5-4.2A7.5 7.5 0 1 1 20 11.5Z"/></svg></span>Feedback</button>
+    <button class="tab-btn" data-tab="insights"><span class="ti"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 18h5"/><path d="M10 21h4"/><path d="M12 3a6 6 0 0 0-3.8 10.6c.5.5.8 1.2.8 2.4h6c0-1.2.3-1.9.8-2.4A6 6 0 0 0 12 3Z"/></svg></span>Insights</button>
+    <button class="tab-btn" data-tab="my-shifts"><span class="ti"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4.5" width="18" height="16" rx="2"/><path d="M3 9h18M8 2.5v4M16 2.5v4"/></svg></span>My Shifts</button>
+    <button class="tab-btn" data-tab="vas"><span class="ti"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h3.5l1.5 4.5-2 1.2a11 11 0 0 0 4.8 4.8l1.2-2 4.5 1.5V18a2 2 0 0 1-2 2A15 15 0 0 1 3 6a2 2 0 0 1 2-2Z"/></svg></span>VAs</button>
+    <button class="tab-btn" data-tab="shift-recap"><span class="ti"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="12" height="17" rx="2"/><path d="M9 4V3h6v1M9 10h6M9 14h6"/></svg></span>Shift Recap</button>
+  </nav>
+  <label class="sb-mode" for="theme-switch">
+    <span>Switch mode</span>
+    <input type="checkbox" id="theme-switch" onchange="THEME.toggle()">
+    <span class="sb-switch"></span>
+  </label>
+  <div class="sb-profile" id="user-chip" style="display:none">
+    <div class="sb-avatar" id="user-avatar"></div>
+    <div style="min-width:0">
+      <div class="sb-profile-name"><span id="user-name"></span> <span class="manager-badge" id="mgr-badge" style="display:none">MGR</span></div>
+      <div class="sb-profile-role" id="user-role"></div>
+    </div>
+  </div>
+  <button class="sign-out-btn" id="sign-out-btn" style="display:none" onclick="signOut()">Sign out</button>
+</aside>
+
+<div class="content-col">
+
+<header class="topbar">
+  <h1 id="welcome-title">Ops Team Dashboard</h1>
+  <div class="top-search">
+    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3-3"/></svg>
+    <input id="top-search-input" placeholder="Search reps, roles, observations…"
+      onkeydown="if(event.key==='Enter') topSearchGo(this.value)">
+  </div>
   <!-- View As selector (managers only) -->
   <div id="view-as-bar-header" style="display:flex;align-items:center;gap:8px">
-    <label style="font-size:12px;opacity:.75">View as:</label>
+    <label style="font-size:12px">View as:</label>
     <select id="view-as-select"
-      style="padding:3px 8px;border-radius:6px;font:12px var(--font);border:1px solid rgba(255,255,255,.4);background:rgba(255,255,255,.15);color:#fff;cursor:pointer"
       onchange="if(this.value) AUTH.startViewAs(this.value); else if(AUTH.viewingAs) AUTH.exitViewAs()">
-      <option value="" style="color:#000">— My view (manager) —</option>
+      <option value="">— My view (manager) —</option>
     </select>
   </div>
-  <div class="meta" style="display:flex;align-items:center;gap:12px">
+  <div class="meta">
     <span id="hdr-month"></span>
-    <div class="user-chip" id="user-chip" style="display:none">
-      <div class="user-avatar" id="user-avatar"></div>
-      <span class="user-name" id="user-name"></span>
-      <span class="manager-badge" id="mgr-badge" style="display:none">MGR</span>
-    </div>
-    <button class="sign-out-btn" id="sign-out-btn" style="display:none" onclick="signOut()">Sign out</button>
+    <span id="hdr-updated" style="display:none"></span>
   </div>
+  <div class="top-avatar" id="top-avatar" style="display:none"></div>
 </header>
-
-<nav class="tab-nav">
-  <button class="tab-btn active" data-tab="overview">Overview</button>
-  <button class="tab-btn" data-tab="leaderboard">Leaderboard</button>
-  <button class="tab-btn" data-tab="trends">Trends</button>
-  <button class="tab-btn" data-tab="individual">Individual</button>
-  <button class="tab-btn" data-tab="entry">Score Entry</button>
-  <button class="tab-btn" data-tab="feedback">Feedback</button>
-  <button class="tab-btn" data-tab="insights">Insights</button>
-  <button class="tab-btn" data-tab="my-shifts">My Shifts</button>
-  <button class="tab-btn" data-tab="vas">VAs</button>
-  <button class="tab-btn" data-tab="shift-recap">Shift Recap</button>
-</nav>
 
 <!-- Preview mode banner -->
 <div id="preview-banner">
@@ -694,8 +718,89 @@
 
   <!-- ══════════════════════════════ OVERVIEW ══════════════════════════════ -->
   <section id="tab-overview" class="tab-content active">
-    <div id="kpi-grid" class="kpi-grid"></div>
-    <div class="card">
+
+    <!-- Team avatar row -->
+    <div class="team-row-card" style="margin-bottom:18px">
+      <div class="team-row-label">TEAM</div>
+      <div class="team-row" id="ov-team-row"></div>
+    </div>
+
+    <!-- Bento grid -->
+    <div class="bento" style="margin-bottom:18px">
+
+      <div class="glass-card bento-hero span2">
+        <div class="hero-grad"></div>
+        <div style="position:relative">
+          <h3 id="ov-hero-title">Team overview</h3>
+          <p id="ov-hero-sub"></p>
+        </div>
+        <button class="hero-btn" onclick="document.getElementById('team-report').scrollIntoView({behavior:'smooth'})">View report</button>
+      </div>
+
+      <div class="glass-card">
+        <div class="glow-blob" style="background:#a05fff"></div>
+        <div class="bento-kicker" style="color:#d9c6ff"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9 6.8 19.6l1-5.8L3.5 9.7l5.9-.9L12 3Z"/></svg>TOP PERFORMER</div>
+        <div id="ov-top-performer" style="position:relative;display:flex;align-items:center;gap:12px"></div>
+      </div>
+
+      <div class="glass-card">
+        <div class="glow-blob" style="background:#3ddc84"></div>
+        <div class="bento-kicker" style="color:#7fe8ab;justify-content:space-between">
+          <span>VAs</span>
+          <span style="display:flex;align-items:center;gap:5px;font-size:11px;color:#3ddc84"><span style="width:7px;height:7px;border-radius:50%;background:#3ddc84;box-shadow:0 0 8px #3ddc84"></span>Live</span>
+        </div>
+        <div style="position:relative">
+          <div class="bento-big" id="ov-va-big">–</div>
+          <div class="bento-sub" id="ov-va-sub">touches today</div>
+        </div>
+      </div>
+
+      <div class="glass-card">
+        <div style="font-size:15px;font-weight:600;color:var(--ink)">Team Average</div>
+        <div class="gauge-wrap">
+          <div class="gauge" id="ov-gauge">
+            <div class="gauge-hole">
+              <div class="gauge-pct" id="ov-gauge-pct">–</div>
+              <div class="gauge-label">team avg</div>
+            </div>
+          </div>
+          <div class="gauge-delta" id="ov-gauge-delta"></div>
+        </div>
+      </div>
+
+      <div class="glass-card">
+        <div style="font-size:15px;font-weight:600;color:var(--ink);margin-bottom:12px">Role Averages</div>
+        <div id="ov-role-bars" style="flex:1;display:flex;flex-direction:column;justify-content:center"></div>
+      </div>
+
+      <div class="span2 toggle-grid" id="ov-toggle-cards"></div>
+
+      <div class="glass-card span2">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+          <div style="font-size:16px;font-weight:700;color:var(--ink)">Score Trend</div>
+          <div style="padding:7px 14px;border-radius:12px;background:var(--glass-strong);color:var(--ink);font-size:12px;font-weight:600">Monthly</div>
+        </div>
+        <div style="flex:1;position:relative;min-height:150px"><canvas id="ov-trend-chart"></canvas></div>
+      </div>
+
+      <div class="glass-card">
+        <div class="glow-blob" style="background:#ff5f9e"></div>
+        <div class="bento-kicker" style="color:#ffbcd6">LATEST OBSERVATION</div>
+        <div style="position:relative" id="ov-latest-obs"></div>
+      </div>
+
+      <div class="glass-card grad-card-amber">
+        <div style="display:flex;align-items:baseline;gap:8px">
+          <span style="font-size:30px;font-weight:700;color:#fff" id="ov-week-avg">–</span>
+          <span style="font-size:18px;color:rgba(255,255,255,.8)" id="ov-week-target">/ –</span>
+        </div>
+        <div class="bento-sub">team avg vs target</div>
+        <div id="ov-weekdays" style="display:flex;justify-content:space-between;font-size:11px;color:rgba(255,255,255,.7);margin-top:6px"></div>
+      </div>
+
+    </div>
+
+    <div class="card" id="team-report">
       <div class="section-head">
         <h2>Team Performance</h2>
         <span id="overview-period" class="sub"></span>
@@ -929,7 +1034,7 @@
       <span id="va-last-updated" style="font-size:13px;color:var(--text-muted)">Updated: –</span>
       <span style="font-size:13px;color:var(--text-muted)">·</span>
       <span id="va-next-refresh" style="font-size:12px;color:var(--text-muted)">Auto-refreshes every 15 min</span>
-      <button onclick="reloadVAData()" style="margin-left:auto;padding:4px 14px;border-radius:8px;border:1px solid var(--success);background:#fff;color:var(--success);font:600 12px var(--font);cursor:pointer">
+      <button onclick="reloadVAData()" style="margin-left:auto;padding:4px 14px;border-radius:8px;border:1px solid var(--success);background:var(--input-bg);color:var(--success);font:600 12px var(--font);cursor:pointer">
         ↻ Refresh now
       </button>
     </div>
@@ -963,7 +1068,62 @@
     <div id="shift-recap-content"></div>
   </section>
 
+  <!-- ══════════════════════════════ MY SCORES (rep home) ═════════════════ -->
+  <section id="tab-my-scores" class="tab-content">
+    <div id="ms-alerts" style="display:flex;gap:16px;margin-bottom:18px;flex-wrap:wrap"></div>
+    <div class="bento">
+
+      <div class="glass-card">
+        <div style="font-size:15px;font-weight:600;color:var(--ink)">Your Score</div>
+        <div class="gauge-wrap">
+          <div class="gauge" id="ms-gauge">
+            <div class="gauge-hole">
+              <div class="gauge-pct" id="ms-gauge-pct">–</div>
+              <div class="gauge-label">your score</div>
+            </div>
+          </div>
+          <div class="gauge-delta" id="ms-gauge-note"></div>
+        </div>
+      </div>
+
+      <div class="glass-card span2">
+        <div style="font-size:16px;font-weight:700;color:var(--ink);margin-bottom:14px">Score by Role</div>
+        <div id="ms-role-bars" style="flex:1;display:flex;flex-direction:column;justify-content:center"></div>
+        <div class="bento-sub" id="ms-role-note" style="margin-top:10px"></div>
+      </div>
+
+      <div class="glass-card">
+        <div class="bento-kicker" style="color:var(--ink-muted)">YOUR RANK</div>
+        <div style="font-size:44px;font-weight:700;color:var(--ink);line-height:1" id="ms-rank">–</div>
+        <div class="bento-sub" id="ms-rank-sub"></div>
+      </div>
+
+      <div class="glass-card span2">
+        <div style="font-size:16px;font-weight:700;color:var(--ink);margin-bottom:6px">Score Trend</div>
+        <div style="flex:1;position:relative;min-height:130px"><canvas id="ms-trend-chart"></canvas></div>
+      </div>
+
+      <div class="glass-card">
+        <div class="glow-blob" style="background:#ff5f9e"></div>
+        <div class="bento-kicker" style="color:#ffbcd6">LATEST FEEDBACK · ROTEM</div>
+        <div id="ms-feedback" dir="auto" style="position:relative;font-size:13px;color:var(--ink-soft);line-height:1.5"></div>
+      </div>
+
+      <div class="glass-card grad-card-blue">
+        <div class="bento-kicker" style="color:rgba(255,255,255,.85)">NEXT SHIFT</div>
+        <div>
+          <div style="font-size:20px;font-weight:700;color:#fff" id="ms-next-shift">–</div>
+          <div class="bento-sub" id="ms-next-shift-sub"></div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
 </main>
+
+</div><!-- /content-col -->
+</div><!-- /app-shell -->
 
 <!-- ═══════════════════════════════ EMBEDDED SEED DATA ════════════════════ -->
 <script>
@@ -1133,6 +1293,113 @@ function roleBadge(role) {
   return `<span class="badge badge-junior">${role}</span>`;
 }
 
+// ── Liquid Glass UI: theme, avatars, bento helpers ───────────────────────────
+
+const THEME = {
+  KEY: 'ops_theme',
+  current: 'dark',
+  init() {
+    this.current = localStorage.getItem(this.KEY) === 'light' ? 'light' : 'dark';
+    this.apply();
+  },
+  toggle() {
+    this.current = this.current === 'dark' ? 'light' : 'dark';
+    localStorage.setItem(this.KEY, this.current);
+    this.apply(true);
+  },
+  chartInk()  { return this.current === 'light' ? 'rgba(45,58,74,.62)' : 'rgba(255,255,255,.6)'; },
+  chartGrid() { return this.current === 'light' ? 'rgba(30,42,60,.08)' : 'rgba(255,255,255,.08)'; },
+  apply(rerender) {
+    document.documentElement.classList.toggle('theme-light', this.current === 'light');
+    const sw = document.getElementById('theme-switch');
+    if (sw) sw.checked = this.current === 'light';
+    if (window.Chart) {
+      Chart.defaults.color = this.chartInk();
+      Chart.defaults.borderColor = this.chartGrid();
+    }
+    if (rerender && AUTH.user) {
+      const activeTab = document.querySelector('.tab-btn.active')?.dataset.tab;
+      try {
+        if (activeTab === 'overview')  renderOverview();
+        if (activeTab === 'my-scores') renderMyScores();
+        if (activeTab === 'trends')    renderTrends();
+        if (activeTab === 'individual') renderIndividual();
+      } catch (e) {}
+    }
+  }
+};
+
+// Team photos live in team/<id>.png (240×240 squares). Gal has no photo yet.
+const PHOTO_IDS = ['noam','omer','eran','tomer','lior','nitzan','rotem','febe','sheryl','justine'];
+
+function nameInitials(name) {
+  return String(name || '').split(' ').filter(Boolean).map(w => w[0]).join('').slice(0, 2).toUpperCase();
+}
+
+function avatarInner(id, name) {
+  return PHOTO_IDS.includes(id)
+    ? `<img src="team/${id}.png" alt="${name || id}">`
+    : `<span>${nameInitials(name || id)}</span>`;
+}
+
+const STATUS_COLORS = { on: '#3ddc84', warn: '#f5a623', below: '#ff5f9e', na: 'rgba(150,160,175,.5)' };
+const ROLE_DESC = { A: 'Lead Investigation', B: 'Task Management', C: 'Reviews / Reactivate' };
+
+function gaugeGradient(p) {
+  if (p == null) return 'conic-gradient(rgba(150,160,175,.3) 0% 100%)';
+  const v = Math.min(Math.max(p, 0), 100), seg = v / 4;
+  return `conic-gradient(#3ddc84 0% ${seg}%, #22c9c9 ${seg}% ${seg * 2}%, #2f80ed ${seg * 2}% ${seg * 3}%, #a05fff ${seg * 3}% ${v}%, rgba(150,160,175,.18) ${v}% 100%)`;
+}
+
+function roleBarsHTML(items) {
+  return items.map(it => `
+    <div class="rolebar">
+      <div class="rolebar-head">
+        <span${it.focus ? ' style="color:#ff5f9e;font-weight:600"' : ''}>${it.label}${it.focus ? ' — focus area' : ''}</span>
+        <b>${it.pct != null ? it.pct.toFixed(0) + '%' : '–'}</b>
+      </div>
+      <div class="rolebar-track"><div class="rolebar-fill" style="width:${it.pct || 0}%;background:${it.focus ? '#ff5f9e' : it.color}"></div></div>
+    </div>`).join('');
+}
+
+function drawBentoTrend(canvasId, labels, data, opts = {}) {
+  destroyChart(canvasId);
+  const el = document.getElementById(canvasId);
+  if (!el || !window.Chart) return;
+  const c2d = el.getContext('2d');
+  let stroke = opts.color || '#3ddc84';
+  if (opts.rainbow) {
+    stroke = c2d.createLinearGradient(0, 0, el.parentElement.clientWidth || 400, 0);
+    stroke.addColorStop(0, '#22c9c9'); stroke.addColorStop(.5, '#2f80ed'); stroke.addColorStop(1, '#a05fff');
+  }
+  const fill = c2d.createLinearGradient(0, 0, 0, 170);
+  fill.addColorStop(0, (opts.rainbow ? '#a05fff' : stroke) + '55');
+  fill.addColorStop(1, (opts.rainbow ? '#2f80ed' : stroke) + '00');
+  activeCharts[canvasId] = new Chart(el, {
+    type: 'line',
+    data: { labels, datasets: [{
+      data, borderColor: stroke, backgroundColor: fill, fill: true,
+      tension: .45, borderWidth: 3.5, pointRadius: 4, spanGaps: true,
+      pointBackgroundColor: '#fff', pointBorderColor: opts.rainbow ? '#a05fff' : stroke, pointBorderWidth: 2
+    }] },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        y: { suggestedMin: 40, suggestedMax: 100, grid: { color: THEME.chartGrid() }, ticks: { color: THEME.chartInk(), callback: v => v + '%' } },
+        x: { grid: { display: false }, ticks: { color: THEME.chartInk() } }
+      }
+    }
+  });
+}
+
+function topSearchGo(q) {
+  q = (q || '').trim().toLowerCase();
+  if (!q) return;
+  const rep = REPS.find(r => r.name.toLowerCase().includes(q) || r.id.startsWith(q));
+  if (rep && AUTH.isManager()) switchToIndividual(rep.id);
+}
+
 function repColor(repId) {
   const palette = {
     noam:"#7B1FA2", omer:"#0277BD", tal:"#2E7D32",
@@ -1206,9 +1473,19 @@ const AUTH = {
     const g = id => document.getElementById(id);
     if (g('user-chip'))    g('user-chip').style.display    = 'flex';
     if (g('sign-out-btn')) g('sign-out-btn').style.display = 'block';
-    if (g('user-avatar'))  g('user-avatar').textContent    = this.user.name.charAt(0).toUpperCase();
+    if (g('user-avatar'))  g('user-avatar').innerHTML      = avatarInner(this.user.id, this.user.name);
     if (g('user-name'))    g('user-name').textContent      = this.user.name.split(' ')[0];
+    if (g('user-role'))    g('user-role').textContent      =
+      this.user.isManager ? 'Manager' : (REPS.find(r => r.id === this.user.id)?.role || 'Rep');
     if (g('mgr-badge'))    g('mgr-badge').style.display    = this.user.isManager ? 'inline' : 'none';
+
+    // Top bar: welcome + profile photo (shows the viewed-as rep during preview)
+    const viewed = this.viewingAs || this.user;
+    if (g('welcome-title')) g('welcome-title').textContent = 'Welcome, ' + viewed.name.split(' ')[0];
+    if (g('top-avatar')) {
+      g('top-avatar').style.display = 'flex';
+      g('top-avatar').innerHTML = avatarInner(viewed.id, viewed.name);
+    }
 
     // "View As" selector in header
     const sel = g('view-as-select');
@@ -1246,23 +1523,25 @@ function _rerenderAsRep(repId) {
     const btn = document.querySelector(`[data-tab="${t}"]`);
     if (btn) btn.style.display = 'none';
   });
-  ['individual','leaderboard','trends','feedback','my-shifts'].forEach(t => {
+  ['my-scores','individual','leaderboard','trends','feedback','my-shifts'].forEach(t => {
     const btn = document.querySelector(`[data-tab="${t}"]`);
     if (btn) btn.style.display = '';
   });
-  // Switch to My Shifts tab
+  // Land on My Scores (rep home)
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   document.querySelectorAll('.tab-content').forEach(s => s.classList.remove('active'));
-  const msBtn = document.querySelector('[data-tab="my-shifts"]');
+  const msBtn = document.querySelector('[data-tab="my-scores"]');
   if (msBtn) msBtn.classList.add('active');
-  const msEl = document.getElementById('tab-my-shifts');
+  const msEl = document.getElementById('tab-my-scores');
   if (msEl) msEl.classList.add('active');
-  renderMyShifts();
+  renderMyScores();
 }
 
 function _rerenderAsManager() {
   // Restore all tabs
   document.querySelectorAll('.tab-btn').forEach(b => b.style.display = '');
+  const msb = document.querySelector('[data-tab="my-scores"]');
+  if (msb) msb.style.display = 'none';
   // Switch to overview
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   document.querySelectorAll('.tab-content').forEach(s => s.classList.remove('active'));
@@ -1399,6 +1678,7 @@ function setActiveMonth(ym) {
   // Re-render the active tab
   const activeTab = document.querySelector('.tab-btn.active')?.dataset.tab;
   if (activeTab === 'overview')    renderOverview();
+  if (activeTab === 'my-scores')   renderMyScores();
   if (activeTab === 'leaderboard') renderLeaderboard();
   if (activeTab === 'individual')  renderIndividual();
   if (activeTab === 'insights')    renderInsights();
@@ -1603,6 +1883,7 @@ document.querySelectorAll(".tab-btn").forEach(btn => {
     const tab = btn.dataset.tab;
     document.getElementById("tab-" + tab).classList.add("active");
     if (tab === "trends")     renderTrends();
+    if (tab === "my-scores")  renderMyScores();
     if (tab === "individual") renderIndividual();
     if (tab === "leaderboard") renderLeaderboard();
     if (tab === "feedback")   renderFeedbackTab();
@@ -1627,26 +1908,131 @@ function renderOverview() {
     D.generated_at ? new Date(D.generated_at).toLocaleDateString("en-GB") : "–";
   document.getElementById("overview-period").textContent = cm ? `Showing ${monthLabel(cm)}` : "";
 
-  // KPI cards
-  const teamScores = REPS.map(r => getMonthlyScore(r.id, year, month).overall).filter(x => x != null);
+  // ── Bento grid ──
+  const scored = REPS.map(r => ({ rep: r, s: getMonthlyScore(r.id, year, month) }));
+  const teamScores = scored.map(x => x.s.overall).filter(x => x != null);
   const teamAvg = avg(teamScores);
-  const onTarget = REPS.filter(r => {
-    const s = getMonthlyScore(r.id, year, month).overall;
-    return s != null && s >= r.target * 100;
-  }).length;
+  const onTarget = scored.filter(x => x.s.overall != null && x.s.overall >= x.rep.target * 100).length;
+  const prevAvg = prevYM
+    ? avg(REPS.map(r => getMonthlyScore(r.id, parseMonth(prevYM).year, parseMonth(prevYM).month).overall).filter(x => x != null))
+    : null;
+  const delta = (teamAvg != null && prevAvg != null) ? teamAvg - prevAvg : null;
+  const prevName = prevYM ? monthLabel(prevYM).split(' ')[0] : '';
 
-  const kpiData = [
-    { label: "Team Average", value: teamAvg != null ? pct(teamAvg) : "–", sub: "overall score" },
-    { label: "On Target", value: `${onTarget} / ${REPS.length}`, sub: "reps meeting goal" },
-    { label: "Reps Observed", value: teamScores.length, sub: "this month" },
-    { label: "Observations", value: D.sampling_scores.filter(s => s.date.startsWith(cm?.slice(0,7) || "9999")).length, sub: "spot-checks" }
+  // Team avatar row — ring color = status vs target
+  document.getElementById('ov-team-row').innerHTML = scored.map(({ rep, s }) => {
+    const st = statusClass(s.overall, rep.target);
+    return `
+      <div class="team-chip" onclick="switchToIndividual('${rep.id}')" title="${rep.name} — open Individual">
+        <div class="team-chip-ring" style="background:${STATUS_COLORS[st]}">
+          <div class="team-chip-photo">${avatarInner(rep.id, rep.name)}</div>
+        </div>
+        <div>
+          <div class="team-chip-name">${rep.name.split(' ')[0]}</div>
+          <div class="team-chip-score">${s.overall != null ? s.overall.toFixed(0) + '%' : '–'}</div>
+        </div>
+      </div>`;
+  }).join('');
+
+  // Hero banner
+  const below = scored.filter(x => x.s.overall != null && statusClass(x.s.overall, x.rep.target) === 'below').length;
+  const trendWord = delta == null ? 'at a glance' : delta >= 1 ? 'trending up' : delta <= -1 ? 'trending down' : 'holding steady';
+  document.getElementById('ov-hero-title').textContent = 'Team is ' + trendWord;
+  document.getElementById('ov-hero-sub').textContent =
+    (delta != null ? `${delta >= 0 ? '+' : ''}${delta.toFixed(0)} pts this month · ` : '') +
+    `${onTarget} of ${REPS.length} reps on target.` +
+    (below ? ` ${below} rep${below > 1 ? 's' : ''} need${below > 1 ? '' : 's'} coaching.` : '');
+
+  // Top performer
+  const top = scored.filter(x => x.s.overall != null).sort((a, b) => b.s.overall - a.s.overall)[0];
+  document.getElementById('ov-top-performer').innerHTML = top ? `
+    <div style="width:46px;height:46px;border-radius:14px;overflow:hidden;flex-shrink:0;box-shadow:0 4px 14px rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#2f80ed,#4aa0ff);color:#fff;font-weight:700">${avatarInner(top.rep.id, top.rep.name)}</div>
+    <div>
+      <div style="font-size:16px;font-weight:700;color:var(--ink)">${top.rep.name}</div>
+      <div class="bento-sub">${top.rep.role.replace(' Ops', '')} · ${top.s.overall.toFixed(0)}%</div>
+    </div>` : '<div class="bento-sub">No data yet</div>';
+
+  // VAs live — latest day's top VA
+  const vaLatest = (D.va_metrics || []).slice().sort((a, b) => a.date < b.date ? 1 : -1)[0];
+  if (vaLatest && vaLatest.vas?.length) {
+    const topVA = vaLatest.vas.slice().sort((a, b) => (b.unique_touches || 0) - (a.unique_touches || 0))[0];
+    const todayISO = new Date().toISOString().slice(0, 10);
+    document.getElementById('ov-va-big').textContent =
+      topVA.va_id.charAt(0).toUpperCase() + topVA.va_id.slice(1) + ' · ' + (topVA.unique_touches ?? '–');
+    document.getElementById('ov-va-sub').textContent =
+      `touches ${vaLatest.date === todayISO ? 'today' : vaLatest.date} / 350`;
+  } else {
+    document.getElementById('ov-va-big').textContent = '–';
+    document.getElementById('ov-va-sub').textContent = 'no VA data yet';
+  }
+
+  // Team average gauge
+  document.getElementById('ov-gauge').style.background = gaugeGradient(teamAvg);
+  document.getElementById('ov-gauge-pct').textContent = teamAvg != null ? teamAvg.toFixed(0) + '%' : '–';
+  const gd = document.getElementById('ov-gauge-delta');
+  if (delta != null) {
+    gd.textContent = `${delta >= 0 ? '↑ +' : '↓ '}${Math.abs(delta).toFixed(0)} pts vs ${prevName}`;
+    gd.style.color = delta >= 0 ? '#3ddc84' : '#ff5f9e';
+  } else gd.textContent = '';
+
+  // Role averages — weakest role flagged as focus area
+  const roleAvgOf = k => avg(scored.map(x => x.s['cat' + k]).filter(x => x != null));
+  const rA = roleAvgOf('A'), rB = roleAvgOf('B'), rC = roleAvgOf('C');
+  const focusRole = [['A', rA], ['B', rB], ['C', rC]].filter(x => x[1] != null).sort((a, b) => a[1] - b[1])[0]?.[0];
+  document.getElementById('ov-role-bars').innerHTML = roleBarsHTML([
+    { label: 'Role A', pct: rA, color: '#f5a623', focus: focusRole === 'A' },
+    { label: 'Role B', pct: rB, color: '#2f80ed', focus: focusRole === 'B' },
+    { label: 'Role C', pct: rC, color: '#a05fff', focus: focusRole === 'C' }
+  ]);
+
+  // Role / VA info cards (2×2) — toggle shows whether the area has data this month
+  const svgBolt  = '<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 4 13.5h6L9 22l10-12.5h-6L13 2Z"/></svg>';
+  const svgGrid  = '<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></svg>';
+  const svgChart = '<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4v16h16"/><path d="M7 14l4-4 3 2 5-6"/></svg>';
+  const svgPhone = '<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h3.5l1.5 4.5-2 1.2a11 11 0 0 0 4.8 4.8l1.2-2 4.5 1.5V18a2 2 0 0 1-2 2A15 15 0 0 1 3 6a2 2 0 0 1 2-2Z"/></svg>';
+  const toggles = [
+    { t: 'Role A', sub: ROLE_DESC.A, color: '#f5a623', on: rA != null, icon: svgBolt },
+    { t: 'Role B', sub: ROLE_DESC.B, color: '#2f80ed', on: rB != null, icon: svgGrid },
+    { t: 'Role C', sub: ROLE_DESC.C, color: '#a05fff', on: rC != null, icon: svgChart },
+    { t: 'VAs',    sub: 'Daily touches', color: '#3ddc84', on: !!vaLatest, icon: svgPhone }
   ];
-  document.getElementById("kpi-grid").innerHTML = kpiData.map(k => `
-    <div class="kpi-card">
-      <div class="kpi-label">${k.label}</div>
-      <div class="kpi-value">${k.value}</div>
-      <div class="kpi-sub">${k.sub}</div>
-    </div>`).join("");
+  document.getElementById('ov-toggle-cards').innerHTML = toggles.map(c => `
+    <div class="glass-card toggle-card">
+      <div class="glow-blob" style="background:${c.color};width:110px;height:110px;top:-30px;right:-30px;opacity:.16;filter:blur(6px)"></div>
+      <div style="position:relative;display:flex;align-items:flex-start;justify-content:space-between">
+        <div class="toggle-icon" style="background:${c.color}29;color:${c.color}">${c.icon}</div>
+        <div class="mini-toggle" style="background:${c.on ? c.color : 'rgba(150,160,175,.35)'};justify-content:${c.on ? 'flex-end' : 'flex-start'};box-shadow:${c.on ? '0 2px 10px ' + c.color + '88' : 'none'}"><div class="knob"></div></div>
+      </div>
+      <div><div class="toggle-title">${c.t}</div><div class="toggle-sub">${c.sub}</div></div>
+    </div>`).join('');
+
+  // Score trend — monthly team average
+  drawBentoTrend('ov-trend-chart',
+    months.map(m => monthLabel(m).split(' ')[0]),
+    months.map(ym => {
+      const p = parseMonth(ym);
+      return avg(REPS.map(r => getMonthlyScore(r.id, p.year, p.month).overall).filter(x => x != null));
+    }),
+    { rainbow: true });
+
+  // Latest observation
+  const lastRec = D.sampling_scores.slice().sort((a, b) => a.date < b.date ? 1 : -1)[0];
+  if (lastRec) {
+    const rep = REPS.find(r => r.id === lastRec.rep_id);
+    const scale = lastRec.avg > 5 ? 10 : 5;
+    const d = new Date(lastRec.date);
+    document.getElementById('ov-latest-obs').innerHTML = `
+      <div style="font-size:16px;font-weight:700;color:var(--ink)">${rep ? rep.name : lastRec.rep_id} · ${((lastRec.avg / scale) * 100).toFixed(0)}%</div>
+      <div class="bento-sub" style="margin-top:3px">Role ${lastRec.category} · by ${(lastRec.reviewer || '').charAt(0).toUpperCase() + (lastRec.reviewer || '').slice(1)} · ${MONTH_NAMES[d.getMonth()]} ${d.getDate()}</div>`;
+  }
+
+  // Week summary — team avg vs average target
+  const avgTarget = avg(REPS.map(r => r.target * 100));
+  document.getElementById('ov-week-avg').textContent = teamAvg != null ? teamAvg.toFixed(0) : '–';
+  document.getElementById('ov-week-target').textContent = '/ ' + (avgTarget != null ? avgTarget.toFixed(0) : '–');
+  const dow = (new Date().getDay() + 6) % 7; // Mon=0
+  document.getElementById('ov-weekdays').innerHTML = ['M', 'T', 'W', 'T', 'F', 'S', 'S']
+    .map((l, i) => i === dow ? `<span style="color:#fff;font-weight:700">${l}</span>` : `<span>${l}</span>`).join('');
 
   // Rep table
   const tbody = document.getElementById("overview-tbody");
@@ -1684,6 +2070,116 @@ function renderOverview() {
         <td style="font-size:12px;color:var(--text-muted)">${lastObs || "–"}</td>
       </tr>`;
   }).join("");
+}
+
+// ── My Scores (rep personal home) ───────────────────────────────────────────
+
+function renderMyScores() {
+  const repId = AUTH.viewingAs?.id || AUTH.myRepId?.() || AUTH.user?.id;
+  const rep = REPS.find(r => r.id === repId);
+  if (!rep) return;
+
+  const cm = getActiveMonth();
+  const { year, month } = cm ? parseMonth(cm) : { year: 2026, month: 6 };
+  const months = getAllMonths();
+  const idx = cm ? months.indexOf(cm) : months.length - 1;
+  const prevYM = idx > 0 ? months[idx - 1] : null;
+  const prevName = prevYM ? monthLabel(prevYM).split(' ')[0] : '';
+
+  document.getElementById('hdr-month').textContent = cm ? monthLabel(cm) : '';
+
+  const s = getMonthlyScore(repId, year, month);
+  const prev = prevYM ? getMonthlyScore(repId, parseMonth(prevYM).year, parseMonth(prevYM).month) : { overall: null };
+  const target = rep.target * 100;
+
+  // Alert banners — praise / below / improving / declining (thin line icons, no emoji)
+  const icoTrophy = '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#3ddc84" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4h10v4a5 5 0 0 1-10 0V4Z"/><path d="M7 6H4v1.5a3 3 0 0 0 3 3"/><path d="M17 6h3v1.5a3 3 0 0 1-3 3"/><path d="M9 20h6"/><path d="M12 13v4"/></svg>';
+  const icoUp     = '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#4aa0ff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4v16h16"/><path d="M7 14l4-4 3 2 5-6"/></svg>';
+  const icoDown   = '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#f5a623" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4v16h16"/><path d="M7 8l4 4 3-2 5 6"/></svg>';
+  const icoFlag   = '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#ff5f9e" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4"/><path d="M5 4c4-2 8 2 14 0v9c-6 2-10-2-14 0"/></svg>';
+
+  const alerts = [];
+  if (s.overall != null) {
+    if (s.overall >= target) {
+      alerts.push({ cls: 'ga-green', ico: icoTrophy, t: 'Above target — great work!', sub: `You're at ${s.overall.toFixed(0)}% — ${(s.overall - target).toFixed(0)} pts above your ${target.toFixed(0)}% target. Keep it up!` });
+    } else {
+      alerts.push({ cls: 'ga-pink', ico: icoFlag, t: 'Below target', sub: `You're at ${s.overall.toFixed(0)}% — ${(target - s.overall).toFixed(0)} pts below your ${target.toFixed(0)}% target.` });
+    }
+    if (prev.overall != null) {
+      const d = s.overall - prev.overall;
+      if (d >= 1)  alerts.push({ cls: 'ga-blue', ico: icoUp, t: 'Improving trend', sub: `Up ${d.toFixed(0)} pts from ${prev.overall.toFixed(0)}% in ${prevName}. Great momentum.` });
+      if (d <= -1) alerts.push({ cls: 'ga-amber', ico: icoDown, t: 'Declining trend', sub: `Down ${Math.abs(d).toFixed(0)} pts from ${prev.overall.toFixed(0)}% in ${prevName}.` });
+    }
+  } else {
+    alerts.push({ cls: 'ga-blue', ico: icoUp, t: 'No score yet', sub: `No observations for ${cm ? monthLabel(cm) : 'this month'} yet — check back after your next review.` });
+  }
+  document.getElementById('ms-alerts').innerHTML = alerts.map(a => `
+    <div class="glass-alert ${a.cls}">
+      <div class="ga-icon">${a.ico}</div>
+      <div><div class="glass-alert-title">${a.t}</div><div class="glass-alert-sub">${a.sub}</div></div>
+    </div>`).join('');
+
+  // Gauge
+  const gaugeColor = s.overall == null ? null : s.overall >= target ? '#3ddc84' : statusClass(s.overall, rep.target) === 'warn' ? '#f5a623' : '#ff5f9e';
+  document.getElementById('ms-gauge').style.background = s.overall != null
+    ? `conic-gradient(${gaugeColor} 0% ${Math.min(s.overall, 100)}%, rgba(150,160,175,.18) ${Math.min(s.overall, 100)}% 100%)`
+    : gaugeGradient(null);
+  document.getElementById('ms-gauge').style.boxShadow = gaugeColor ? `0 0 30px ${gaugeColor}55` : 'none';
+  document.getElementById('ms-gauge-pct').textContent = s.overall != null ? s.overall.toFixed(0) + '%' : '–';
+  const note = document.getElementById('ms-gauge-note');
+  note.textContent = `${rep.role} · target ${target.toFixed(0)}%`;
+  note.style.color = gaugeColor || 'var(--ink-muted)';
+
+  // Score by role
+  document.getElementById('ms-role-bars').innerHTML = roleBarsHTML([
+    { label: 'Role A — ' + ROLE_DESC.A, pct: s.catA, color: '#f5a623' },
+    { label: 'Role B — ' + ROLE_DESC.B, pct: s.catB, color: '#2f80ed' },
+    { label: 'Role C — ' + ROLE_DESC.C, pct: s.catC, color: '#a05fff' }
+  ]);
+  const roleVals = [['Role A', s.catA], ['Role B', s.catB], ['Role C', s.catC]].filter(x => x[1] != null);
+  if (roleVals.length >= 2) {
+    const sorted = roleVals.slice().sort((a, b) => b[1] - a[1]);
+    document.getElementById('ms-role-note').textContent = `Strongest in ${sorted[0][0]} · keep an eye on ${sorted[sorted.length - 1][0]}`;
+  } else document.getElementById('ms-role-note').textContent = '';
+
+  // Rank among reps this month
+  const ranked = REPS.map(r => ({ id: r.id, sc: getMonthlyScore(r.id, year, month).overall }))
+    .filter(x => x.sc != null).sort((a, b) => b.sc - a.sc);
+  const pos = ranked.findIndex(x => x.id === repId);
+  document.getElementById('ms-rank').textContent = pos >= 0 ? '#' + (pos + 1) : '–';
+  document.getElementById('ms-rank-sub').textContent = pos >= 0
+    ? `of ${ranked.length}${pos < ranked.length / 3 ? ' · top third' : ''}`
+    : 'no score this month';
+
+  // Personal trend
+  drawBentoTrend('ms-trend-chart',
+    months.map(m => monthLabel(m).split(' ')[0]),
+    months.map(ym => { const p = parseMonth(ym); return getMonthlyScore(repId, p.year, p.month).overall; }),
+    { color: gaugeColor || '#3ddc84' });
+
+  // Latest feedback from Rotem (general note or link note; Hebrew-safe via dir="auto")
+  const fb = (D.rotem_comments || []).filter(c => c.rep_id === repId)
+    .sort((a, b) => (a.comment_date < b.comment_date ? 1 : -1))[0];
+  const fbText = fb ? (fb.general_note || (fb.links || []).map(l => l.note).filter(Boolean)[0] || fb.subcat_label) : null;
+  document.getElementById('ms-feedback').innerHTML = fb
+    ? `"${fbText}"<div class="bento-sub" style="margin-top:8px">${fb.subcat_label ? fb.subcat_label + ' · ' : ''}${fb.comment_date}</div>`
+    : '<span class="bento-sub">No feedback yet.</span>';
+
+  // Next shift
+  const todayISO = new Date().toISOString().slice(0, 10);
+  const next = (D.shift_schedule || []).filter(x => x.rep_id === repId && x.date >= todayISO)
+    .sort((a, b) => a.date < b.date ? -1 : 1)[0];
+  if (next) {
+    const dayDiff = Math.round((new Date(next.date) - new Date(todayISO)) / 86400000);
+    const when = dayDiff === 0 ? 'Today' : dayDiff === 1 ? 'Tomorrow'
+      : new Date(next.date).toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' });
+    document.getElementById('ms-next-shift').textContent = `${when} · Role ${next.role}`;
+    document.getElementById('ms-next-shift-sub').textContent =
+      `${ROLE_DESC[next.role] || ''}${next.start ? ' · ' + next.start + '–' + next.end : ''}`;
+  } else {
+    document.getElementById('ms-next-shift').textContent = 'No upcoming shift';
+    document.getElementById('ms-next-shift-sub').textContent = 'check the schedule';
+  }
 }
 
 // ── Leaderboard ──────────────────────────────────────────────────────────────
@@ -2236,7 +2732,7 @@ function renderIndividual(repId) {
   if (radarLegend) {
     radarLegend.innerHTML = radarData.map((v, i) => v != null
       ? `<span style="font-size:11px;padding:2px 8px;background:var(--bg);border-radius:4px">${ROLE_LABELS[i]}: <strong>${pct(v,0)}</strong></span>`
-      : `<span style="font-size:11px;padding:2px 8px;background:#fafafa;border:1px dashed #ccc;border-radius:4px;color:var(--text-muted)">${ROLE_LABELS[i]}: no data</span>`
+      : `<span style="font-size:11px;padding:2px 8px;background:var(--glass-strong);border:1px dashed #ccc;border-radius:4px;color:var(--text-muted)">${ROLE_LABELS[i]}: no data</span>`
     ).join('');
   }
 
@@ -2413,7 +2909,7 @@ function exampleRowHTML(key, idx) {
         style="padding:4px 10px;border:1px solid #ffcdd2;background:#ffebee;color:var(--danger);border-radius:6px;font:700 14px var(--font);cursor:pointer;align-self:start;margin-top:2px">&#10005;</button>`
     : '<div style="width:34px"></div>';
   return `<div class="example-row" id="ex-${key}-${idx}"
-    style="display:grid;grid-template-columns:1fr 1fr 34px;gap:8px;align-items:start;margin-bottom:8px;background:#f8f9fb;border-radius:8px;padding:10px 12px">
+    style="display:grid;grid-template-columns:1fr 1fr 34px;gap:8px;align-items:start;margin-bottom:8px;background:var(--glass-strong);border-radius:8px;padding:10px 12px">
     <div>
       <div style="font-size:11px;font-weight:600;color:var(--text-muted);margin-bottom:4px">Podio link</div>
       <input type="url" id="link-${key}-${idx}" placeholder="https://podio.com/..."
@@ -3585,7 +4081,7 @@ function renderMyShifts() {
         <div style="margin-bottom:16px">
           <div style="font-size:13px;font-weight:700;color:var(--primary);margin-bottom:8px;padding:6px 12px;background:var(--primary-light);border-radius:6px;display:inline-block">${block.time}</div>
           ${block.tasks.map(task => `
-            <div style="display:flex;align-items:flex-start;gap:10px;padding:8px 12px;margin-bottom:4px;background:#fafafa;border-radius:8px;font-size:14px;line-height:1.5">
+            <div style="display:flex;align-items:flex-start;gap:10px;padding:8px 12px;margin-bottom:4px;background:var(--glass-strong);border-radius:8px;font-size:14px;line-height:1.5">
               <span style="font-size:16px;flex-shrink:0;margin-top:1px">○</span>
               <span>${task}</span>
             </div>`).join('')}
@@ -4083,25 +4579,30 @@ function initApp() {
       const btn = document.querySelector(`[data-tab="${tab}"]`);
       if (btn) btn.style.display = 'none';
     });
-    // Reps land on My Shifts tab (today's role + checklist)
+    const msBtn = document.querySelector('[data-tab="my-scores"]');
+    if (msBtn) msBtn.style.display = '';
+    // Reps land on My Scores (personal home)
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
     document.querySelectorAll('.tab-content').forEach(s => s.classList.remove('active'));
-    const myShiftsBtn = document.querySelector('[data-tab="my-shifts"]');
-    if (myShiftsBtn) myShiftsBtn.classList.add('active');
-    const myShiftsEl = document.getElementById('tab-my-shifts');
-    if (myShiftsEl) myShiftsEl.classList.add('active');
+    if (msBtn) msBtn.classList.add('active');
+    const msEl = document.getElementById('tab-my-scores');
+    if (msEl) msEl.classList.add('active');
   }
 
   initMonthFilter();
 
   if (isRep) {
-    renderMyShifts();
+    renderMyScores();
     initFeedbackTab();
   } else {
     renderOverview();
     initScoreEntry();
     initFeedbackTab();
   }
+
+  // Deep link: ?tab=leaderboard opens that tab directly
+  const urlTab = new URLSearchParams(location.search).get('tab');
+  if (urlTab) document.querySelector(`.tab-btn[data-tab="${urlTab}"]`)?.click();
 }
 
 // ── Shift comments helpers ────────────────────────────────────────────────────
@@ -4415,7 +4916,7 @@ function buildRecapCard(rep, team, today) {
           </div>
           <textarea id="recap-note-${repId}"
             placeholder="Write notes about your shift — your managers will see this."
-            style="width:100%;min-height:80px;padding:10px 12px;border:1px solid var(--border);border-radius:8px;font:14px var(--font);resize:vertical;color:var(--text);background:#fafafa;outline:none"
+            style="width:100%;min-height:80px;padding:10px 12px;border:1px solid var(--border);border-radius:8px;font:14px var(--font);resize:vertical;color:var(--text);background:var(--glass-strong);outline:none"
           >${savedNote}</textarea>
           <div style="display:flex;align-items:center;gap:10px;margin-top:10px">
             <button onclick="submitShiftNote('${repId}','${today}')"
@@ -4434,7 +4935,7 @@ function buildRecapCard(rep, team, today) {
             Rep's Notes ${savedAtStr ? `<span style="font-weight:400;text-transform:none;letter-spacing:0;margin-left:6px">saved at ${savedAtStr}</span>` : ''}
           </div>
           ${savedNote
-            ? `<div style="padding:10px 12px;background:#fafafa;border:1px solid var(--border);border-radius:8px;font-size:14px;line-height:1.6;color:var(--text)">${savedNote}</div>`
+            ? `<div style="padding:10px 12px;background:var(--glass-strong);border:1px solid var(--border);border-radius:8px;font-size:14px;line-height:1.6;color:var(--text)">${savedNote}</div>`
             : `<div style="font-size:13px;color:var(--text-muted);font-style:italic">No note submitted yet.</div>`
           }
         </div>`;
@@ -4457,7 +4958,8 @@ function buildRecapCard(rep, team, today) {
     </div>`;
 }
 
-// On load: restore session or show name-picker
+// On load: apply persisted theme, then restore session or show name-picker
+THEME.init();
 AUTH.init();
 buildLoginPicker();
 mergePendingIntoData();
