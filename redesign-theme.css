@@ -124,3 +124,10 @@ header .meta { color: var(--text-muted); opacity: 1; }
 /* ── Month + misc chips ── */
 .month-badge { background: var(--primary-light); color: var(--danger); }
 .insight-section-title, .card-title { color: var(--text-muted); }
+
+/* ── Readable dark text on pink action buttons (beats inline color:#fff) ── */
+.login-card button[onclick] { background: var(--primary) !important; color: var(--ink) !important; border: 2.5px solid var(--ink) !important; box-shadow: 3px 3px 0 var(--ink); border-radius: 999px; }
+.month-btn.active { color: var(--ink) !important; }
+.seg-btn.active, .rep-toggle.active { color: var(--ink) !important; }
+#tab-vas button[onclick*="applyVADateFilter"] { background: var(--primary) !important; color: var(--ink) !important; border: 2px solid var(--ink) !important; }
+#tab-vas button[onclick*="reloadVAData"] { color: var(--success) !important; border: 2px solid var(--success) !important; }
