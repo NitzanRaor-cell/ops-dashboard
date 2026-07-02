@@ -1,0 +1,126 @@
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap');
+
+/* ══════════════════════════════════════════════════════════════
+   ZoomREI Ops Dashboard — "Groovy" redesign theme
+   Loaded AFTER the inline <style>, so these rules win.
+   Palette: cream + bubblegum pink + mint + lilac + peach.
+   Sticker aesthetic: dark outlines + hard offset shadows + rounded.
+   Only visual — no markup, logic or data changes.
+   ══════════════════════════════════════════════════════════════ */
+
+:root {
+  --ink: #3a3540;
+  --bg: #f8f1e2;
+  --card: #fffdf7;
+  --border: #3a3540;          /* dark sticker outline */
+  --border-soft: #e6dcc4;
+  --primary: #ef8fc0;         /* bubblegum pink */
+  --primary-ink: #3a3540;     /* readable text on pink */
+  --primary-light: #f7d4e4;
+  --text: #3a3540;
+  --text-muted: #8a8290;
+  --success: #3f7a72;  --success-bg: #cfeae6;
+  --warn:    #a8862b;  --warn-bg:    #f9ecbf;
+  --danger:  #c85f97;  --danger-bg:  #f7d4e4;
+  --purple:  #7a4f96;  --purple-bg:  #ead9f2;   /* Closer  → lilac */
+  --blue:    #3f7a72;  --blue-bg:    #cfeae6;   /* Senior  → mint  */
+  --green:   #b57529;  --green-bg:   #f9dcbd;   /* Junior  → peach */
+  --shadow: 4px 4px 0 rgba(58,53,64,.13);
+  --radius: 18px;
+  --font: 'Fredoka', system-ui, -apple-system, sans-serif;
+}
+
+body { font-family: var(--font); background: var(--bg); color: var(--text); }
+h1, h2, h3, h4 { font-family: var(--font); }
+
+/* ── Header → cream with ink text + outline ── */
+header { background: var(--card); color: var(--ink); border-bottom: 2.5px solid var(--ink); box-shadow: none; }
+header h1 { color: var(--ink); font-weight: 700; }
+header .meta { color: var(--text-muted); opacity: 1; }
+.user-chip { background: var(--primary-light); border: 2px solid var(--ink); color: var(--ink); }
+.user-chip:hover { background: #f5c1da; }
+#view-as-bar-header label { color: var(--text-muted) !important; opacity: 1 !important; }
+#view-as-select { border: 2px solid var(--ink) !important; background: #fff !important; color: var(--ink) !important; border-radius: 999px !important; }
+.user-avatar { background: var(--primary); color: var(--ink); }
+.user-name { color: var(--ink); }
+.sign-out-btn { color: var(--text-muted); }
+.sign-out-btn:hover { color: var(--ink); }
+.manager-badge { background: var(--purple); color: #fff; }
+
+/* ── Tab nav → rounded sticker pills ── */
+.tab-nav { background: var(--bg); border-bottom: 2px solid var(--border-soft); gap: 8px; padding: 12px 24px; }
+.tab-nav button, .tab-btn {
+  border-radius: 999px !important;
+  border: 2px solid transparent !important;
+  margin-bottom: 0 !important;
+  padding: 9px 16px !important;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+.tab-nav button:hover, .tab-btn:hover { color: var(--ink); background: #fff; border-color: var(--border-soft) !important; }
+.tab-nav button.active, .tab-btn.active {
+  background: var(--primary) !important;
+  color: var(--ink) !important;
+  border-color: var(--ink) !important;
+  box-shadow: 2px 2px 0 var(--ink);
+}
+
+/* ── Sticker cards (outline + hard shadow + rounded) ── */
+.card, .kpi-card, .lb-card, .insight-rep-card, .subcat-card,
+.entry-log-card, .tts-card, .feedback-card, .name-card,
+.login-card, .alert-banner, .shift-today-card, .team-trends-summary .tts-card {
+  border: 2.5px solid var(--ink) !important;
+  box-shadow: var(--shadow) !important;
+  border-radius: var(--radius) !important;
+}
+.kpi-value, .lb-score, .lb-name, .irc-score, .irc-name { color: var(--ink); }
+
+/* ── Tables ── */
+.rep-table th, .entry-log th { color: var(--text-muted); border-bottom: 2px solid var(--border-soft); }
+.rep-table td { border-bottom: 1.5px solid var(--border-soft); }
+.rep-table tr:hover td { background: #fff6ea; }
+
+/* ── Progress tracks ── */
+.progress-bar, .sw-bar, .shift-metric-bar { background: #eee3ce; border: 1.5px solid #ddd0b4; }
+
+/* ── Badges & chips get thin outlines ── */
+.badge, .chip { border: 1.5px solid rgba(58,53,64,.28); }
+
+/* ── Buttons ── */
+.btn { border-radius: 999px; }
+.btn-primary { background: var(--primary); color: var(--ink); border: 2.5px solid var(--ink); box-shadow: 3px 3px 0 var(--ink); }
+.btn-primary:hover { background: #ef7ab4; }
+.btn-secondary { background: #fff; color: var(--ink); border: 2px solid var(--ink); }
+.seg-btn { border: 2px solid var(--ink); border-radius: 999px; color: var(--ink); background: #fff; }
+.seg-btn.active { background: var(--primary); color: var(--ink); border-color: var(--ink); }
+.response-save-btn { background: var(--primary); color: var(--ink); border-radius: 999px; border: 2px solid var(--ink); }
+.reviewed-check.checked { border-color: var(--success); background: var(--success-bg); color: var(--success); }
+
+/* ── Inputs ── */
+.form-group select, .form-group input, .ind-header select,
+.subcat-link-wrap input, .subcat-comment-wrap textarea, .response-wrap textarea {
+  border: 2px solid var(--ink) !important;
+  border-radius: 12px !important;
+}
+.response-wrap textarea:focus { outline: 2px solid var(--primary); }
+
+/* ── Insights team banner → lilac ── */
+.insight-team-card { background: #9466b8 !important; color: #fff; border: 2.5px solid var(--ink); box-shadow: var(--shadow); }
+
+/* ── Feedback ── */
+.feedback-header { background: var(--primary-light); border-bottom: 2px solid var(--border-soft); }
+.feedback-header:hover { background: #f5c1da; }
+.reply-block { background: var(--blue-bg); color: var(--ink); }
+
+/* ── Login ── */
+#login-overlay { background: var(--bg); }
+.login-title { color: var(--ink); font-weight: 700; }
+.name-card { background: #fff; }
+.name-card:hover { border-color: var(--ink); background: var(--primary-light); }
+.name-card.manager { background: var(--purple-bg); border-color: var(--ink); }
+.name-card.manager:hover { background: #e2c9f0; }
+.name-card-badge { border: 1.5px solid var(--ink); }
+
+/* ── Month + misc chips ── */
+.month-badge { background: var(--primary-light); color: var(--danger); }
+.insight-section-title, .card-title { color: var(--text-muted); }
