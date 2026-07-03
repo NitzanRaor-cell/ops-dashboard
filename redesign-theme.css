@@ -251,6 +251,7 @@ html.theme-light .sb-switch::after { transform: translateX(17px); }
   background: var(--blue-grad); color: #fff; font-weight: 700; font-size: 17px;
 }
 .top-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.bento-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
 #view-as-bar-header label { color: var(--ink-muted) !important; opacity: 1 !important; font-size: 12px; }
 #view-as-select {

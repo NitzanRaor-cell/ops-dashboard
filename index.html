@@ -1135,7 +1135,6 @@ if (!window.OPS_DATA) {
       reps: [
         { id: "noam",    name: "Noam Levi",    role: "Closer Ops", target: 0.90 },
         { id: "omer",    name: "Omer Livne",   role: "Senior Ops", target: 0.85 },
-        { id: "gal",     name: "Gal Kalderon", role: "Junior Ops", target: 0.80 },
         { id: "tomer",   name: "Tomer Peled",  role: "Junior Ops", target: 0.80 },
         { id: "eran",    name: "Eran Retman",  role: "Junior Ops", target: 0.80 },
         { id: "lior",    name: "Lior",         role: "Junior Ops", target: 0.80 },
@@ -1946,7 +1945,7 @@ function renderOverview() {
   // Top performer
   const top = scored.filter(x => x.s.overall != null).sort((a, b) => b.s.overall - a.s.overall)[0];
   document.getElementById('ov-top-performer').innerHTML = top ? `
-    <div style="width:46px;height:46px;border-radius:14px;overflow:hidden;flex-shrink:0;box-shadow:0 4px 14px rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#2f80ed,#4aa0ff);color:#fff;font-weight:700">${avatarInner(top.rep.id, top.rep.name)}</div>
+    <div class="bento-avatar" style="width:46px;height:46px;border-radius:14px;overflow:hidden;flex-shrink:0;box-shadow:0 4px 14px rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#2f80ed,#4aa0ff);color:#fff;font-weight:700">${avatarInner(top.rep.id, top.rep.name)}</div>
     <div>
       <div style="font-size:16px;font-weight:700;color:var(--ink)">${top.rep.name}</div>
       <div class="bento-sub">${top.rep.role.replace(' Ops', '')} · ${top.s.overall.toFixed(0)}%</div>

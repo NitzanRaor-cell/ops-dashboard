@@ -17,14 +17,6 @@
       "password_hash": "9f25d0fb357462b4836cc78a118cfd6348509cac04732f03cb166303c1b89f50"
     },
     {
-      "id": "gal",
-      "name": "Gal Kalderon",
-      "role": "Junior Ops",
-      "target": 0.8,
-      "gmail": "gal.kalderon@zoomrei.com",
-      "password_hash": "de72dd78c248faa356134248ec2da49c2eea073ce1780af88a21193201a990aa"
-    },
-    {
       "id": "tomer",
       "name": "Tomer Peled",
       "role": "Junior Ops",
